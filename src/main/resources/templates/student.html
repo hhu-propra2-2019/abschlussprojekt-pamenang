@@ -1,12 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Student</title>
 </head>
 <body>
 <div class="container">
-    <h1>Studenten Übersicht</h1>
+    <h1>Klausuranmeldung</h1>
+
+    <form action="/student" method="post">
+
+
+        <p>Name: <input type="string" name="name" value="Max"></p>
+        <p>Token: <input type="string" name ="token" value="12345678" ></p>
+        <input type="submit" name ="action" value="Klausurzulassung erhalten">
+
+
+    </form>
 </div>
 </body>
 </html>
