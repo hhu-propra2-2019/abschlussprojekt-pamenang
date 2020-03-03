@@ -1,4 +1,4 @@
-package mops.Controller;
+package mops.klausurzulassung.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
