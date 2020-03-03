@@ -59,6 +59,8 @@ dependencies {
 	}
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation "mops:styleguide:2.0.0"
+
+	implementation("com.google.guava:guava:28.2-jre")
 }
 
 test {
