@@ -1,11 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mopslayout :: html(name='Name des Subsystems', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
 <head>
-    <meta charset="UTF-8">
-    <title>Student</title>
+    <meta charset="utf-8">
+    <title>Name des Subsystems</title>
+    <th:block th:fragment="headcontent">
+        <!-- Links, Skripts, Styles hier einfügen! -->
+    </th:block>
 </head>
 <body>
-<div class="container">
+<header>
+    <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
+        <!-- Navigation als ungeordnete Liste mit einfachen Links hier einfügen! -->
+    </nav>
+</header>
+<main th:fragment="bodycontent">
+
+
     <h1>Klausuranmeldung</h1>
 
     <form action="/student" method="post">
@@ -17,6 +28,7 @@
 
 
     </form>
-</div>
+    <!-- Restlichen Inhalt hier einfügen! -->
+</main>
 </body>
 </html>
