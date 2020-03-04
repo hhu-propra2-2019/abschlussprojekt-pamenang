@@ -31,6 +31,29 @@
         </div>
     </div>
 
+    <br>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Vorname</th>
+            <th scope="col">Nachname</th>
+            <th scope="col">Matrikel-Nr</th>
+            <th scope="col">Zulassung</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${studentList} ">
+            <td><span th:text="${student.vorname}"></span></td>
+            <td><span th:text="${student.nachname}"></span></td>
+            <td><span th:text="${student.matrikelnummer}"></span></td>
+            <td><span th:text="${student.zulassung}"></span></td>
+
+        </tr>
+
+        </tbody>
+    </table>
+
 
 
 </main>
