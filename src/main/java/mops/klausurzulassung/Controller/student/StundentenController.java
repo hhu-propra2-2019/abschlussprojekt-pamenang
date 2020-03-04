@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import static mops.klausurzulassung.Token.Tokenverifikation.verifikation;
+
 @Controller
 public class StundentenController {
 
@@ -37,7 +39,8 @@ public class StundentenController {
       String matrikelnummer,
       String token,
       String fach) {
-    boolean value = true;
+
+    boolean value =  verifikation(matrikelnummer,fach,token);
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
     model.addAttribute("meldung", true);
