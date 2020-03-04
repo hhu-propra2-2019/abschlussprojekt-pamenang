@@ -16,7 +16,6 @@ public class StundentenController {
 
     @PostMapping("/student")
     public String empfangeDaten(Model model,String matrikelnummer, String token, String fach){
-        System.out.println(matrikelnummer + " " + token + " " + fach);
         boolean value = true;
         model.addAttribute("success", value);
         model.addAttribute("meldung", true);
