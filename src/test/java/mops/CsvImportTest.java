@@ -1,5 +1,6 @@
 package mops;
 
+import mops.klausurzulassung.Domain.Student;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +40,12 @@ public class CsvImportTest {
         new MockMultipartFile("datei", "data.csv", "text/csv", "Boris,Tenelsen,4252152,ja\n".getBytes());
         mockMvc.perform(MockMvcRequestBuilders.multipart("/csvimport").file(mockMultipartFile)).andExpect(status().is3xxRedirection());
 
+
+    }
+
+    @Test
+    public void lineShouldReturnValidStudent(){
+        Student student = new Student("Max","Mustermann",1234567,true);
 
     }
 

@@ -23,20 +23,25 @@ public class CsvImportService {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(inputstream));
         String line;
+
+        while ((line = br.readLine()) != null) {
+            studentList.add(createStudentFromInputStream(line));
+        }
+        return studentList;
+
+    }
+
+    private Student createStudentFromInputStream(String line){
         String vorname,nachname;
         long matrikelnummer;
         boolean zulassung;
-        while ((line = br.readLine()) != null) {
-            String [] temp = line.split(",");
-            vorname = temp[0];
-            nachname = temp[1];
-            matrikelnummer = Long.parseLong(temp[2]);
-            zulassung = temp[3].equals("ja");
+        String [] temp = line.split(",");
+        vorname = temp[0];
+        nachname = temp[1];
+        matrikelnummer = Long.parseLong(temp[2]);
+        zulassung = temp[3].equals("ja");
 
-            Student student = new Student(vorname,nachname,matrikelnummer,zulassung);
-            studentList.add(student);
-        }
-        return studentList;
+        return new Student(vorname,nachname,matrikelnummer,zulassung);
 
     }
 }
