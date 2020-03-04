@@ -1,4 +1,4 @@
 package mops.klausurzulassung.Services;
 
-public class CsvImportService { 
+public class CsvImportService {
 }
