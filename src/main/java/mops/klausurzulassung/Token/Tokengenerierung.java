@@ -20,7 +20,7 @@ public class Tokengenerierung {
         return matr+fach+key;
     }
 
-    public static String erstellenStudenttoken(String matr, String fach, String token){
+    public static String erstellenQuittung(String matr, String fach, String token){
         return matr+fach+token;
     }
 }
