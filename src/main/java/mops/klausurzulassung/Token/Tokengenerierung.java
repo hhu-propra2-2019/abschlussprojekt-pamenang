@@ -15,4 +15,8 @@ public class Tokengenerierung {
 
         return token.toString();
     }
+
+    public String erstellenHashValue(String matr, String fach, String key){
+        return matr+fach+key;
+    }
 }
