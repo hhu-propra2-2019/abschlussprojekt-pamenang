@@ -15,4 +15,15 @@ public class TokengenerierungTest {
 
         assertEquals(hash, testHash);
     }
+
+    @Test
+    public void testErstellenHashValue(){
+        String matr = "3333333";
+        String fach = "propra1";
+        String key = "key";
+
+        String ergebnis = Tokengenerierung.erstellenHashValue(matr, fach, key);
+
+        assertEquals(ergebnis, "3333333propra1key");
+    }
 }
