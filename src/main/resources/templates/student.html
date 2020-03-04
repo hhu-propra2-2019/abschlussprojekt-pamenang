@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{mopslayout :: html(name='Name des Subsystems', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
 <head>
     <meta charset="utf-8">
-    <title>Name des Subsystems</title>
+    <title>Klausurzulassungssystem</title>
     <th:block th:fragment="headcontent">
         <!-- Links, Skripts, Styles hier einfügen! -->
     </th:block>
 </head>
-
 <body>
 <header>
     <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
@@ -16,7 +15,6 @@
     </nav>
 </header>
 <main th:fragment="bodycontent">
-
     <h1>Klausuranmeldung</h1>
     <div th:if="${meldung}">
         <div th:if="${success}">
@@ -81,5 +79,4 @@
     </form>
 </main>
 </body>
-
 </html>
