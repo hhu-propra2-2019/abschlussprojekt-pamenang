@@ -18,14 +18,31 @@
 <main th:fragment="bodycontent">
 
     <h1>Klausuranmeldung</h1>
+    <div th:if="${meldung}">
+        <div th:if="${success}">
 
-    <div th:if="${success}">
-        <input size="35" style="background-color: forestgreen" value="Erfolgreich zur Klausur angemeldet!">
+            <form>
+                <input style="    width: 100%;
+                                  padding: 12px 20px;
+                                  margin: 8px 0;
+                                  box-sizing: border-box;
+                                  border: none;
+                                  background-color: #3CBC8D;
+                                  color: white; " type="text" id="fname" name="fname" value="Erfolgreich zur Klausur angemeldet!">
+            </form>
+        </div>
+        <div th:if="${!success}">
+            <form>
+                <input style="    width: 100%;
+                                  padding: 12px 20px;
+                                  margin: 8px 0;
+                                  box-sizing: border-box;
+                                  border: none;
+                                  background-color: #ef291f;
+                                  color: white; " type="text" id="fname" name="fname" value="Anmeldung fehlgeschlagen!">
+            </form>
+        </div>
     </div>
-    <div th:if="${!success}">
-        <p>  <input size="35" class="btn btn-outline-primary" value="Erfolgreich zur Klausur angemeldet!"> </p>
-    </div>
-
     <form action="/student" method="post">
 
         <table>
