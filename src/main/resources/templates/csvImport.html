@@ -16,12 +16,23 @@
 </header>
 <main th:fragment="bodycontent">
 
-    <form method="post" enctype="multipart/form-data">
-        <label>Wählen Sie eine Textdatei (*.csv) von Ihrem Rechner aus.
-            <input name="datei" type="file" size="50" accept="text/*">
-        </label>
-        <button>Importieren</button>
-    </form>
+
+
+    <div class="card">
+        <h5 class="card-header">Import</h5>
+        <div class="card-body">
+            <p class="card-text">Hier können Sie verschiedene Studenten-Klausurzulassungen mithilfe einer CSV-Datei Importieren</p>
+            <form method="post" enctype="multipart/form-data">
+                <label>Wählen Sie eine Textdatei (*.csv) von Ihrem Rechner aus.
+                    <input name="datei" type="file" size="50" accept="text/*">
+                </label>
+                <input class="btn-success" type="submit" value="importieren">
+            </form>
+        </div>
+    </div>
+
+
+
 </main>
 </body>
 </html>
