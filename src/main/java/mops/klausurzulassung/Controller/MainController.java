@@ -15,4 +15,9 @@ public class MainController {
     public String mainpage(Model model){
         return "mainpage";
     }
+
+    @GetMapping("/student")
+    public String studentpage(Model model){
+        return "student";
+    }
 }
