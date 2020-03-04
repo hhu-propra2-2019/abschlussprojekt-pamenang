@@ -15,8 +15,68 @@
     </nav>
 </header>
 <main th:fragment="bodycontent">
-    <!-- Restlichen Inhalt hier einfügen! -->
-    <h1>Studentenseite</h1>
+    <h1>Klausuranmeldung</h1>
+    <div th:if="${meldung}">
+        <div th:if="${success}">
+
+            <form>
+                <input style="    width: 100%;
+                                  padding: 12px 20px;
+                                  margin: 8px 0;
+                                  box-sizing: border-box;
+                                  border: none;
+                                  background-color: #3CBC8D;
+                                  color: white; " type="text" id="fname" name="fname" value="Erfolgreich zur Klausur angemeldet!">
+            </form>
+        </div>
+        <div th:if="${!success}">
+            <form>
+                <input style="    width: 100%;
+                                  padding: 12px 20px;
+                                  margin: 8px 0;
+                                  box-sizing: border-box;
+                                  border: none;
+                                  background-color: #ef291f;
+                                  color: white; " type="text" id="fname" name="fname" value="Anmeldung fehlgeschlagen!">
+            </form>
+        </div>
+    </div>
+    <form action="/student" method="post">
+
+        <table>
+
+            <tr>
+                <td>Matrikelnummer: </td>
+                <td>
+                    <input type="string" name="matrikelnummer" value="2618132">
+                </td>
+                <td>
+                    <p> </p>
+                </td>
+            </tr>
+            <tr>
+                <td>Fach: </td>
+                <td>
+                    <input type="string" name="fach" value="ProPra">
+                </td>
+                <td>
+                    <p>(Wie auf Quittung)</p>
+                </td>
+            </tr>
+            <tr>
+                <td>Token: </td>
+                <td>
+                    <input type="string" name="token">
+                </td>
+                <td>
+                    <p>(64-stellig)</p>
+                </td>
+            </tr>
+
+        </table>
+        <input type="submit" name="action" value="Klausurzulassung erhalten">
+
+    </form>
 </main>
 </body>
 </html>
