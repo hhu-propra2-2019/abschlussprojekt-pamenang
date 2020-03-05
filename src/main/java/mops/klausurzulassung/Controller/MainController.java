@@ -1,12 +1,10 @@
 package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
-import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.EmailService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,20 +43,5 @@ public class MainController {
   public String logout(HttpServletRequest request) throws Exception {
     request.logout();
     return "redirect:/";
-  }
-
-  @GetMapping("/student/sendMail")
-  @Secured("ROLE_studentin")
-  public String sendMail() {
-    emailService.sendMail(
-        new Student(
-            "Max",
-            "Mustermann",
-            "hendrik.schmitt.mail@web.de",
-            1020824,
-            1,
-            "ProPra2",
-            "fikadk93f383i3jd3kd39kd993kd93k09"));
-    return "student";
   }
 }
