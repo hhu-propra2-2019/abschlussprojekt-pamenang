@@ -1,4 +1,4 @@
 INSERT INTO moduls (id, name) VALUES
 (1L, 'ProPra1'),
 (2L, 'ProPra2'),
-(3L, 'Analysis1')
+(3L, 'ML')

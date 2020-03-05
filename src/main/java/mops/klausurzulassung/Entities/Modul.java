@@ -9,6 +9,7 @@ import javax.persistence.Table;
 
 @Data
 @Entity
+@Table(name="moduls")
 public class Modul {
 
     @Id

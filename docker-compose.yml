@@ -1,9 +1,10 @@
 version: "3.1"
 services:
+
   database:
     image: mysql:5.7
     volumes:
-      - ./mysql/db/entrypoint:/docker-entrypoint-initdb.d/
+      - ./main/resources:/docker-entrypoint-initdb.d/
     ports:
       - "3306:3306"
     environment:
