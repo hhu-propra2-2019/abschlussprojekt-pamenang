@@ -1,13 +1,15 @@
 package mops.klausurzulassung.Token;
 
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
 
 public class Tokenverifikation {
 
     //WICHTIG!!!
     //Key muss noch angepasst werden! s. Zeile 13
-    public static boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException{
+    public static boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException {
 
         String HashValue = matr+fachID;
 
