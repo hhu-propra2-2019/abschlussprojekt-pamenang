@@ -2,15 +2,19 @@ package mops.klausurzulassung.Domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Student {
 
     private String vorname;
     private String nachname;
-    private long matrikelnummer;
     private boolean zulassung;
+    private String email;
+    private long matrikelnummer;
+    private int raumId;
+    private String fachname;
+    private String token;
+
 }
+
