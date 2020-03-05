@@ -34,34 +34,26 @@ public class Tokengenerierung {
 
     public static String signatur() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
-        //Creating KeyPair generator object
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
-
-        //Initializing the key pair generator
-        keyPairGen.initialize(2048);
-
-        //Generate the pair of keys
-        KeyPair pair = keyPairGen.generateKeyPair();
-
-        //Getting the privatekey from the key pair
+        KeyPair pair = KeyPaarGenerierung();
         PrivateKey privKey = pair.getPrivate();
-
-        //Creating a Signature object
         Signature sign = Signature.getInstance("SHA256withRSA");
-
-        //Initializing the signature
         sign.initSign(privKey);
         byte[] bytes = "JOSHI".getBytes(StandardCharsets.UTF_8);
-
-        //Adding data to the signature
         sign.update(bytes);
 
-        //Calculating the signature
+        //Speicher Student + Public Key ab
+
         byte[] signature = sign.sign();
         String string = bytesToHex(signature);
         System.out.println(string);
         return string;
 
+    }
+
+    private static KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+        keyPairGen.initialize(2048);
+        return keyPairGen.generateKeyPair();
     }
 
     public static String bytesToHex(byte[] bytes) {
