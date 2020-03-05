@@ -1,7 +1,8 @@
 package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
-import mops.klausurzulassung.EmailService;
+import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.Services.EmailService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,15 @@ public class MainController {
   @GetMapping("/student/sendMail")
   @Secured("ROLE_studentin")
   public String sendMail() {
-    emailService.sendMail();
+    emailService.sendMail(
+        new Student(
+            "Max",
+            "Mustermann",
+            "hendrik.schmitt.mail@web.de",
+            1020824,
+            1,
+            "ProPra2",
+            "fikadk93f383i3jd3kd39kd993kd93k09"));
     return "student";
   }
 }
