@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
+<head>
+    <meta charset="utf-8">
+    <title>Modul Auswahl</title>
+    <th:block th:fragment="headcontent">
+        <!-- Links, Skripts, Styles hier einfügen! -->
+    </th:block>
+</head>
+<body>
+<header>
+    <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
+        <!-- Navigation als ungeordnete Liste mit einfachen Links hier einfügen! -->
+    </nav>
+</header>
+<main th:fragment="bodycontent">
+    <div class="container pt-3">
+        <h1 class="text-center">
+            Modul Auswahl
+        </h1>
+        <div id="error-message" th:classappend="${error != null} ? 'alert alert-warning'" th:text="${error}">
+            Modul erfolgreich hinzugefügt!
+        </div>
+
+        <div id="success-message" th:classappend="${success != null} ? 'alert alert-success'" th:text="${success}">
+            Modul konnte nicht hinzugefügt werden!
+        </div>
+
+        <div id="new-modul">
+            <form action="#" method="post" th:action="'/zulassung1/modulHinzufuegen'" th:object="${modul}">
+                <div class="form-group">
+                    <label for="name">Bitte geben Sie den Modulnamen ein.</label>
+                    <input class="form-control" id="name" name="name" placeholder="Modulname"
+                           th:errorclass="is-invalid" th:value="*{name}" type="text">
+                    <span class="text-danger" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></span>
+                </div>
+                <div class="form-group">
+                    <label for="id">Bitte geben Sie die Modul-ID ein.</label>
+                    <input class="form-control" id="id" name="id" placeholder="Modul-ID"
+                           th:errorclass="is-invalid" th:value="*{id}" type="text">
+                    <span class="text-danger" th:errors="*{id}" th:if="${#fields.hasErrors('id')}"></span>
+                </div>
+                <input class="btn btn-primary" type="submit" value="Modul hinzufügen">
+            </form>
+        </div>
+
+        <hr class="m-5">
+
+        <div id="links" th:if="${moduls}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Modul-ID</th>
+                    <th>Modulname</th>
+                    <th>Löschen/Auswählen</th>
+                </tr>
+                </thead>
+                <tbody th:remove="all-but-first">
+                <tr th:each="m : ${moduls}">
+                    <td>
+                        <span th:text="${m.id}">1234</span>
+                    </td>
+                    <td>
+                        <span th:text="${m.name}">ProPra2</span>
+                    </td>
+                    <td>
+                        <form action="#" method="POST" th:action="'/zulassung1/modul'+'/' + ${m.id} + '/delete'">
+                            <input class="btn btn-outline-dark btn-sm" type="submit" value="Delete">
+                        </form>
+                        <form action="#" method="GET" th:action="'/zulassung1/modul' +'/' + ${m.id}">
+                            <input class="btn btn-outline-dark btn-sm" type="submit" value="Auswählen">
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+</main>
+</body>
+</html>
