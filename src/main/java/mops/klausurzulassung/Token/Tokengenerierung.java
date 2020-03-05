@@ -6,11 +6,11 @@ import java.security.*;
 public class Tokengenerierung {
 
     static PublicKey pk;
-    static Signature sign;
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
-        String token = signatur("123");
-        verifikation("12", "3", token);
+        String token = signatur("2770736111");
+
+        System.out.println(verifikation("2770736", "111", token));
     }
 
     public static String erstellenHashValue(String matr, String fach){
@@ -25,7 +25,7 @@ public class Tokengenerierung {
 
         KeyPair pair = KeyPaarGenerierung();
         PrivateKey privKey = pair.getPrivate();
-        sign = Signature.getInstance("SHA256withRSA");
+        Signature sign = Signature.getInstance("SHA256withRSA");
         sign.initSign(privKey);
         byte[] bytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(bytes);
@@ -34,6 +34,7 @@ public class Tokengenerierung {
         pk = pair.getPublic();
         byte[] signature = sign.sign();
 
+        System.out.println(bytesToHex(signature));
         return bytesToHex(signature);
 
     }
@@ -57,15 +58,19 @@ public class Tokengenerierung {
 
     public static boolean verifikation(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
-        byte[] bytes = hexStringToByteArray(token);
+        Signature sign = Signature.getInstance("SHA256withRSA");
+
 
         sign.initVerify(pk);
+        String string = matr+fachID;
+        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
         sign.update(bytes);
 
-        System.out.println(bytes.length);
 
-        System.out.println(sign.verify(bytes));
-        return sign.verify(bytes);
+        System.out.println(bytesToHex(bytes));
+
+        byte[] bytetoken = hexStringToByteArray(token);
+        return sign.verify(bytetoken);
 
 
     }
