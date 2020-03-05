@@ -42,7 +42,7 @@ public class Tokengenerierung {
         return keyPairGen.generateKeyPair();
     }
 
-    private static String bytesToHex(byte[] bytes) {
+    public static String bytesToHex(byte[] bytes) {
         final char[] hexArray = "0123456789ABCDEF".toCharArray();
         char[] hexChars = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {
