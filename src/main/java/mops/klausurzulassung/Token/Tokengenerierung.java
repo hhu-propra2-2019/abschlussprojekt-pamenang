@@ -12,7 +12,7 @@ public class Tokengenerierung {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
-        signatur();
+        signatur(HashValue);
     }
 
     public static String hashing(String HashValue){
@@ -32,21 +32,20 @@ public class Tokengenerierung {
         return matr+fach+token;
     }
 
-    public static String signatur() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public static String signatur(String HashValue) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
         KeyPair pair = KeyPaarGenerierung();
         PrivateKey privKey = pair.getPrivate();
         Signature sign = Signature.getInstance("SHA256withRSA");
         sign.initSign(privKey);
-        byte[] bytes = "JOSHI".getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(bytes);
 
         //Speicher Student + Public Key ab
+        PublicKey publicKey = pair.getPublic();
 
         byte[] signature = sign.sign();
-        String string = bytesToHex(signature);
-        System.out.println(string);
-        return string;
+        return bytesToHex(signature);
 
     }
 
