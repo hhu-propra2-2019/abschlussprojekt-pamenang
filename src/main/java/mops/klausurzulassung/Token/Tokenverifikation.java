@@ -7,16 +7,18 @@ public class Tokenverifikation {
 
     //WICHTIG!!!
     //Key muss noch angepasst werden! s. Zeile 13
-    public static boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+    public static boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException{
+
+        String HashValue = matr+fachID;
+
+
         Signature sign = Signature.getInstance("SHA256withRSA");
-
         //sign.initVerify(/*publicKey*/);
-        String string = matr+fachID;
-        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-        sign.update(bytes);
+        byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
+        sign.update(hashValueBytes);
 
-        byte[] bytetoken = hexStringToByteArray(token);
-        return sign.verify(bytetoken);
+        byte[] tokenByte = hexStringToByteArray(token);
+        return sign.verify(tokenByte);
     }
 
     private static byte[] hexStringToByteArray(String s) {

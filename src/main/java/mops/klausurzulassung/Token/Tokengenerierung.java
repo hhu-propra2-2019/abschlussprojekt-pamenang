@@ -16,11 +16,11 @@ public class Tokengenerierung {
     public static String erstellenToken(String HashValue) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
         KeyPair pair = KeyPaarGenerierung();
-        PrivateKey privKey = pair.getPrivate();
+        PrivateKey privateKey = pair.getPrivate();
         Signature sign = Signature.getInstance("SHA256withRSA");
-        sign.initSign(privKey);
-        byte[] bytes = HashValue.getBytes(StandardCharsets.UTF_8);
-        sign.update(bytes);
+        sign.initSign(privateKey);
+        byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
+        sign.update(hashValueBytes);
 
         //Speicher Student + Public Key ab
         PublicKey publicKey = pair.getPublic();
