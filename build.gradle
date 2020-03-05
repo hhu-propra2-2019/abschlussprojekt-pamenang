@@ -1,9 +1,9 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.5.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-	id 'java'
-	id "com.github.spotbugs" version "3.0.0"
-	id 'checkstyle'
+    id 'org.springframework.boot' version '2.2.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id "com.github.spotbugs" version "3.0.0"
+    id 'checkstyle'
 }
 
 group = 'mops'
@@ -11,72 +11,72 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
-	developmentOnly
-	runtimeClasspath {
-		extendsFrom developmentOnly
-	}
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 spotbugs {
-	ignoreFailures = true
-	effort = "max"
-	reportLevel = "high"
+    ignoreFailures = true
+    effort = "max"
+    reportLevel = "high"
 }
 tasks.withType(com.github.spotbugs.SpotBugsTask) {
-	reports {
-		html {
-			enabled = true
-		}
-		xml {
-			enabled = false
-		}
-	}
+    reports {
+        html {
+            enabled = true
+        }
+        xml {
+            enabled = false
+        }
+    }
 }
 
 repositories {
-	maven {
-		url="https://s3.cs.hhu.de/public/mops/"
-		metadataSources {
-			artifact()
-		}
-	}
-	mavenCentral()
+    maven {
+        url = "https://s3.cs.hhu.de/public/mops/"
+        metadataSources {
+            artifact()
+        }
+    }
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.keycloak:keycloak-spring-boot-starter:9.0.0'
-	implementation 'org.keycloak.bom:keycloak-adapter-bom:3.3.0.Final'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.keycloak:keycloak-spring-boot-starter:9.0.0'
+    implementation 'org.keycloak.bom:keycloak-adapter-bom:3.3.0.Final'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.security:spring-security-test'
 
-	implementation "mops:styleguide:2.0.0"
+    implementation "mops:styleguide:2.0.0"
 
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'mysql:mysql-connector-java'
-	implementation('org.springframework.boot:spring-boot-starter-jdbc')
-	implementation("com.google.guava:guava:28.2-jre")
-	compile group: 'com.itextpdf', name: 'itextpdf', version: '5.0.6'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
+	  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	  runtimeOnly 'mysql:mysql-connector-java'
+	  implementation('org.springframework.boot:spring-boot-starter-jdbc')
+	  implementation("com.google.guava:guava:28.2-jre")
 
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 checkstyle {
-	toolVersion = "8.28"
-	configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-	ignoreFailures = true
+    toolVersion = "8.28"
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    ignoreFailures = true
 }
