@@ -1,33 +1,25 @@
 package mops.klausurzulassung.Token;
 
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 
 public class Tokenverifikation {
 
-    static PublicKey pk;
     //WICHTIG!!!
-    //Key muss noch angepasst werden!
-
-    public static boolean verifikation(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-
+    //Key muss noch angepasst werden! s. Zeile 13
+    public static boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
         Signature sign = Signature.getInstance("SHA256withRSA");
 
-
-        byte[] bytes = hexStringToByteArray(token);
-
-
-        sign.initVerify(pk);
+        //sign.initVerify(/*publicKey*/);
+        String string = matr+fachID;
+        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
         sign.update(bytes);
 
-
-
-        System.out.println(sign.verify(bytes));
-        return sign.verify(bytes);
-
-
+        byte[] bytetoken = hexStringToByteArray(token);
+        return sign.verify(bytetoken);
     }
 
-    public static byte[] hexStringToByteArray(String s) {
+    private static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
