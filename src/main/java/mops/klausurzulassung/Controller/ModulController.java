@@ -42,7 +42,6 @@ public class ModulController {
   @Secured("ROLE_orga")
   @GetMapping("/modulHinzufuegen")
   public String index(Model model,KeycloakAuthenticationToken token) {
-    System.out.println(modulService.allModuls());
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("moduls", modulService.allModuls());
     model.addAttribute("modul", currentModul);
@@ -89,7 +88,6 @@ public class ModulController {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Modul modul = modulService.findById(id).get();
     String name = modul.getName();
-    System.out.println(name);
     model.addAttribute("modul", name);
     model.addAttribute("id", id);
 
