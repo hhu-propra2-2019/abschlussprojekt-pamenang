@@ -45,7 +45,7 @@ public class CsvImportTest {
 
     @Test
     public void lineShouldReturnValidStudent(){
-        Student student = new Student("Max","Mustermann",1234567,true);
+
 
     }
 

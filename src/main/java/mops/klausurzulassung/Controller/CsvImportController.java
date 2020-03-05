@@ -26,8 +26,6 @@ public class CsvImportController {
 
     @GetMapping("/csvImport")
     public String csvimport(Model model){
-
-
         model.addAttribute("studentList", studentList);
         return "csvImport";
     }
@@ -37,7 +35,7 @@ public class CsvImportController {
 
         studentList = csvImportService.getStudentListFromInputFile(multipartFile);
 
-        return "redirect:/csvimport";
+        return "redirect:/csvImport";
     }
 
 }

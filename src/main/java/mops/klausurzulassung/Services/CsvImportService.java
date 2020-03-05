@@ -44,7 +44,7 @@ public class CsvImportService {
         nachname = temp[1];
         email = temp[2];
         matrikelnummer = Long.parseLong(temp[3]);
-        raumId = Integer.parseInt(temp[4]);
+        raumId = 0;
         fachname = null;
         token = null;
         return new Student(vorname,nachname,email,matrikelnummer,raumId,fachname,token);
