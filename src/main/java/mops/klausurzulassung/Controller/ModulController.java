@@ -1,7 +1,11 @@
 package mops.klausurzulassung.Controller;
 
+import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Services.ModulService;
 import mops.klausurzulassung.organisatoren.Entities.Modul;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,9 +27,23 @@ public class ModulController {
     this.modulService = modulService;
   }
 
+
+  private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
+    KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
+    return new Account(
+            principal.getName(),
+            principal.getKeycloakSecurityContext().getIdToken().getEmail(),
+            null,
+            token.getAccount().getRoles());
+  }
+
+
+
+  @Secured("ROLE_orga")
   @GetMapping("/modulHinzufuegen")
-  public String index(Model model) {
+  public String index(Model model,KeycloakAuthenticationToken token) {
     System.out.println(modulService.allModuls());
+    model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("moduls", modulService.allModuls());
     model.addAttribute("modul", currentModul);
     model.addAttribute("error", errorMessage);
@@ -33,9 +51,11 @@ public class ModulController {
     return "modulAuswahl";
   }
 
+  @Secured("ROLE_orga")
   @PostMapping("/modulHinzufuegen")
   public String newModul(
-      @ModelAttribute @Valid Modul modul, BindingResult bindingResult, Model model) {
+      @ModelAttribute @Valid Modul modul, BindingResult bindingResult, Model model,KeycloakAuthenticationToken token) {
+    model.addAttribute("account", createAccountFromPrincipal(token));
     this.currentModul = modul;
 
     if (modulService.findById(modul.getId()).isPresent()) {
@@ -49,8 +69,10 @@ public class ModulController {
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
+  @Secured("ROLE_orga")
   @PostMapping("/modul/{id}/delete")
-  public String deleteModul(@PathVariable Long id) {
+  public String deleteModul(Model model, @PathVariable Long id,KeycloakAuthenticationToken token) {
+    model.addAttribute("account", createAccountFromPrincipal(token));
     Optional<Modul> modul = modulService.findById(id);
     if (modul.isPresent()) {
       modulService.delete(modul.get());
@@ -61,8 +83,10 @@ public class ModulController {
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
+  @Secured("ROLE_orga")
   @GetMapping("/modul/{id}")
-  public String selectModul(@PathVariable Long id, Model model) {
+  public String selectModul(@PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
+    model.addAttribute("account", createAccountFromPrincipal(token));
     Modul modul = modulService.findById(id).get();
     String name = modul.getName();
     System.out.println(name);
