@@ -13,7 +13,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
-import static mops.klausurzulassung.Token.Tokenverifikation.verifikation;
+import static mops.klausurzulassung.Token.Tokenverifikation.verifikationToken;
 
 @Controller
 public class StundentenController {
@@ -44,7 +44,7 @@ public class StundentenController {
       String token,
       String fach) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
 
-    boolean value =  verifikation(matrikelnummer,fach,token);
+    boolean value =  verifikationToken(matrikelnummer,fach,token);
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
     model.addAttribute("meldung", true);
