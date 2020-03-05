@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +16,7 @@ import java.security.SignatureException;
 
 import static mops.klausurzulassung.Token.Tokenverifikation.verifikationToken;
 
+@RequestMapping("/zulassung1")
 @Controller
 public class StundentenController {
 
