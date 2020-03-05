@@ -1,6 +1,5 @@
 package mops;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +19,7 @@ public class ModulAuswahlTests {
     @Test
     public void fuerModulAuswahlAnmelden() throws Exception {
         mockMvc
-                .perform(get("/zulassung1/ModulHinzufuegen"))
+                .perform(get("/zulassung1/modulHinzufuegen"))
                 .andExpect(status().is3xxRedirection())
                 .andDo(print());
     }
