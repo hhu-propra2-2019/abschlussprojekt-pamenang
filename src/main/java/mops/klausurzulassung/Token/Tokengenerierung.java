@@ -5,6 +5,7 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 
 public class Tokengenerierung {
@@ -50,18 +51,27 @@ public class Tokengenerierung {
 
         //Initializing the signature
         sign.initSign(privKey);
-        byte[] bytes = "Hello how are you".getBytes();
+        byte[] bytes = "JOSHI".getBytes(StandardCharsets.UTF_8);
 
         //Adding data to the signature
         sign.update(bytes);
 
         //Calculating the signature
         byte[] signature = sign.sign();
-
-
-        String string = new String(signature);
+        String string = bytesToHex(signature);
         System.out.println(string);
         return string;
 
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        final char[] hexArray = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 }
