@@ -31,9 +31,9 @@ public class Tokengenerierung {
 
         //Speicher Student + Public Key ab
         PublicKey publicKey = pair.getPublic();
-        byte[] signature = sign.sign();
+        byte[] token = sign.sign();
 
-        return bytesToHex(signature);
+        return bytesToHex(token);
     }
 
     private static KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
