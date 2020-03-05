@@ -15,6 +15,8 @@ import java.util.List;
 @Service
 public class CsvImportService {
 
+    /*CsvImportService kümmert sich um ein Multipartfile welches ein .csv File repräsentiert. Aus diesem File werden Studenten-Objekte
+    generiert die als Liste weitergegeben werden*/
 
 
     public List<Student> getStudentListFromInputFile(MultipartFile multipartFile) throws IOException {
@@ -32,16 +34,20 @@ public class CsvImportService {
     }
 
     private Student createStudentFromInputStream(String line){
-        String vorname,nachname;
+
+        String vorname,nachname,email,fachname,token;
         long matrikelnummer;
-        boolean zulassung;
+        int raumId;
+
         String [] temp = line.split(",");
         vorname = temp[0];
         nachname = temp[1];
-        matrikelnummer = Long.parseLong(temp[2]);
-        zulassung = temp[3].equals("ja");
-
-        return new Student(vorname,nachname,matrikelnummer,zulassung);
+        email = temp[2];
+        matrikelnummer = Long.parseLong(temp[3]);
+        raumId = Integer.parseInt(temp[4]);
+        fachname = null;
+        token = null;
+        return new Student(vorname,nachname,email,matrikelnummer,raumId,fachname,token);
 
     }
 }

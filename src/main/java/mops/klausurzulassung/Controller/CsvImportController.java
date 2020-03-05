@@ -24,16 +24,15 @@ public class CsvImportController {
 
     private List<Student> studentList =  new ArrayList<>();;
 
-    @GetMapping("/csvimport")
+    @GetMapping("/csvImport")
     public String csvimport(Model model){
 
 
         model.addAttribute("studentList", studentList);
-
         return "csvImport";
     }
 
-    @PostMapping("/csvimport")
+    @PostMapping("/csvImport")
     public String csvimportPost(@RequestParam("datei")MultipartFile multipartFile, Model model) throws IOException {
 
         studentList = csvImportService.getStudentListFromInputFile(multipartFile);
