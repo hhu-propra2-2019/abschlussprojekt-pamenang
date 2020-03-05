@@ -16,7 +16,6 @@ public class EmailService {
     msg.setTo("hendrik.schmitt.mail@web.de");
     msg.setSubject("Testen des Klausurzulassung MOPS Mailsender");
     msg.setText("Hallo du Nudel!");
-
     javaMailSender.send(msg);
   }
 }
