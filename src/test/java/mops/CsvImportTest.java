@@ -29,7 +29,7 @@ public class CsvImportTest {
     @Test
     public void shouldReturnCsvImportTemplate() throws Exception {
 
-        mockMvc.perform(get("/csvimport").with(user("root").password("test")))
+        mockMvc.perform(get("/csvImport").with(user("root").password("test")))
         .andExpect(status().isOk());
 
     }
@@ -37,17 +37,12 @@ public class CsvImportTest {
     @Test
     public void shouldUploadFileIntoContext() throws Exception {
     MockMultipartFile mockMultipartFile =
-        new MockMultipartFile("datei", "data.csv", "text/csv", "Boris,Tenelsen,4252152,ja\n".getBytes());
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/csvimport").file(mockMultipartFile)).andExpect(status().is3xxRedirection());
+        new MockMultipartFile("datei", "data.csv", "text/csv", "Boris,Tenelsen,test@test.de,4252152,ja\n".getBytes());
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/csvImport").file(mockMultipartFile)).andExpect(status().is3xxRedirection());
 
 
     }
-
-    @Test
-    public void lineShouldReturnValidStudent(){
-
-
-    }
+    
 
 
 }
