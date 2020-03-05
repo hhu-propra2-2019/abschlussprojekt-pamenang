@@ -31,6 +31,33 @@
         </div>
     </div>
 
+    <br>
+    <br>
+    <div th:if="${imported}" class="alert alert-success">
+        Studenten erfolgreich importiert!
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Vorname</th>
+            <th scope="col">Nachname</th>
+            <th scope="col">Email</th>
+            <th scope="col">Matrikel-Nr</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${studentList} ">
+            <td><span th:text="${student.vorname}"></span></td>
+            <td><span th:text="${student.nachname}"></span></td>
+            <td><span th:text="${student.email}"></span></td>
+            <td><span th:text="${student.matrikelnummer}"></span></td>
+
+        </tr>
+
+        </tbody>
+    </table>
+
 
 
 </main>

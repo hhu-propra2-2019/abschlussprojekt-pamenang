@@ -21,12 +21,14 @@ public class CsvImportController {
     @Autowired
     CsvImportService csvImportService;
 
+    private boolean imported =false;
 
     private List<Student> studentList =  new ArrayList<>();;
 
     @GetMapping("/csvImport")
     public String csvimport(Model model){
         model.addAttribute("studentList", studentList);
+        model.addAttribute("imported", imported);
         return "csvImport";
     }
 
@@ -34,6 +36,7 @@ public class CsvImportController {
     public String csvimportPost(@RequestParam("datei")MultipartFile multipartFile, Model model) throws IOException {
 
         studentList = csvImportService.getStudentListFromInputFile(multipartFile);
+        if(!studentList.isEmpty())imported=true;
 
         return "redirect:/csvImport";
     }
