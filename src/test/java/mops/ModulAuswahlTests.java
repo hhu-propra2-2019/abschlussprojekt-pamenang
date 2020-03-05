@@ -23,16 +23,4 @@ public class ModulAuswahlTests {
                 .andExpect(status().is3xxRedirection())
                 .andDo(print());
     }
-
-    @WithMockUser(username = "niemand", password = "nichts")
-    @Test
-    public void anmeldungFailed() throws Exception {
-        mockMvc.perform(get("/student")).andExpect(status().isForbidden());
-    }
-/*
-    @WithMockUser(username = "orga", password = "orga")
-    @Test
-    public void anmeldungSuccessful() throws Exception {
-        mockMvc.perform(get("/student")).andExpect(status().isOk());
-    }*/
 }
