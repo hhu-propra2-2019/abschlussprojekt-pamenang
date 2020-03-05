@@ -1,8 +1,11 @@
 package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
+import mops.klausurzulassung.EmailService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class MainController {
 
-  public MainController() {}
+  EmailService emailService;
+
+  @Autowired
+  public MainController(EmailService emailService) {
+    this.emailService = emailService;
+  }
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
@@ -36,5 +44,12 @@ public class MainController {
   public String logout(HttpServletRequest request) throws Exception {
     request.logout();
     return "redirect:/";
+  }
+
+  @GetMapping("/student/sendMail")
+  @Secured("ROLE_studentin")
+  public String sendMail() {
+    emailService.sendMail();
+    return "student";
   }
 }
