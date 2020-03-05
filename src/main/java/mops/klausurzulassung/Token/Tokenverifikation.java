@@ -1,24 +1,29 @@
 package mops.klausurzulassung.Token;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
-import java.security.SignatureException;
+import java.security.*;
 
 public class Tokenverifikation {
 
+    static PublicKey pk;
     //WICHTIG!!!
     //Key muss noch angepasst werden!
-    public static boolean verifikation(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException {
+
+    public static boolean verifikation(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         Signature sign = Signature.getInstance("SHA256withRSA");
 
 
         byte[] bytes = hexStringToByteArray(token);
 
-        sign.initVerify(/*get Public key*/);
+
+        sign.initVerify(pk);
         sign.update(bytes);
 
+
+
+        System.out.println(sign.verify(bytes));
         return sign.verify(bytes);
+
 
     }
 

@@ -14,6 +14,6 @@ public class TokenverifkationTest {
         String matr ="2770736";
         String fachid="1111111";
 
-        assertTrue(Tokenverifikation.verifikation(matr,fachid,token));
+        assertTrue(Tokenverifikation.verifikation(matr,fachid,token, pk));
     }
 }
