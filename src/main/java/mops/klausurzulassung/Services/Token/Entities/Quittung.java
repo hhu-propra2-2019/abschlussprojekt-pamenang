@@ -1,6 +1,7 @@
 package mops.klausurzulassung.Services.Token.Entities;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
