@@ -22,12 +22,15 @@ public class QuittungServiceTest {
         String matr = "1234567";
         String fachID = "1111";
 
+        //Erstellung des KeyPairs
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
 
+        //Einsetzen des PublicKeys in die Quittung
         PublicKey pK = keyPairGenerator.generateKeyPair().getPublic();
         Quittung quittung = new Quittung(matr, fachID, pK, "1324235");
 
+        //Suchen des PublicKeys in QuittungRepository
         Quittung[] quittungen = {quittung};
         when(quittungRepository.findAll()).thenReturn(Arrays.asList(quittungen));
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
