@@ -1,10 +1,10 @@
 package mops.klausurzulassung.Services.Token.Entities;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Data
@@ -21,6 +21,7 @@ public class Quittung {
     @Column(name = "PublicKey")
     private String publicKey;
 
+    @Id
     @Column(name = "Token")
     private String token;
 }
