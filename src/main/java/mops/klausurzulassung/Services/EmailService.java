@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 public class EmailService {
@@ -31,5 +32,16 @@ public class EmailService {
             + " dein Klausurzulassungtoken. Dieses lautet: \n"
             + student.getToken());
     javaMailSender.send(msg);
+  }
+
+  public String generateValidTokenLink(Student student){
+    String link = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+    String studentAddUri = "/zulassung1/student/";
+    String token = student.getToken()+"/";
+    String fachName = student.getFachname()+ "/";
+    String matrikelnr = Long.toString(student.getMatrikelnummer());
+    link = link + studentAddUri + token  + fachName +matrikelnr;
+    return link;
+
   }
 }
