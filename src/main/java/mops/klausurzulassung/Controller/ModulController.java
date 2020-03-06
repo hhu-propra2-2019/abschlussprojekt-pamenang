@@ -1,6 +1,5 @@
 package mops.klausurzulassung.Controller;
 
-import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.CsvService;
@@ -17,11 +16,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -56,7 +54,6 @@ public class ModulController {
   @Secured("ROLE_orga")
   @GetMapping("/modulHinzufuegen")
   public String index(Model model, KeycloakAuthenticationToken token, Principal principal) {
-    System.out.println(principal.getName());
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("moduls", modulService.findByOwner(principal.getName()));
     model.addAttribute("modul", currentModul);
@@ -110,8 +107,8 @@ public class ModulController {
   }
 
   @Secured("ROLE_orga")
-  @PostMapping("/upload/{id}")
-  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, MultipartFile file) throws IOException {
+  @PostMapping("/modul/{id}")
+  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     List<Student> students = csvService.getStudentListFromInputFile(file, id);
 
@@ -120,24 +117,9 @@ public class ModulController {
       // Student wird zu Token-Generierung geschickt (Email, Vorname, Nachname, MatrNr, Fach)
       // Token des Students wird zum Mailsender geschickt
     }
+    csvService.writeCsvFile(id, students);
 
-    File outputFile = new File("./klausurliste.csv");
-    FileWriter fileWriter = new FileWriter(outputFile);
-    CSVWriter writer = new CSVWriter(fileWriter);
-
-    Iterable<Student> altzugelassene = studentService.findByModulId(id);
-
-    for (Student student : altzugelassene) {
-      students.add(student);
-    }
-
-    for (Student student : students) {
-      csvService.putStudentOntoList(writer, student);
-      writer.flush();
-    }
-    writer.close();
-
-    return "redirect:/zulassung1/upload" + "/" + id;
+    return "redirect:/zulassung1/modul" + "/" + id;
   }
 
   private void setMessages(String errorMessage, String successMessage) {

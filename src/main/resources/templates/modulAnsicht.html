@@ -27,11 +27,12 @@
         <span th:text="${id}">1234</span>
     </div>
 
-    <form action="#" enctype="multipart/form-data" method="post" th:action="'/zulassung1/upload'+'/'+${id}">
+    <form action="#" enctype="multipart/form-data" method="post" th:action="'/zulassung1/modul'+'/'+${id}">
         <div>
             <label>Wählen Sie eine Zulassungsliste aus Ihrem Dateimanager aus!
-                <input accept="text/*" name="datei" size="50" type="file">
+                <input accept=".csv" name="datei" size="50" type="file">
             </label>
+            <input class="btn-success" type="submit" value="Abschicken">
         </div>
     </form>
 

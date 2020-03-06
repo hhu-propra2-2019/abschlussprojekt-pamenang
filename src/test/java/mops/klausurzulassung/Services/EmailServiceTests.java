@@ -6,7 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class EmailServiceTests {
 
@@ -22,7 +25,7 @@ public class EmailServiceTests {
   @Test
   public void test_sendMail_checkForMethodCalls() {
     // Arrange
-    Student student = new Student("t1", "t2", "t3", 1234, 1, "t4", "token");
+    Student student = new Student("t1", "t2", "t3", 1234L, 1L, "t4", "token");
     // Act
     emailService.sendMail(student);
 
