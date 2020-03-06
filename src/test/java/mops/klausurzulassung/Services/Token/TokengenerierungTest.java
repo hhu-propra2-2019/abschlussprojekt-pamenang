@@ -1,6 +1,7 @@
 package mops.klausurzulassung.Services.Token;
 
 import mops.klausurzulassung.Services.Token.Repositories.QuittungRepository;
+import mops.klausurzulassung.Services.Token.Services.QuittungService;
 import org.junit.jupiter.api.Test;
 
 import java.security.InvalidKeyException;
@@ -9,7 +10,6 @@ import java.security.SignatureException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class TokengenerierungTest {
