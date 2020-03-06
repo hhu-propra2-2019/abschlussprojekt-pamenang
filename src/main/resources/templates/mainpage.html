@@ -30,65 +30,65 @@
     <!-- Restlichen Inhalt hier einfügen! -->
     <div class="row h-100" style="margin-top: 5vh;">
         <div class="col-md-12">
-            <div class="card border-info" style="border-width: 0px; border-bottom-width: 0.25vh; border-radius: 2%;">
+            <div class="card" style="border-width: 0px;">
                 <div class="card-body text-center">
                     <span class="h1">Willkommen im Klausurzulassungssystem</span>
                 </div>
             </div>
         </div>
     </div>
+    <hr>
     <div class="row h-100" id="mainpageAuswahlMenue" style="margin-top: 5vh;">
         <div class="col-md-12 text-center" style="margin-top: 2vh;">
             <h2>Welche Rolle hast du ?</h2>
         </div>
         <div class="col-md-5 text-right" style="margin-top: 2vh;">
-            <button class="btn btn-info" onclick="changeFromMenueToStudent()" type="button">Student</button>
+            <button class="btn btn-secondary" onclick="changeFromMenueToStudent()" type="button">Student</button>
         </div>
         <div class="col-md-2 text-center" style="margin-top: 2vh;">
             <h3>ODER</h3>
         </div>
         <div class="col-md-5 text-left" style="margin-top: 2vh;">
-            <button class="btn btn-info" onclick="changeFromMenueToOrganisator()" type="button">Organisator</button>
+            <button class="btn btn-secondary" onclick="changeFromMenueToOrganisator()" type="button">Organisator
+            </button>
         </div>
     </div>
     <div class="row h-100" id="mainpageStudentInfo" style="display: none; margin-top: 5vh;">
-        <div class="col-md-8 h-100">
+        <div class="col-md-12 h-100">
             <div class="card text-center">
                 <div class="card-body">
-                    <span>Hier stehen dann die Möglichkeiten die der Student auf der Seite hat.<br>
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-                        voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-                        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                        At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-                        no sea takimata sanctus est Lorem ipsum dolor sit amet.</span>
+                    <span>Als Student kannst Du in unserem System deine Quittung einreichen.
+                    Mit dieser Quittung kannst du deine Altklausurzulassung bestätigen und dich
+                    damit dann, bei deinen Organisatoren, für eine Klausur im aktuellen Semester zulassen.
+                    Alle Quittungen sind modulspezifisch, somit musst Du die richtige Quittung zu
+                    dem Modul angeben. Deine Quittung hast Du, wenn du eine Zulassung erhalten hast
+                    bereits per E-Mail zugeschickt bekommen. Wenn du im Menü auf Student klickst, musst du dich
+                    anmelden und kommst dann zur Ansicht, wo Du dann deine Quittung einreichen kannst.</span>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 text-left h-100">
-            <button class="btn btn-info" onclick="changeFromStudentToMenue()" type="button">Zurück zur Auswahl</button>
+        <div class="col-md-12 text-center h-100" style="margin-top: 2vh;">
+            <button class="btn btn-secondary" onclick="changeFromStudentToMenue()" type="button">Zurück zur Auswahl
+            </button>
         </div>
     </div>
     <div class="row h-100" id="mainpageOrganisatorInfo" style="display: none; margin-top: 5vh;">
-        <div class="col-md-8 text-center">
+        <div class="col-md-12 text-center">
             <div class="card">
                 <div class="card-body">
-                    <span>Hier stehen dann die Möglichkeiten die der Organisator hat.<br>
-                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-                        voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-                        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-                        eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-                        At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-                        no sea takimata sanctus est Lorem ipsum dolor sit amet.</span>
+                    <span>Als Organisator kannst Du in unserem System deine Module, für die Du zuständig bist
+                    verwalten oder auch neue anlegen. In den Modulen kannst Du dann Zulassungslisten der
+                    Studenten hochladen, um automatisch Zulassungsquittungen zu generieren und diese per
+                    Email versenden zu lassen. Außerdem ist es möglich, Studenten einzeln zum jeweiligen
+                    Modul zu zulassen oder Quittungen der Studenten bei verlust abzufragen. Auch kann am Ende
+                    der Einreichungsphase der Studenten eine Liste generiert werden, auf welcher alle
+                    Studenten stehen, welche dieses Semester für die Klausur zugelassen sind (aktuelle Zulassung
+                        und Altzulassung).</span>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 text-left">
-            <button class="btn btn-info" onclick="changeFromOrganisatorToMenue()" type="button">Zurück zur Auswahl
+        <div class="col-md-12 text-center">
+            <button class="btn btn-secondary" onclick="changeFromOrganisatorToMenue()" type="button">Zurück zur Auswahl
             </button>
         </div>
     </div>
