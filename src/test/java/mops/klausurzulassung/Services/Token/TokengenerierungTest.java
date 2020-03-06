@@ -1,4 +1,4 @@
-package mops.klausurzulassung.Token;
+package mops.klausurzulassung.Services.Token;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,8 @@ public class TokengenerierungTest {
     String matr = "3333333";
     String fach = "propra1";
 
-    String ergebnis = Tokengenerierung.erstellenHashValue(matr, fach);
+    TokengenerierungService tg = new TokengenerierungService();
+    String ergebnis = tg.erstellenHashValue(matr, fach);
 
     assertEquals(ergebnis, "3333333propra1");
   }
@@ -24,7 +25,8 @@ public class TokengenerierungTest {
     String fach = "propra1";
     String token = "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3";
 
-    String ergebnis = Tokengenerierung.erstellenQuittung(matr, fach, token);
+    TokengenerierungService tg = new TokengenerierungService();
+    String ergebnis = tg.erstellenQuittung(matr, fach, token);
 
     assertEquals(
         ergebnis, "3333333propra1a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
@@ -34,7 +36,8 @@ public class TokengenerierungTest {
   public void testBytesToHex(){
 
     byte[] bytes ={10};
-    String test = Tokengenerierung.bytesToHex(bytes);
+    TokengenerierungService tg = new TokengenerierungService();
+    String test = tg.bytesToHex(bytes);
 
     assertEquals(test,"0A");
 

@@ -3,6 +3,7 @@ package mops.klausurzulassung.Controller.student;
 import mops.klausurzulassung.Domain.Account;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +15,14 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
-import static mops.klausurzulassung.Token.Tokenverifikation.verifikationToken;
+import mops.klausurzulassung.Services.Token.TokenverifikationService;
 
 @RequestMapping("/zulassung1")
 @Controller
 public class StundentenController {
+
+  @Autowired
+  TokenverifikationService tokenverifikation;
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
@@ -46,7 +50,8 @@ public class StundentenController {
       String token,
       String fach) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
 
-    boolean value =  verifikationToken(matrikelnummer,fach,token);
+
+    boolean value =  tokenverifikation.verifikationToken(matrikelnummer,fach,token);
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
     model.addAttribute("meldung", true);

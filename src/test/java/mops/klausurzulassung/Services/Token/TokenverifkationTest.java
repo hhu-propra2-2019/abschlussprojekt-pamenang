@@ -1,4 +1,4 @@
-package mops.klausurzulassung.Token;
+package mops.klausurzulassung.Services.Token;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,8 @@ public class TokenverifkationTest {
     public void testHexStringToByteArray(){
         String hexString = "0A";
         byte b = 10;
-        byte[] bytes = Tokenverifikation.hexStringToByteArray(hexString);
+        TokenverifikationService tv = new TokenverifikationService();
+        byte[] bytes = tv.hexStringToByteArray(hexString);
 
         assertEquals(bytes[0], b);
     }

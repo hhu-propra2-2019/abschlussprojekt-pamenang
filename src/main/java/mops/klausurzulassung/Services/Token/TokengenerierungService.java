@@ -1,4 +1,6 @@
-package mops.klausurzulassung.Token;
+package mops.klausurzulassung.Services.Token;
+
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -10,17 +12,18 @@ import java.security.Signature;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
-public class Tokengenerierung {
+@Service
+public class TokengenerierungService {
 
-    public static String erstellenHashValue(String matr, String fach){
+    public String erstellenHashValue(String matr, String fach){
         return matr+fach;
     }
 
-    public static String erstellenQuittung(String matr, String fach, String token){
+    public String erstellenQuittung(String matr, String fach, String token){
         return matr+fach+token;
     }
 
-    public static String erstellenToken(String HashValue) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public String erstellenToken(String HashValue) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
         KeyPair pair = KeyPaarGenerierung();
         PrivateKey privateKey = pair.getPrivate();
@@ -36,13 +39,13 @@ public class Tokengenerierung {
         return bytesToHex(token);
     }
 
-    private static KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
+    private KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
         keyPairGen.initialize(2048);
         return keyPairGen.generateKeyPair();
     }
 
-     static String bytesToHex(byte[] bytes) {
+    String bytesToHex(byte[] bytes) {
         final char[] hexArray = "0123456789ABCDEF".toCharArray();
         char[] hexChars = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {

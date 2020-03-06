@@ -1,15 +1,18 @@
-package mops.klausurzulassung.Token;
+package mops.klausurzulassung.Services.Token;
+
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.SignatureException;
 
-public class Tokenverifikation {
+@Service
+public class TokenverifikationService {
 
     //WICHTIG!!!
     //Key muss noch angepasst werden! s. Zeile 13
-    public static boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException {
+    public boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException {
 
         String HashValue = matr+fachID;
 
@@ -23,7 +26,7 @@ public class Tokenverifikation {
         return sign.verify(tokenByte);
     }
 
-     static byte[] hexStringToByteArray(String s) {
+    byte[] hexStringToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
