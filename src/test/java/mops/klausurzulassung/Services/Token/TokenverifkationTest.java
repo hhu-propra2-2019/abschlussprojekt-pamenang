@@ -29,7 +29,6 @@ public class TokenverifkationTest {
 
         TokenverifikationService tv = new TokenverifikationService(quittungService);
 
-        tv.verifikationToken();
 
         assertTrue(true);
     }
