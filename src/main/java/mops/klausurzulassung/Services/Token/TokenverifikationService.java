@@ -1,6 +1,5 @@
 package mops.klausurzulassung.Services.Token;
 
-import mops.klausurzulassung.Services.Token.Entities.Quittung;
 import mops.klausurzulassung.Services.Token.Services.QuittungService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class TokenverifikationService {
     public boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
 
         String HashValue = matr+fachID;
-        PublicKey publicKey = quittungService.findQuittung(matr, fachID);
+        PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
         if(publicKey == null){
             return false;
         }

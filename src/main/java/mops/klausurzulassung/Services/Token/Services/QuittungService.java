@@ -18,7 +18,7 @@ public class QuittungService {
         this.quittungRepository = quittungRepository;
     }
 
-    public PublicKey findQuittung(String matr, String fachID){
+    public PublicKey findPublicKeyByQuittung(String matr, String fachID){
         for(Quittung quittung : quittungRepository.findAll()){
             if(quittung.getMatrikelnummer().equals(matr) && quittung.getFachID().equals(fachID)){
                 return quittung.getPublicKey();
