@@ -23,7 +23,7 @@ public class Tokenverifikation {
         return sign.verify(tokenByte);
     }
 
-    public static byte[] hexStringToByteArray(String s) {
+     static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
