@@ -34,6 +34,7 @@ public class EmailService {
     javaMailSender.send(msg);
   }
 
+  /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
   public String generateValidTokenLink(Student student){
     String link = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
     String studentAddUri = "/zulassung1/student/";
@@ -42,6 +43,5 @@ public class EmailService {
     String matrikelnr = Long.toString(student.getMatrikelnummer());
     link = link + studentAddUri + token  + fachName +matrikelnr;
     return link;
-
   }
 }

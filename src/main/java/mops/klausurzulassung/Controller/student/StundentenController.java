@@ -64,7 +64,6 @@ public class StundentenController {
       String token,
       String fach) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
 
-
     boolean value =  tokenverifikation.verifikationToken(matrikelnummer,fach,token);
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
