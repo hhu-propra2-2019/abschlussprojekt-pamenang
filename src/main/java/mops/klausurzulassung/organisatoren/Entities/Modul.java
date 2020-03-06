@@ -18,4 +18,7 @@ public class Modul {
 
   @Column(name = "name")
   private String name;
+
+  @Column(name = "owner")
+  private String owner;
 }

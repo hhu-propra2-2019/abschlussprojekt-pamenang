@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
+<html lang="en"
+      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>Modul Ansicht</title>
@@ -26,23 +27,21 @@
         <span th:text="${id}">1234</span>
     </div>
 
-    <form action="#" method="post" th:action="'/zulassung1/upload'" enctype="multipart/form-data">
+    <form action="#" enctype="multipart/form-data" method="post" th:action="'/zulassung1/upload'+'/'+${id}">
         <div>
             <label>Wählen Sie eine Zulassungsliste aus Ihrem Dateimanager aus!
-                <input name="datei" type="file" size="50" accept="text/*">
+                <input accept="text/*" name="datei" size="50" type="file">
             </label>
         </div>
     </form>
 
-
     <div>
-        <label>Hier können Sie die Liste mit Klausurzulassungen runterladen!
-            <form method="get" action="file.doc">
+        <label> Hier können Sie die Klausurliste zum Modul <span th:text="${modul}">Propra</span> downladen!
+            <form action="./klausurliste.csv" method="get">
                 <button type="submit">Download!</button>
             </form>
         </label>
     </div>
-
 </main>
 </body>
 </html>

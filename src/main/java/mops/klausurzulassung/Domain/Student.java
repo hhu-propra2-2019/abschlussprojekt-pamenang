@@ -7,13 +7,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class Student {
 
-    private String vorname;
-    private String nachname;
-    private String email;
-    private long matrikelnummer;
-    private int raumId;
-    private String fachname;
-    private String token;
+  private String vorname;
+  private String nachname;
+  private String email;
+  private Long matrikelnummer;
+  private Long raumId;
+  private String fachname;
+  private String token;
 
 }
 
