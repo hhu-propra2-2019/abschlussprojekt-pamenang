@@ -21,4 +21,4 @@ public class QuittungService {
         quittungRepository.save(quittung);
     }
 }
-}
+
