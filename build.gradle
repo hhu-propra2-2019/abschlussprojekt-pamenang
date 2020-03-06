@@ -60,8 +60,10 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.security:spring-security-test'
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.6.1'
 
-  	implementation "mops:styleguide:2.1.0"
+
+    implementation "mops:styleguide:2.1.0"
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '1.2.0.RELEASE'
 	  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

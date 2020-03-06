@@ -7,6 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+
 @Service
 public class EmailService {
 
@@ -36,12 +37,16 @@ public class EmailService {
 
   /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
   public String generateValidTokenLink(Student student){
-    String link = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
     String studentAddUri = "/zulassung1/student/";
     String token = student.getToken()+"/";
     String fachName = student.getFachname()+ "/";
     String matrikelnr = Long.toString(student.getMatrikelnummer());
-    link = link + studentAddUri + token  + fachName +matrikelnr;
-    return link;
+    return ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path(studentAddUri)
+            .path(token)
+            .path(fachName)
+            .path(matrikelnr)
+            .toUriString();
   }
+
 }
