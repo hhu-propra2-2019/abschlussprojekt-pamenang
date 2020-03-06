@@ -21,15 +21,4 @@ public class TokenverifkationTest {
 
         assertEquals(bytes[0], b);
     }
-
-    @Test
-    public void testTokenverifikation(){
-        QuittungRepository repository = mock(QuittungRepository.class);
-        QuittungService quittungService = new QuittungService(repository);
-
-        TokenverifikationService tv = new TokenverifikationService(quittungService);
-
-
-        assertTrue(true);
-    }
 }
