@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
+<html lang="en"
+      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>Klausurzulassungssystem</title>
@@ -11,7 +12,17 @@
 <body>
 <header>
     <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
-        <!-- Navigation als ungeordnete Liste mit einfachen Links hier einfügen! -->
+        <ul>
+            <li>
+                <a href="/" th:href="@{/}">Home</a>
+            </li>
+            <li class="active">
+                <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
+            </li>
+            <li>
+                <a href="/zulassung1/modulHinzufuegen" th:href="@{/zulassung1/modulHinzufuegen}">Orga</a>
+            </li>
+        </ul>
     </nav>
 </header>
 <main th:fragment="bodycontent">
@@ -20,24 +31,25 @@
         <div th:if="${success}">
 
             <form>
-                <input style="    width: 100%;
+                <input id="fname" name="fname" style="    width: 100%;
                                   padding: 12px 20px;
                                   margin: 8px 0;
                                   box-sizing: border-box;
                                   border: none;
                                   background-color: #3CBC8D;
-                                  color: white; " type="text" id="fname" name="fname" value="Erfolgreich zur Klausur angemeldet!">
+                                  color: white; " type="text"
+                       value="Erfolgreich zur Klausur angemeldet!">
             </form>
         </div>
         <div th:if="${!success}">
             <form>
-                <input style="    width: 100%;
+                <input id="fname" name="fname" style="    width: 100%;
                                   padding: 12px 20px;
                                   margin: 8px 0;
                                   box-sizing: border-box;
                                   border: none;
                                   background-color: #ef291f;
-                                  color: white; " type="text" id="fname" name="fname" value="Anmeldung fehlgeschlagen!">
+                                  color: white; " type="text" value="Anmeldung fehlgeschlagen!">
             </form>
         </div>
     </div>
@@ -46,12 +58,12 @@
         <table>
 
             <tr>
-                <td>Matrikelnummer: </td>
+                <td>Matrikelnummer:</td>
                 <td>
-                    <input type="string" name="matrikelnummer" value="2618132">
+                    <input name="matrikelnummer" type="string" value="2618132">
                 </td>
                 <td>
-                    <p> </p>
+                    <p></p>
                 </td>
             </tr>
             <tr>
@@ -64,9 +76,9 @@
                 </td>
             </tr>
             <tr>
-                <td>Token: </td>
+                <td>Token:</td>
                 <td>
-                    <input type="string" name="token">
+                    <input name="token" type="string">
                 </td>
                 <td>
                     <p>(64-stellig)</p>
@@ -74,7 +86,7 @@
             </tr>
 
         </table>
-        <input type="submit" name="action" value="Klausurzulassung erhalten">
+        <input name="action" type="submit" value="Klausurzulassung erhalten">
 
     </form>
 </main>
