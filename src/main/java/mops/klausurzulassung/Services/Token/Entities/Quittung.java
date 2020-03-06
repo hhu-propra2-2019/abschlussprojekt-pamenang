@@ -1,13 +1,15 @@
 package mops.klausurzulassung.Services.Token.Entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
+import java.security.PublicKey;
 
 @Data
+@AllArgsConstructor
 @Entity
 @Table(name = "quittungen")
 public class Quittung {
@@ -19,8 +21,8 @@ public class Quittung {
     private String fachID;
 
     @Column(name = "PublicKey")
-    private String publicKey;
-    
+    private PublicKey publicKey;
+
     @Column(name = "Token")
     private String token;
 }

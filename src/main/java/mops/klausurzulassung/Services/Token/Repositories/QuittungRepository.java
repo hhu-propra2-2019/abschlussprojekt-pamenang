@@ -5,4 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface QuittungRepository extends CrudRepository<Quittung,String> {}
+public interface QuittungRepository extends CrudRepository<Quittung,String> {
+
+}

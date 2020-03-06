@@ -60,6 +60,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.security:spring-security-test'
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
 
   	implementation "mops:styleguide:2.1.0"
 
