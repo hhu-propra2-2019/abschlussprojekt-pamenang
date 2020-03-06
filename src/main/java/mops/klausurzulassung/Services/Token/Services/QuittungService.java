@@ -27,6 +27,15 @@ public class QuittungService {
         return null;
     }
 
+    public String findTokenByQuittung(String matr, String fachID){
+        for(Quittung quittung : quittungRepository.findAll()){
+            if(quittung.getMatrikelnummer().equals(matr) && quittung.getFachID().equals(fachID)){
+                return quittung.getToken();
+            }
+        }
+        return null;
+    }
+
     public void save(Quittung quittung) {
         quittungRepository.save(quittung);
     }
