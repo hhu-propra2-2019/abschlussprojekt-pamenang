@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.PublicKey;
-import java.util.Optional;
 
 @Component
 public class QuittungService {
