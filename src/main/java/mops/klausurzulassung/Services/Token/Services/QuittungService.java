@@ -15,7 +15,14 @@ public class QuittungService {
         this.quittungRepository = quittungRepository;
     }
 
-    public Optional<Quittung> findByID(String token){return quittungRepository.findById(token);}
+    public Optional<Quittung> findQuittung(String matr, String fachID){
+        for(Quittung quittung : quittungRepository.findAll()){
+            if(quittung.getMatrikelnummer().equals(matr) && quittung.getFachID().equals(fachID)){
+                return Optional.of(quittung);
+            }
+        }
+        return Optional.empty();
+    }
 
     public void save(Quittung quittung) {
         quittungRepository.save(quittung);

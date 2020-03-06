@@ -1,5 +1,6 @@
 package mops.klausurzulassung.Services.Token;
 
+import mops.klausurzulassung.Services.Token.Entities.Quittung;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -23,7 +24,9 @@ public class TokengenerierungService {
         return matr+fach+token;
     }
 
-    public String erstellenToken(String HashValue) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public String erstellenToken(String matr, String fachID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+
+        String HashValue = erstellenHashValue(matr, fachID);
 
         KeyPair pair = KeyPaarGenerierung();
         PrivateKey privateKey = pair.getPrivate();
@@ -34,6 +37,8 @@ public class TokengenerierungService {
 
         //Speicher Student + Public Key ab
         PublicKey publicKey = pair.getPublic();
+        Quittung quittung = new Quittung();
+
         byte[] token = sign.sign();
 
         return bytesToHex(token);

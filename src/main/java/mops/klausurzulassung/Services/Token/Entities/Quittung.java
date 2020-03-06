@@ -20,8 +20,7 @@ public class Quittung {
 
     @Column(name = "PublicKey")
     private String publicKey;
-
-    @Id
+    
     @Column(name = "Token")
     private String token;
 }
