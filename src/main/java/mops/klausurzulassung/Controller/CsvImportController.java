@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,31 +15,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequestMapping("/zulassung1")
 @Controller
 public class CsvImportController {
 
+  @Autowired CsvImportService csvImportService;
 
-    @Autowired
-    CsvImportService csvImportService;
+  private boolean imported = false;
 
-    private boolean imported =false;
+  private List<Student> studentList = new ArrayList<>();;
 
-    private List<Student> studentList =  new ArrayList<>();;
+  @GetMapping("/csvImport")
+  public String csvimport(Model model) {
+    model.addAttribute("studentList", studentList);
+    model.addAttribute("imported", imported);
+    return "csvImport";
+  }
 
-    @GetMapping("/csvImport")
-    public String csvimport(Model model){
-        model.addAttribute("studentList", studentList);
-        model.addAttribute("imported", imported);
-        return "csvImport";
-    }
+  @PostMapping("/csvImport")
+  public String csvimportPost(@RequestParam("datei") MultipartFile multipartFile, Model model)
+      throws IOException {
 
-    @PostMapping("/csvImport")
-    public String csvimportPost(@RequestParam("datei")MultipartFile multipartFile, Model model) throws IOException {
+    studentList = csvImportService.getStudentListFromInputFile(multipartFile);
+    if (!studentList.isEmpty()) imported = true;
 
-        studentList = csvImportService.getStudentListFromInputFile(multipartFile);
-        if(!studentList.isEmpty())imported=true;
-
-        return "redirect:/csvImport";
-    }
-
+    return "redirect:/csvImport";
+  }
 }

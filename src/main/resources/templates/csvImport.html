@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
+<html lang="en" th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>Klausurlisten-Import</title>
@@ -11,20 +11,30 @@
 <body>
 <header>
     <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
-        <!-- Navigation als ungeordnete Liste mit einfachen Links hier einfügen! -->
+        <ul>
+            <li>
+                <a href="/" th:href="@{/}">Home</a>
+            </li>
+            <li>
+                <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
+            </li>
+            <li>
+                <a href="/zulassung1/modulHinzufuegen" th:href="@{/zulassung1/modulHinzufuegen}">Orga</a>
+            </li>
+        </ul>
     </nav>
 </header>
 <main th:fragment="bodycontent">
 
 
-
     <div class="card">
         <h5 class="card-header">Import</h5>
         <div class="card-body">
-            <p class="card-text">Hier können Sie verschiedene Studenten-Klausurzulassungen mithilfe einer CSV-Datei Importieren</p>
-            <form action="/csvImport" method="post" enctype="multipart/form-data">
+            <p class="card-text">Hier können Sie verschiedene Studenten-Klausurzulassungen mithilfe einer CSV-Datei
+                Importieren</p>
+            <form action="/csvImport" enctype="multipart/form-data" method="post">
                 <label>Wählen Sie eine Textdatei (*.csv) von Ihrem Rechner aus.
-                    <input name="datei" type="file" size="50">
+                    <input name="datei" size="50" type="file">
                 </label>
                 <input class="btn-success" type="submit" value="importieren">
             </form>
@@ -33,7 +43,7 @@
 
     <br>
     <br>
-    <div th:if="${imported}" class="alert alert-success">
+    <div class="alert alert-success" th:if="${imported}">
         Studenten erfolgreich importiert!
     </div>
 
@@ -57,7 +67,6 @@
 
         </tbody>
     </table>
-
 
 
 </main>
