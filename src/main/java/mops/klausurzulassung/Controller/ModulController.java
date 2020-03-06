@@ -5,8 +5,8 @@ import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.CsvService;
 import mops.klausurzulassung.organisatoren.Entities.Modul;
-import mops.klausurzulassung.organisatoren.Services.AltzulassungService;
 import mops.klausurzulassung.organisatoren.Services.ModulService;
+import mops.klausurzulassung.organisatoren.Services.StudentService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.security.access.annotation.Secured;
@@ -33,12 +33,12 @@ public class ModulController {
 
   private final ModulService modulService;
   private final CsvService csvService;
-  private final AltzulassungService studentService;
+  private final StudentService studentService;
   private String errorMessage;
   private String successMessage;
   private Modul currentModul = new Modul();
 
-  public ModulController(ModulService modulService, CsvService csvService, AltzulassungService studentService) {
+  public ModulController(ModulService modulService, CsvService csvService, StudentService studentService) {
     this.modulService = modulService;
     this.csvService = csvService;
     this.studentService = studentService;
@@ -125,7 +125,7 @@ public class ModulController {
     FileWriter fileWriter = new FileWriter(outputFile);
     CSVWriter writer = new CSVWriter(fileWriter);
 
-    Iterable<Student> altzugelassene = studentService.findByRaumId(id);
+    Iterable<Student> altzugelassene = studentService.findByModulId(id);
 
     for (Student student : altzugelassene) {
       students.add(student);
