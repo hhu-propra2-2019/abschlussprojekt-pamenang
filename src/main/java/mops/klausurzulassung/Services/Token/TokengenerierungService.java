@@ -1,6 +1,8 @@
 package mops.klausurzulassung.Services.Token;
 
 import mops.klausurzulassung.Services.Token.Entities.Quittung;
+import mops.klausurzulassung.Services.Token.Services.QuittungService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -15,6 +17,13 @@ import java.security.SignatureException;
 
 @Service
 public class TokengenerierungService {
+
+    private final QuittungService quittungService;
+
+    @Autowired
+    public TokengenerierungService(QuittungService quittungService) {
+        this.quittungService = quittungService;
+    }
 
     public String erstellenHashValue(String matr, String fach){
         return matr+fach;
@@ -35,11 +44,11 @@ public class TokengenerierungService {
         byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
 
-        //Speicher Student + Public Key ab
         PublicKey publicKey = pair.getPublic();
-        Quittung quittung = new Quittung();
-
         byte[] token = sign.sign();
+
+        Quittung quittung = new Quittung(matr, fachID, publicKey, bytesToHex(token));
+        quittungService.save(quittung);
 
         return bytesToHex(token);
     }
