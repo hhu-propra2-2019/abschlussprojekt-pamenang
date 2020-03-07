@@ -55,7 +55,8 @@ public class ModulController {
   @GetMapping("/modulHinzufuegen")
   public String index(Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    model.addAttribute("moduls", modulService.findByOwner(principal.getName()));
+    Iterable<Modul> moduls = modulService.findByOwner(principal.getName());
+    model.addAttribute("moduls", moduls);
     model.addAttribute("modul", currentModul);
     model.addAttribute("error", errorMessage);
     model.addAttribute("success", successMessage);
@@ -71,7 +72,7 @@ public class ModulController {
     this.currentModul = modul;
 
     if (modulService.findById(modul.getId()).isPresent()) {
-      setMessages("Diese Modul-ID existiert schon, bitte eine andere eingeben!", null);
+      setMessages("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", null);
     } else {
       modulService.save(modul);
       setMessages(null, "Neues Modul wurde erfolgreich hinzugefügt!");
@@ -86,10 +87,11 @@ public class ModulController {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Optional<Modul> modul = modulService.findById(id);
     if (modul.isPresent()) {
+      String modulName = modul.get().getName();
       modulService.delete(modul.get());
-      setMessages(null, "Successfully deleted modul!");
+      setMessages(null, "Das Modul " + modulName + " wurde gelöscht!");
     } else {
-      setMessages("Modul could not be deleted, because it was not found in the database.", null);
+      setMessages("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", null);
     }
     return "redirect:/zulassung1/modulHinzufuegen";
   }
@@ -102,6 +104,10 @@ public class ModulController {
     String name = modul.getName();
     model.addAttribute("modul", name);
     model.addAttribute("id", id);
+    model.addAttribute("student", new Student("", "", "", null, id, null, null));
+    model.addAttribute("fristAbgelaufen", false);
+    model.addAttribute("error", errorMessage);
+    model.addAttribute("success", successMessage);
 
     return "modulAnsicht";
   }
@@ -118,8 +124,39 @@ public class ModulController {
       // Token des Students wird zum Mailsender geschickt
     }
     csvService.writeCsvFile(id, students);
+    setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
 
     return "redirect:/zulassung1/modul" + "/" + id;
+  }
+
+  @Secured("ROLE_orga")
+  @PostMapping("/{id}/altzulassungHinzufuegen")
+  public String altzulassungHinzufuegen(@ModelAttribute @Valid Student student, Boolean fristAbgelaufen, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
+    model.addAttribute("account", createAccountFromPrincipal(token));
+
+    String email = student.getEmail();
+    String vorname = student.getVorname();
+    String nachname = student.getNachname();
+    Long matnr = student.getMatrikelnummer();
+    Long modulId = id;
+
+    if (fristAbgelaufen == null) {
+
+      System.out.println("Student:" + email + " " + vorname + " " + nachname + " " + matnr + " " + modulId);
+      // Student zur Tokengenierung schicken
+      // Token per Mail verschicken
+
+      setMessages(null, "Quittung für Student " + matnr + " ist neu verschickt worden!");
+
+    } else {
+      System.out.println("Datenbank wird durchsucht");
+      // wenn in DB ein Token für modulId und MatrNr gespeichert ist, Student in Altzulassung-DB schreiben
+      //setMessages(null, "Altzulassung des Students "+matnr+" wurde erfolgreich eingetragen.");
+
+      // wenn Student nicht in DB gefunden werden kann, gibt Error Message aus
+      //setMessages("Student "+matnr+" wurde nicht gefunden.",null);
+    }
+    return "redirect:/zulassung1/modul/" + id;
   }
 
   private void setMessages(String errorMessage, String successMessage) {

@@ -6,7 +6,78 @@
     <meta charset="utf-8">
     <title>Modul Ansicht</title>
     <th:block th:fragment="headcontent">
-        <!-- Links, Skripts, Styles hier einfügen! -->
+        <style>
+            .csstab {
+                width: 250px;
+                display: block;
+                float: left;
+            }
+
+            /* Add padding and center-align text to the container */
+            .containerModal {
+                padding: 16px;
+                text-align: left;
+            }
+
+            .buttonModal {
+                text-align: center;
+            }
+
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                /*z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgba(0, 0, 0, 0.42);
+                padding-top: 50px;
+            }
+
+            .modal-backdrop {
+                opacity: 0.5 !important;
+            }
+
+            /* Modal Content/Box */
+            .modal-content {
+                background-color: #fefefe;
+                margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+                border: 1px solid #888;
+                width: 40%; /* Could be more or less, depending on screen size */
+            }
+
+            /* Style the horizontal ruler */
+            hr {
+                border: 1px solid #f1f1f1;
+                margin-bottom: 25px;
+            }
+
+            /* The Modal Close Button (x) */
+            .close {
+                position: absolute;
+                right: 35px;
+                top: 15px;
+                font-size: 40px;
+                font-weight: bold;
+                color: #000000;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #f44336;
+                cursor: pointer;
+            }
+
+            /* Clear floats */
+            .clearfix::after {
+                content: "";
+                clear: both;
+                display: table;
+            }
+        </style>
     </th:block>
 </head>
 <body>
@@ -20,29 +91,125 @@
         Modul Ansicht
     </h1>
 
-    <div>Name des ausgewählten Moduls:
-        <span th:text="${modul}">Propra</span>
-    </div>
-    <div>ID des ausgewählten Moduls:
-        <span th:text="${id}">1234</span>
+    <div id="error-message" th:classappend="${error != null} ? 'alert alert-warning'" th:text="${error}">
+        Datei konnte nicht efolgreich hochgeladen werden!
     </div>
 
-    <form action="#" enctype="multipart/form-data" method="post" th:action="'/zulassung1/modul'+'/'+${id}">
+    <div id="success-message" th:classappend="${success != null} ? 'alert alert-success'" th:text="${success}">
+        Upload der Datei ist erfolgreich!
+    </div>
+
+    <span class="csstab">Name des ausgewählten Moduls:</span><b><span th:text="${modul}">Propra</span></b><br>
+    <span class="csstab">ID des ausgewählten Moduls:</span><b><span th:text="${id}">1234</span></b>
+
+    <hr>
+    <label> Hier können Sie manuell Altklauzulassungen eintragen, falls der Student noch keine digitalisierte
+        Altzulassung hat oder die Quittung gegangen ist.
         <div>
-            <label>Wählen Sie eine Zulassungsliste aus Ihrem Dateimanager aus!
+            <button class="btn btn-outline-dark"
+                    onclick="document.getElementById('id02').style.display='block'">Altzulassung manuell hinzufügen
+            </button>
+        </div>
+    </label>
+
+    <div class="modal" id="id02">
+                                <span class="close" onclick="document.getElementById('id02').style.display='none'"
+                                      title="Close Modal">&times;</span>
+        <div class="modal-content">
+            <div class="containerModal">
+                <h1>Altzulassung manuell hinzufügen</h1>
+
+                <form action="#" method="post" th:action="'/zulassung1'+'/' + ${id} + '/altzulassungHinzufuegen'"
+                      th:object="${student}">
+                    <div class="form-group">
+                        <label for="matrikelnummer">Bitte geben Sie die Matrikelnummer des Students ein.</label>
+                        <input class="form-control" id="matrikelnummer" name="matrikelnummer"
+                               placeholder="Matrikelnummer"
+                               th:errorclass="is-invalid" th:value="*{matrikelnummer}" type="text">
+                        <span class="text-danger" th:errors="*{matrikelnummer}"
+                              th:if="${#fields.hasErrors('matrikelnummer')}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Bitte geben Sie den Namen des Students ein.</label>
+                        <input class="form-control" id="vorname" name="vorname" placeholder="Vorname"
+                               th:errorclass="is-invalid" th:value="*{vorname}" type="text">
+                        <span class="text-danger" th:errors="*{vorname}" th:if="${#fields.hasErrors('vorname')}"></span>
+                        <input class="form-control" id="nachname" name="nachname" placeholder="Nachname"
+                               th:errorclass="is-invalid" th:value="*{nachname}" type="text">
+                        <span class="text-danger" th:errors="*{nachname}"
+                              th:if="${#fields.hasErrors('nachname')}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Bitte geben Sie die E-Mail-Adresse des Students ein.</label>
+                        <input class="form-control" id="email" name="email" placeholder="E-Mail-Adresse"
+                               th:errorclass="is-invalid" th:value="*{email}" type="email">
+                        <span class="text-danger" th:errors="*{email}"
+                              th:if="${#fields.hasErrors('email')}"></span>
+                    </div>
+                    <div>
+                        <input id="fristAbgelaufen" name="fristAbgelaufen" th:checked="${fristAbgelaufen}"
+                               type="checkbox">
+                        <label for="fristAbgelaufen">Frist ist abgelaufen</label>
+                    </div>
+                    <div class="buttonModal">
+                        <input align="center" class="btn btn-primary" type="submit" value="Abschicken">
+
+                    </div>
+                </form>
+
+
+                <div class="clearfix">
+                    <div class="linkerButton">
+                        <form action="#" method="GET"
+                              th:action="'/zulassung1/modul/'+${id}">
+                            <input class="btn btn-outline-dark btn-sm" data-target="#myModal"
+                                   data-toggle="modal"
+                                   type="submit" value="Abbrechen">
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <hr>
+
+    <form action="#" align="left" enctype="multipart/form-data" method="post"
+          th:action="'/zulassung1/modul'+'/'+${id}">
+        <div>
+            <label>Wählen Sie eine Zulassungsliste (.csv) aus Ihrem Dateimanager aus! <br>
                 <input accept=".csv" name="datei" size="50" type="file">
             </label>
-            <input class="btn-success" type="submit" value="Abschicken">
+            <br>
+            <input class="btn btn-primary" type="submit" value="Liste abschicken">
         </div>
     </form>
 
-    <div>
+    <hr>
+
+    <div align="left">
         <label> Hier können Sie die Klausurliste zum Modul <span th:text="${modul}">Propra</span> downladen!
-            <form action="./klausurliste.csv" method="get">
-                <button type="submit">Download!</button>
+            <form action="#" method="get" th:action="'/zulassung1/modul' +'/' + ${id}">
+                <button class="btn btn-outline-dark" type="submit">Download!</button>
             </form>
         </label>
     </div>
+
+    <!-- JavaScript für DeleteModal -->
+    <script>
+        // Get the modal
+        var modal = document.getElementById('id02');
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
 </main>
 </body>
 </html>

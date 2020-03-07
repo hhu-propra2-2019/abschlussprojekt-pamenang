@@ -3,6 +3,8 @@ package mops;
 import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.CsvService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +17,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,17 +26,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
 public class CsvTest {
 
   private CsvService csvService;
   private MultipartFile multipartFile;
+  private CSVRecord record;
 
   @Test
   public void getStudentListFromInputFileTest() throws IOException {
     csvService = new CsvService();
-
     this.multipartFile = mock(MultipartFile.class);
 
     List<Student> students = new ArrayList<>();
@@ -51,28 +55,54 @@ public class CsvTest {
     writer.flush();
     writer.close();
 
-
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,1,\nRebecca,Fröhlich,refro100@hhu.de,2658447,1".getBytes());
-
 
     when(multipartFile.getInputStream()).thenReturn(input);
     System.out.println(multipartFile.getInputStream());
     List<Student> studentList = csvService.getStudentListFromInputFile(multipartFile, 1L);
 
     assertEquals(students, studentList);
+
+    // Löschen des Test-Files
+    File file = new File("liste.csv");
+    if (file.exists()) {
+      file.delete();
+    }
   }
 
 
   @Test
-  public void createStudentFromInputStreamTest() {
+  public void createStudentFromInputStreamTest() throws IOException {
     csvService = new CsvService();
-    String cara = "Cara,Überschär,caueb100@hhu.de,2659396";
+
+    Student student = new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, "ProPra2", "123Ldnd");
+
+    File outputFile = new File("studenten.csv");
+    FileWriter fileWriter = new FileWriter(outputFile);
+    CSVWriter writer = new CSVWriter(fileWriter);
+
+    String[] list = {String.valueOf(student.getMatrikelnummer()), student.getNachname(), student.getVorname(), student.getEmail()};
+    writer.writeNext(list, false);
+    writer.flush();
+    writer.close();
+
+    Reader input = new FileReader("studenten.csv");
+    Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(input);
+
+    Student cara = null;
+    for (CSVRecord record : records) {
+      cara = csvService.createStudentFromInputStream(record, 1L);
+    }
+
     Student expected = new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, null, null);
-    Long id = 1L;
 
-    Student rebecca = csvService.createStudentFromInputStream(cara, id);
+    assertEquals(expected, cara);
 
-    assertEquals(expected, rebecca);
+    // Löschen des Test-Files
+    File file = new File("studenten.csv");
+    if (file.exists()) {
+      file.delete();
+    }
   }
 
   @Test
@@ -102,6 +132,7 @@ public class CsvTest {
     line = br.readLine();
     assertEquals(line, "2658447,Fröhlich,Rebecca");
 
+    // Löschen des Test-Files
     File file = new File("klausurliste.csv");
     if (file.exists()) {
       file.delete();
