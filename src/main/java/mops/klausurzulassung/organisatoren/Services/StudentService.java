@@ -15,4 +15,8 @@ public class StudentService {
   public Iterable<Student> findByModulId(Long id) {
     return studentRepository.findByModulId(id);
   }
+
+  public void delete(Student student) {
+    studentRepository.delete(student);
+  }
 }

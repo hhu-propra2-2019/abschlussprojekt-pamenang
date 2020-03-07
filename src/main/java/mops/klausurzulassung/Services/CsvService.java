@@ -28,12 +28,11 @@ public class CsvService {
   /*CsvImportService kümmert sich um ein Multipartfile welches ein .csv File repräsentiert. Aus diesem File werden Studenten-Objekte
     generiert die als Liste weitergegeben werden*/
 
+  // Reihenfolge im input.csv:
+  // Vorname, Nachname, Email, Matrikelnummer
 
-  // Studenten auf input.csv müssen in folgender Reihenfolge angegeben werden:
-  // MatrNr, Nachname, Vorname, E-Mail
-
-  // output.csv hat folgende Reihenfolge: MatrNr, Nachname, Vorname
-
+  // Reihenfolge im output.csv:
+  // Matrikelnummer, Nachname, Vorname
 
   public List<Student> getStudentListFromInputFile(MultipartFile multipartFile, Long id) throws IOException {
     List<Student> studentList = new ArrayList<>();
@@ -57,10 +56,10 @@ public class CsvService {
     String vorname, nachname, email, fachname, token;
     Long matrikelnummer, modulId;
 
-    vorname = record.get(2);
+    vorname = record.get(0);
     nachname = record.get(1);
-    email = record.get(3);
-    matrikelnummer = Long.parseLong(record.get(0));
+    email = record.get(2);
+    matrikelnummer = Long.parseLong(record.get(3));
     modulId = id;
     fachname = null;
     token = null;

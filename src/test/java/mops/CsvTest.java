@@ -3,6 +3,7 @@ package mops;
 import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.CsvService;
+import mops.klausurzulassung.organisatoren.Services.StudentService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
@@ -34,10 +35,11 @@ public class CsvTest {
   private CsvService csvService;
   private MultipartFile multipartFile;
   private CSVRecord record;
+  private StudentService studentService;
 
   @Test
   public void getStudentListFromInputFileTest() throws IOException {
-    csvService = new CsvService();
+    csvService = new CsvService(studentService);
     this.multipartFile = mock(MultipartFile.class);
 
     List<Student> students = new ArrayList<>();
@@ -58,7 +60,6 @@ public class CsvTest {
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,1,\nRebecca,Fröhlich,refro100@hhu.de,2658447,1".getBytes());
 
     when(multipartFile.getInputStream()).thenReturn(input);
-    System.out.println(multipartFile.getInputStream());
     List<Student> studentList = csvService.getStudentListFromInputFile(multipartFile, 1L);
 
     assertEquals(students, studentList);
@@ -73,7 +74,7 @@ public class CsvTest {
 
   @Test
   public void createStudentFromInputStreamTest() throws IOException {
-    csvService = new CsvService();
+    csvService = new CsvService(studentService);
 
     Student student = new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, "ProPra2", "123Ldnd");
 
@@ -81,7 +82,7 @@ public class CsvTest {
     FileWriter fileWriter = new FileWriter(outputFile);
     CSVWriter writer = new CSVWriter(fileWriter);
 
-    String[] list = {String.valueOf(student.getMatrikelnummer()), student.getNachname(), student.getVorname(), student.getEmail()};
+    String[] list = {student.getVorname(), student.getNachname(), student.getEmail(), String.valueOf(student.getMatrikelnummer())};
     writer.writeNext(list, false);
     writer.flush();
     writer.close();
@@ -107,7 +108,7 @@ public class CsvTest {
 
   @Test
   public void putStudentOntoListTest() throws IOException {
-    this.csvService = new CsvService();
+    this.csvService = new CsvService(studentService);
 
     ArrayList<Student> students = new ArrayList<>();
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, "ProPra2", "123Ldnd"));

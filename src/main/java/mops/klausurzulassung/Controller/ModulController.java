@@ -89,6 +89,12 @@ public class ModulController {
     if (modul.isPresent()) {
       String modulName = modul.get().getName();
       modulService.delete(modul.get());
+
+      Iterable<Student> students = studentService.findByModulId(id);
+      for (Student student : students) {
+        studentService.delete(student);
+      }
+
       setMessages(null, "Das Modul " + modulName + " wurde gelöscht!");
     } else {
       setMessages("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", null);
@@ -116,17 +122,31 @@ public class ModulController {
   @PostMapping("/modul/{id}")
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    List<Student> students = csvService.getStudentListFromInputFile(file, id);
+    if (file.isEmpty()) {
+      setMessages("Datei ist leer oder es wurde keine Datei ausgewählt!", null);
+    } else {
+      List<Student> students = csvService.getStudentListFromInputFile(file, id);
 
-    for (Student student : students) {
-      System.out.println("Tokens werden generiert und verschickt!");
-      // Student wird zu Token-Generierung geschickt (Email, Vorname, Nachname, MatrNr, Fach)
-      // Token des Students wird zum Mailsender geschickt
+      for (Student student : students) {
+        System.out.println("Tokens werden generiert und verschickt!");
+        // Student wird zu Token-Generierung geschickt (Email, Vorname, Nachname, MatrNr, Fach)
+        // Token des Students wird zum Mailsender geschickt
+      }
+      csvService.writeCsvFile(id, students);
+      setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
+
     }
-    csvService.writeCsvFile(id, students);
-    setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
-
     return "redirect:/zulassung1/modul" + "/" + id;
+  }
+
+  @Secured("ROLE_orga")
+  @PostMapping("/modul/{id}/download")
+  public String downloadListe() {
+
+    // Liste muss noch herunter geladen werden
+
+    setMessages(null, "Klausurliste wurde erfolgreich heruntergeladen.");
+    return "redirect:/zulassung1/modulHinzufuegen";
   }
 
   @Secured("ROLE_orga")

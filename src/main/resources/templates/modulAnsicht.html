@@ -104,7 +104,7 @@
 
     <hr>
     <label> Hier können Sie manuell Altklauzulassungen eintragen, falls der Student noch keine digitalisierte
-        Altzulassung hat oder die Quittung gegangen ist.
+        Altzulassung hat oder die Quittung verschwunden ist.
         <div>
             <button class="btn btn-outline-dark"
                     onclick="document.getElementById('id02').style.display='block'">Altzulassung manuell hinzufügen
@@ -191,10 +191,11 @@
 
     <div align="left">
         <label> Hier können Sie die Klausurliste zum Modul <span th:text="${modul}">Propra</span> downladen!
-            <form action="#" method="get" th:action="'/zulassung1/modul' +'/' + ${id}">
+            <form action="#" method="post" th:action="'/zulassung1/modul' +'/' + ${id}+'/download'">
                 <button class="btn btn-outline-dark" type="submit">Download!</button>
             </form>
         </label>
+
     </div>
 
     <!-- JavaScript für DeleteModal -->
