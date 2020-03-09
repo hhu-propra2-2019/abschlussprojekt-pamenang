@@ -3,10 +3,12 @@ package mops.klausurzulassung.Controller;
 import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.CsvService;
+import mops.klausurzulassung.Services.EmailService;
 import mops.klausurzulassung.Services.TokengenerierungService;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Services.ModulService;
 import mops.klausurzulassung.Services.StudentService;
+import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.security.access.annotation.Secured;
@@ -39,14 +41,16 @@ public class ModulController {
   private String errorMessage;
   private String successMessage;
   private Modul currentModul = new Modul();
+  private final EmailService emailService;
 
   private final TokengenerierungService tokengenerierungService;
 
-  public ModulController(ModulService modulService, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService) {
+  public ModulController(ModulService modulService, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService) {
     this.modulService = modulService;
     this.csvService = csvService;
     this.studentService = studentService;
     this.tokengenerierungService = tokengenerierungService;
+    this.emailService = emailService;
   }
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
@@ -137,7 +141,8 @@ public class ModulController {
       for (Student student : students) {
         System.out.println("Tokens werden generiert und verschickt!");
         String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
-        // Token des Students wird zum Mailsender geschickt
+        student.setToken(tokenString);
+        emailService.sendMail(student);
       }
       csvService.writeCsvFile(id, students);
       setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
@@ -171,7 +176,8 @@ public class ModulController {
 
       System.out.println("Student:" + email + " " + vorname + " " + nachname + " " + matnr + " " + modulId);
       String tokenString = tokengenerierungService.erstellenToken(matnr.toString(), id.toString());
-      // Token per Mail verschicken
+      student.setToken(tokenString);
+      emailService.sendMail(student);
 
       setMessages(null, "Quittung für Student " + matnr + " ist neu verschickt worden!");
 
