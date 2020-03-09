@@ -9,8 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 public class EmailServiceTests {
@@ -29,7 +31,7 @@ public class EmailServiceTests {
   @Test
   public void test_sendMail_checkForMethodCalls() {
     // Arrange
-    Student student = new Student("t1", "t2", "t3", 1234, 1, "t4", "token");
+    Student student = new Student("t1", "t2", "t3", 1234L, 1L, "t4", "token");
     // Act
     emailService.sendMail(student);
     // Assert
@@ -38,7 +40,7 @@ public class EmailServiceTests {
 
   @Test
   public void test_generateValidToken_CheckIfSuccessfullyGeneratedLink(){
-    Student student = new Student("t1", "t2", "t3", 1234, 1, "t4", "token");
+    Student student = new Student("t1", "t2", "t3", (long)1234, (long)1, "t4", "token");
     String link = emailService.generateValidTokenLink(student);
     System.out.println(link);
     Assertions.assertThat(link).contains("token/t4/1234");

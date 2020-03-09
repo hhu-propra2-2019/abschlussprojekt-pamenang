@@ -1,11 +1,90 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+<html lang="en"
+      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>Modul Auswahl</title>
+
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
     <th:block th:fragment="headcontent">
-        <!-- Links, Skripts, Styles hier einfügen! -->
+        <style>
+            .linkerButton {
+                width: 49%;
+                float: left;
+            }
+
+            .rechterButton {
+                width: 49%;
+                float: left;
+            }
+
+            /* Add padding and center-align text to the container */
+            .containerModal {
+                padding: 16px;
+                text-align: center;
+            }
+
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                /*z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgba(0, 0, 0, 0.42);
+                padding-top: 50px;
+            }
+
+            .modal-backdrop {
+                opacity: 0.5 !important;
+            }
+
+            /* Modal Content/Box */
+            .modal-content {
+                background-color: #fefefe;
+                margin: 10% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+                border: 1px solid #888;
+                width: 40%; /* Could be more or less, depending on screen size */
+            }
+
+            /* Style the horizontal ruler */
+            hr {
+                border: 1px solid #f1f1f1;
+                margin-bottom: 25px;
+            }
+
+            /* The Modal Close Button (x) */
+            .close {
+                position: absolute;
+                right: 35px;
+                top: 15px;
+                font-size: 40px;
+                font-weight: bold;
+                color: #000000;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #f44336;
+                cursor: pointer;
+            }
+
+            /* Clear floats */
+            .clearfix::after {
+                content: "";
+                clear: both;
+                display: table;
+            }
+        </style>
+
     </th:block>
 </head>
 <body>
@@ -75,20 +154,67 @@
                         <span th:text="${m.name}">ProPra2</span>
                     </td>
                     <td>
-                        <form action="#" method="POST" th:action="'/zulassung1/modul'+'/' + ${m.id} + '/delete'">
-                            <input class="btn btn-outline-dark btn-sm" type="submit" value="Delete">
-                        </form>
-                        <form action="#" method="GET" th:action="'/zulassung1/modul' +'/' + ${m.id}">
-                            <input class="btn btn-outline-dark btn-sm" type="submit" value="Auswählen">
-                        </form>
+                        <div class="linkerButton">
+                            <form action="#" method="GET" th:action="'/zulassung1/modul' +'/' + ${m.id}">
+                                <input class="btn btn-outline-dark btn-sm" type="submit" value="Auswählen">
+                            </form>
+                        </div>
+                        <div class="rechterButton">
+                            <button class="btn btn-outline-dark btn-sm"
+                                    onclick="document.getElementById('id01').style.display='block'">Löschen
+                            </button>
+
+                            <div class="modal" id="id01">
+                                <span class="close" onclick="document.getElementById('id01').style.display='none'"
+                                      title="Close Modal">&times;</span>
+                                <div class="modal-content">
+                                    <div class="containerModal">
+                                        <h1>Modul löschen</h1>
+                                        <p>Sind Sie sicher, dass Sie das Modul <b><span
+                                                th:text="${m.name}">ProPra2</span></b>
+                                            löschen wollen?</p>
+
+                                        <div class="clearfix">
+                                            <div class="linkerButton">
+                                                <form action="#" method="GET"
+                                                      th:action="'/zulassung1/modulHinzufuegen'">
+                                                    <input class="btn btn-outline-dark btn-sm" data-target="#myModal"
+                                                           data-toggle="modal"
+                                                           type="submit" value="Abbrechen">
+                                                </form>
+                                            </div>
+                                            <div class="rechterButton">
+                                                <form action="#" method="POST"
+                                                      th:action="'/zulassung1/modul'+'/' + ${m.id} + '/delete'">
+                                                    <input class="btn btn-primary btn-sm" data-target="#myModal"
+                                                           data-toggle="modal"
+                                                           type="submit" value="Löschen">
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
+
+            <!-- JavaScript für DeleteModal -->
+            <script>
+                // Get the modal
+                var modal = document.getElementById('id01');
+
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function (event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            </script>
         </div>
     </div>
-
-
 </main>
 </body>
 </html>
