@@ -1,6 +1,7 @@
 package mops.klausurzulassung.Controller.student;
 
 import mops.klausurzulassung.Domain.Account;
+import mops.klausurzulassung.Services.Token.TokenverifikationService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,11 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
-import mops.klausurzulassung.Services.Token.TokenverifikationService;
-
 @RequestMapping("/zulassung1")
 @Controller
 public class StundentenController {
 
-  @Autowired
-  TokenverifikationService tokenverifikation;
+  @Autowired TokenverifikationService tokenverifikation;
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
@@ -36,7 +34,12 @@ public class StundentenController {
 
   @GetMapping("/student/{zulassungToken}/{fachName}/{matrikelnr}")
   @Secured("ROLE_studentin")
-  public String studentansichtMitToken(@PathVariable String zulassungToken,@PathVariable String fachName,@PathVariable long matrikelnr, Model model, KeycloakAuthenticationToken token) {
+  public String studentansichtMitToken(
+      @PathVariable String zulassungToken,
+      @PathVariable String fachName,
+      @PathVariable long matrikelnr,
+      Model model,
+      KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
     model.addAttribute("zulassungToken", zulassungToken);
@@ -46,7 +49,7 @@ public class StundentenController {
     return "student";
   }
 
-  @GetMapping("/student/")
+  @GetMapping("/student")
   @Secured("ROLE_studentin")
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
@@ -62,9 +65,10 @@ public class StundentenController {
       Model model,
       String matrikelnummer,
       String token,
-      String fach) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+      String fach)
+      throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
 
-    boolean value =  tokenverifikation.verifikationToken(matrikelnummer,fach,token);
+    boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token);
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
     model.addAttribute("meldung", true);

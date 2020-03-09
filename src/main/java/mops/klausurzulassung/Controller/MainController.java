@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 
 @Controller
 @RequestMapping("/zulassung1")
@@ -45,6 +44,6 @@ public class MainController {
   @GetMapping("/logout")
   public String logout(HttpServletRequest request) throws Exception {
     request.logout();
-    return "redirect:/";
+    return "redirect:/zulassung1";
   }
 }
