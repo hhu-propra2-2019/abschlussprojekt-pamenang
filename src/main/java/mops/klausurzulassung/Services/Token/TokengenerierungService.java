@@ -1,6 +1,7 @@
 package mops.klausurzulassung.Services.Token;
 
-import mops.klausurzulassung.Services.Token.Entities.Quittung;
+import mops.klausurzulassung.Services.Token.Entities.QuittungDao;
+import mops.klausurzulassung.Services.Token.Entities.QuittungDto;
 import mops.klausurzulassung.Services.Token.Services.QuittungService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,10 @@ public class TokengenerierungService {
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
-        Quittung quittung = new Quittung(matr, fachID, publicKey, bytesToHex(token));
-        quittungService.save(quittung);
+        QuittungDto quittungDto = new QuittungDto(matr, fachID, publicKey, bytesToHex(token));
+        QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
+
+        quittungService.save(quittungDao);
 
         return bytesToHex(token);
     }
@@ -68,5 +71,15 @@ public class TokengenerierungService {
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    private QuittungDao erstelleQuittungDao(QuittungDto quittungDto){
+        QuittungDao quittungDao = new QuittungDao();
+        quittungDao.setFachID(quittungDto.getFachID());
+        quittungDao.setMatrikelnummer(quittungDto.getMatrikelnummer());
+        quittungDao.setPublicKey(quittungDto.getPublicKey());
+        quittungDao.setToken(quittungDto.getToken());
+        return quittungDao;
+
     }
 }

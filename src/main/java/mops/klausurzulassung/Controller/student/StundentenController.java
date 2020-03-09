@@ -1,6 +1,7 @@
 package mops.klausurzulassung.Controller.student;
 
 import mops.klausurzulassung.Domain.Account;
+import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Services.Token.TokenverifikationService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
@@ -66,7 +67,7 @@ public class StundentenController {
       String matrikelnummer,
       String token,
       String fach)
-      throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+          throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, NoPublicKeyInDatabaseException {
 
     boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token);
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));

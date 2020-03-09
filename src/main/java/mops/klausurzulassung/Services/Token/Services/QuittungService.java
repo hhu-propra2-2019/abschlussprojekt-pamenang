@@ -1,6 +1,8 @@
 package mops.klausurzulassung.Services.Token.Services;
 
-import mops.klausurzulassung.Services.Token.Entities.Quittung;
+import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
+import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
+import mops.klausurzulassung.Services.Token.Entities.QuittungDao;
 import mops.klausurzulassung.Services.Token.Repositories.QuittungRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,26 +19,26 @@ public class QuittungService {
         this.quittungRepository = quittungRepository;
     }
 
-    public PublicKey findPublicKeyByQuittung(String matr, String fachID){
-        for(Quittung quittung : quittungRepository.findAll()){
-            if(quittung.getMatrikelnummer().equals(matr) && quittung.getFachID().equals(fachID)){
-                return quittung.getPublicKey();
+    public PublicKey findPublicKeyByQuittung(String matr, String fachID) throws NoPublicKeyInDatabaseException {
+        for(QuittungDao quittungDao : quittungRepository.findAll()){
+            if(quittungDao.getMatrikelnummer().equals(matr) && quittungDao.getFachID().equals(fachID)){
+                return quittungDao.getPublicKey();
             }
         }
-        return null;
+        throw new NoPublicKeyInDatabaseException("Public Key wurde nicht Datenbank gefunden!");
     }
 
-    public String findTokenByQuittung(String matr, String fachID){
-        for(Quittung quittung : quittungRepository.findAll()){
-            if(quittung.getMatrikelnummer().equals(matr) && quittung.getFachID().equals(fachID)){
-                return quittung.getToken();
+    public String findTokenByQuittung(String matr, String fachID) throws NoTokenInDatabaseException {
+        for(QuittungDao quittungDao : quittungRepository.findAll()){
+            if(quittungDao.getMatrikelnummer().equals(matr) && quittungDao.getFachID().equals(fachID)){
+                return quittungDao.getToken();
             }
         }
-        return null;
+        throw new NoTokenInDatabaseException("Token wurde in der Datenbank nicht gefunden!");
     }
 
-    public void save(Quittung quittung) {
-        quittungRepository.save(quittung);
+    public void save(QuittungDao quittungDao) {
+        quittungRepository.save(quittungDao);
     }
 }
 
