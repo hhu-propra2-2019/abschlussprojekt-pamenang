@@ -141,8 +141,9 @@ public class ModulController {
       for (Student student : students) {
         System.out.println("Tokens werden generiert und verschickt!");
         String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
-        student.setToken(tokenString);
-        emailService.sendMail(student);
+        System.out.println("TEST "+tokenString);
+        //student.setToken(tokenString);
+        //emailService.sendMail(student);
       }
       csvService.writeCsvFile(id, students);
       setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");

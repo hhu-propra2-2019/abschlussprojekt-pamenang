@@ -30,7 +30,7 @@ public class QuittungDao {
     private PublicKey publicKey;
 
 
-    @Column(name = "Token")
+    @Column(name = "Token", length = 1000)
     private String token;
 
     @Id
