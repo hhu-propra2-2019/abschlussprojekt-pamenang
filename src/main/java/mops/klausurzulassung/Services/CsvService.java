@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class CsvService {
   public List<Student> getStudentListFromInputFile(MultipartFile multipartFile, Long id) throws IOException {
     List<Student> studentList = new ArrayList<>();
 
-    Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(new InputStreamReader(multipartFile.getInputStream()));
+    Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
 
     for (CSVRecord record : records) {
       studentList.add(createStudentFromInputStream(record, id));
@@ -68,7 +69,7 @@ public class CsvService {
 
   public void writeCsvFile(Long id, List<Student> students) throws IOException {
     File outputFile = new File("klausurliste_"+id+".csv");
-    FileWriter fileWriter = new FileWriter(outputFile);
+    FileWriter fileWriter = new FileWriter(outputFile, StandardCharsets.UTF_8);
     CSVWriter writer = new CSVWriter(fileWriter);
 
     Iterable<Student> altzugelassene = studentService.findByModulId(id);
