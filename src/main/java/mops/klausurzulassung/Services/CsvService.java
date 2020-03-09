@@ -68,7 +68,7 @@ public class CsvService {
   }
 
   public void writeCsvFile(Long id, List<Student> students) throws IOException {
-    File outputFile = new File("klausurliste.csv");
+    File outputFile = new File("klausurliste_"+id+".csv");
     FileWriter fileWriter = new FileWriter(outputFile);
     CSVWriter writer = new CSVWriter(fileWriter);
 

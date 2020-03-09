@@ -1,6 +1,7 @@
 package mops.klausurzulassung.organisatoren.Services;
 
 import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.organisatoren.Entities.Modul;
 import mops.klausurzulassung.organisatoren.Repositories.StudentRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +19,9 @@ public class StudentService {
 
   public void delete(Student student) {
     studentRepository.delete(student);
+  }
+
+  public void save(Student student) {
+    studentRepository.save(student);
   }
 }
