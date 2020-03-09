@@ -1,6 +1,6 @@
 package mops;
 
-import mops.klausurzulassung.Controller.student.StundentenController;
+import mops.klausurzulassung.Controller.student.StudentenController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,7 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class Studententest {
 
-  @MockBean StundentenController student;
+  @MockBean
+  StudentenController student;
   @Autowired private MockMvc mockMvc;
   @Autowired private WebApplicationContext context;
 

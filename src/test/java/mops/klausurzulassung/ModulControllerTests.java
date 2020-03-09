@@ -3,6 +3,7 @@ package mops.klausurzulassung;
 import mops.klausurzulassung.organisatoren.Entities.Modul;
 import mops.klausurzulassung.organisatoren.Services.ModulService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -42,6 +43,7 @@ public class ModulControllerTests {
     this.modulService = mock(ModulService.class);
   }
 
+  @Disabled
   @Test
   public void getMappingModulHinzufuegen() throws Exception {
     Modul propra1 = new Modul(1L, "ProPra1", "orga");

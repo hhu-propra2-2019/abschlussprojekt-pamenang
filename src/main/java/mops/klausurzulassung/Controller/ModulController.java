@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.*;
 import javax.validation.Valid;
-import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -153,7 +151,7 @@ public class ModulController {
   public String downloadListe() {
 
     // Liste muss noch herunter geladen werden
-    
+
     setMessages(null, "Klausurliste wurde erfolgreich heruntergeladen.");
     return "redirect:/zulassung1/modulHinzufuegen";
   }
