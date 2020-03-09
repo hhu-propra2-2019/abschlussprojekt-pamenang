@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+<html lang="en"
+      th:replace="~{mopslayout :: html(name='Klausurzulassung', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <title>Klausurzulassungssystem</title>
     <th:block th:fragment="headcontent">
         <!-- Links, Skripts, Styles hier einfügen! -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </th:block>
 </head>
 <body>
@@ -26,6 +28,91 @@
 </header>
 <main th:fragment="bodycontent">
     <!-- Restlichen Inhalt hier einfügen! -->
+    <div class="row h-100" style="margin-top: 5vh;">
+        <div class="col-md-12">
+            <div class="card" style="border-width: 0px;">
+                <div class="card-body text-center">
+                    <span class="h1">Willkommen im Klausurzulassungssystem</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row h-100" id="mainpageAuswahlMenue" style="margin-top: 5vh;">
+        <div class="col-md-12 text-center" style="margin-top: 2vh;">
+            <h2>Welche Rolle hast du ?</h2>
+        </div>
+        <div class="col-md-5 text-right" style="margin-top: 2vh;">
+            <button class="btn btn-secondary" onclick="changeFromMenueToStudent()" type="button">Student</button>
+        </div>
+        <div class="col-md-2 text-center" style="margin-top: 2vh;">
+            <h3>ODER</h3>
+        </div>
+        <div class="col-md-5 text-left" style="margin-top: 2vh;">
+            <button class="btn btn-secondary" onclick="changeFromMenueToOrganisator()" type="button">Organisator
+            </button>
+        </div>
+    </div>
+    <div class="row h-100" id="mainpageStudentInfo" style="display: none; margin-top: 5vh;">
+        <div class="col-md-12 h-100">
+            <div class="card text-center">
+                <div class="card-body">
+                    <span>Als Student kannst Du in unserem System deine Quittung einreichen.
+                    Mit dieser Quittung kannst du deine Altklausurzulassung bestätigen und dich
+                    damit dann, bei deinen Organisatoren, für eine Klausur im aktuellen Semester zulassen.
+                    Alle Quittungen sind modulspezifisch, somit musst Du die richtige Quittung zu
+                    dem Modul angeben. Deine Quittung hast Du, wenn du eine Zulassung erhalten hast
+                    bereits per E-Mail zugeschickt bekommen. Wenn du im Menü auf Student klickst, musst du dich
+                    anmelden und kommst dann zur Ansicht, wo Du dann deine Quittung einreichen kannst.</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 text-center h-100" style="margin-top: 2vh;">
+            <button class="btn btn-secondary" onclick="changeFromStudentToMenue()" type="button">Zurück zur Auswahl
+            </button>
+        </div>
+    </div>
+    <div class="row h-100" id="mainpageOrganisatorInfo" style="display: none; margin-top: 5vh;">
+        <div class="col-md-12 text-center">
+            <div class="card">
+                <div class="card-body">
+                    <span>Als Organisator kannst Du in unserem System deine Module, für die Du zuständig bist
+                    verwalten oder auch neue anlegen. In den Modulen kannst Du dann Zulassungslisten der
+                    Studenten hochladen, um automatisch Zulassungsquittungen zu generieren und diese per
+                    Email versenden zu lassen. Außerdem ist es möglich, Studenten einzeln zum jeweiligen
+                    Modul zu zulassen oder Quittungen der Studenten bei verlust abzufragen. Auch kann am Ende
+                    der Einreichungsphase der Studenten eine Liste generiert werden, auf welcher alle
+                    Studenten stehen, welche dieses Semester für die Klausur zugelassen sind (aktuelle Zulassung
+                        und Altzulassung).</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 text-center">
+            <button class="btn btn-secondary" onclick="changeFromOrganisatorToMenue()" type="button">Zurück zur Auswahl
+            </button>
+        </div>
+    </div>
 </main>
 </body>
 </html>
+<script>
+    function changeFromMenueToStudent() {
+        $("#mainpageAuswahlMenue").fadeOut(1000);
+        $("#mainpageStudentInfo").fadeIn(1000);
+    }
+
+    function changeFromMenueToOrganisator() {
+        $("#mainpageAuswahlMenue").fadeOut(1000);
+        $("#mainpageOrganisatorInfo").fadeIn(1000);
+    }
+
+    function changeFromStudentToMenue() {
+        $("#mainpageStudentInfo").fadeOut(1000);
+        $("#mainpageAuswahlMenue").fadeIn(1000);
+    }
+
+    function changeFromOrganisatorToMenue() {
+        $("#mainpageOrganisatorInfo").fadeOut(1000);
+        $("#mainpageAuswahlMenue").fadeIn(1000);
+    }
+</script>

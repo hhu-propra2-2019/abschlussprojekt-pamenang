@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 @Controller
+@RequestMapping("/zulassung1")
 public class MainController {
 
   EmailService emailService;
@@ -31,7 +33,7 @@ public class MainController {
         token.getAccount().getRoles());
   }
 
-  @GetMapping("/")
+  @GetMapping("")
   public String mainpage(KeycloakAuthenticationToken token, Model model) {
     if (token != null) {
       model.addAttribute("account", createAccountFromPrincipal(token));
