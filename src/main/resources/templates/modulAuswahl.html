@@ -90,7 +90,17 @@
 <body>
 <header>
     <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
-        <!-- Navigation als ungeordnete Liste mit einfachen Links hier einfügen! -->
+        <ul>
+            <li>
+                <a href="/" th:href="@{/}">Home</a>
+            </li>
+            <li>
+                <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
+            </li>
+            <li class="active">
+                <a href="/zulassung1/modulHinzufuegen" th:href="@{/zulassung1/modulHinzufuegen}">Orga</a>
+            </li>
+        </ul>
     </nav>
 </header>
 <main th:fragment="bodycontent">

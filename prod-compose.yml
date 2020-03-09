@@ -1,0 +1,19 @@
+version: "3.1"
+services:
+    
+
+  database:
+    image: mysql:5.7
+    volumes:
+      - ./main/resources:/docker-entrypoint-initdb.d/
+    ports:
+      - "3306:3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=test"
+      - "MYSQL_DATABASE=organisatoren"
+  make:
+    build: .
+    restart: always
+    command: sh -c "apk add bash && bash ./wait-for-it.sh database:3306 --timeout=20 -- java -Dspring.profiles.active=prod -jar app.jar"
+    ports:
+      - "8080:8080"
