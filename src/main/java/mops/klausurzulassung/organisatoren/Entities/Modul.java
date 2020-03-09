@@ -1,6 +1,8 @@
 package mops.klausurzulassung.organisatoren.Entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +12,8 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "moduls")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Modul {
 
   @Id
@@ -18,4 +22,7 @@ public class Modul {
 
   @Column(name = "name")
   private String name;
+
+  @Column(name = "owner")
+  private String owner;
 }

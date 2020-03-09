@@ -20,7 +20,7 @@ import java.security.SignatureException;
 
 @RequestMapping("/zulassung1")
 @Controller
-public class StundentenController {
+public class StudentenController {
 
   @Autowired TokenverifikationService tokenverifikation;
 
