@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Lob;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
 import java.security.PublicKey;
 
 @Data
@@ -20,20 +19,19 @@ import java.security.PublicKey;
 @Table(name = "quittungen")
 public class QuittungDao {
 
-    @Column(name = "Matrikelnummer")
-    private String matrikelnummer;
+  @Column(name = "Matrikelnummer")
+  private String matrikelnummer;
 
-    @Column(name = "FachID")
-    private String fachID;
+  @Column(name = "FachID")
+  private String fachID;
 
-    @Column(name = "PublicKey")
-    private PublicKey publicKey;
+  @Column(name = "PublicKey")
+  @Lob
+  private PublicKey publicKey;
 
+  @Column(name = "Token")
+  @Lob
+  private String token;
 
-    @Column(name = "Token")
-    private String token;
-
-    @Id
-    @GeneratedValue
-    private int id;
+  @Id @GeneratedValue private int id;
 }
