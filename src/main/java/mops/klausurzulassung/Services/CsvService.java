@@ -3,7 +3,6 @@ package mops.klausurzulassung.Services;
 
 import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Student;
-import mops.klausurzulassung.organisatoren.Services.StudentService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;

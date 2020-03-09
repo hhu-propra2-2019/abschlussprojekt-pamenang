@@ -1,8 +1,7 @@
-package mops.klausurzulassung.organisatoren.Services;
+package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Domain.Student;
-import mops.klausurzulassung.organisatoren.Entities.Modul;
-import mops.klausurzulassung.organisatoren.Repositories.StudentRepository;
+import mops.klausurzulassung.Repositories.StudentRepository;
 import org.springframework.stereotype.Service;
 
 @Service

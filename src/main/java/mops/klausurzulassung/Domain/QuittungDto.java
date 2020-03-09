@@ -1,4 +1,4 @@
-package mops.klausurzulassung.Services.Token.Entities;
+package mops.klausurzulassung.Domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

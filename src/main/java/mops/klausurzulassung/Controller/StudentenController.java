@@ -1,8 +1,8 @@
-package mops.klausurzulassung.Controller.student;
+package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
-import mops.klausurzulassung.Services.Token.TokenverifikationService;
+import mops.klausurzulassung.Services.TokenverifikationService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;

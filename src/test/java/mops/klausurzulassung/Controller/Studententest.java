@@ -1,6 +1,6 @@
-package mops;
+package mops.klausurzulassung.Controller;
 
-import mops.klausurzulassung.Controller.student.StudentenController;
+import mops.klausurzulassung.Controller.StudentenController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
