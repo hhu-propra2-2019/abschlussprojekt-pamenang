@@ -1,6 +1,6 @@
-package mops.klausurzulassung.organisatoren.Repositories;
+package mops.klausurzulassung.Repositories;
 
-import mops.klausurzulassung.organisatoren.Entities.Modul;
+import mops.klausurzulassung.Domain.Modul;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

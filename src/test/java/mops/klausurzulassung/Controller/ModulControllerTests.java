@@ -1,7 +1,7 @@
-package mops.klausurzulassung;
+package mops.klausurzulassung.Controller;
 
-import mops.klausurzulassung.organisatoren.Entities.Modul;
-import mops.klausurzulassung.organisatoren.Services.ModulService;
+import mops.klausurzulassung.Domain.Modul;
+import mops.klausurzulassung.Services.ModulService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

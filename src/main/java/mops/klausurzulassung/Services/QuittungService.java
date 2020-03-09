@@ -1,10 +1,10 @@
-package mops.klausurzulassung.Services.Token.Services;
+package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
-import mops.klausurzulassung.Services.Token.Entities.QuittungDao;
-import mops.klausurzulassung.Services.Token.Entities.QuittungDto;
-import mops.klausurzulassung.Services.Token.Repositories.QuittungRepository;
+import mops.klausurzulassung.Domain.QuittungDao;
+import mops.klausurzulassung.Domain.QuittungDto;
+import mops.klausurzulassung.Repositories.QuittungRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

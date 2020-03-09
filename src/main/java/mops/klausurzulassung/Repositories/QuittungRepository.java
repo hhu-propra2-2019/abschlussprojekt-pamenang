@@ -1,8 +1,7 @@
-package mops.klausurzulassung.Services.Token.Repositories;
+package mops.klausurzulassung.Repositories;
 
-import mops.klausurzulassung.Services.Token.Entities.QuittungDao;
+import mops.klausurzulassung.Domain.QuittungDao;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

@@ -1,4 +1,4 @@
-package mops.klausurzulassung.organisatoren.Repositories;
+package mops.klausurzulassung.Repositories;
 
 import mops.klausurzulassung.Domain.Student;
 import org.springframework.data.repository.CrudRepository;

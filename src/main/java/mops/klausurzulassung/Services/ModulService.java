@@ -1,7 +1,7 @@
-package mops.klausurzulassung.organisatoren.Services;
+package mops.klausurzulassung.Services;
 
-import mops.klausurzulassung.organisatoren.Entities.Modul;
-import mops.klausurzulassung.organisatoren.Repositories.ModulRepository;
+import mops.klausurzulassung.Domain.Modul;
+import mops.klausurzulassung.Repositories.ModulRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

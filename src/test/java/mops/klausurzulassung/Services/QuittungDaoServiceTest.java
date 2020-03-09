@@ -1,15 +1,14 @@
-package mops.klausurzulassung.Services.Token.Services;
+package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
-import mops.klausurzulassung.Services.Token.Entities.QuittungDao;
-import mops.klausurzulassung.Services.Token.Entities.QuittungDto;
-import mops.klausurzulassung.Services.Token.Repositories.QuittungRepository;
+import mops.klausurzulassung.Domain.QuittungDao;
+import mops.klausurzulassung.Repositories.QuittungRepository;
+import mops.klausurzulassung.Services.QuittungService;
 import org.junit.jupiter.api.Test;
 
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;

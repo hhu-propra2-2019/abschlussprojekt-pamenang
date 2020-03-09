@@ -1,7 +1,8 @@
-package mops.klausurzulassung.Services.Token;
+package mops.klausurzulassung.Services;
 
-import mops.klausurzulassung.Services.Token.Repositories.QuittungRepository;
-import mops.klausurzulassung.Services.Token.Services.QuittungService;
+import mops.klausurzulassung.Repositories.QuittungRepository;
+import mops.klausurzulassung.Services.QuittungService;
+import mops.klausurzulassung.Services.TokengenerierungService;
 import org.junit.jupiter.api.Test;
 
 import java.security.InvalidKeyException;

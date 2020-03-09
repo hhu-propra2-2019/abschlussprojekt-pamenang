@@ -1,8 +1,8 @@
-package mops.klausurzulassung.Services.Token;
+package mops.klausurzulassung.Services;
 
-import mops.klausurzulassung.Services.Token.Entities.QuittungDao;
-import mops.klausurzulassung.Services.Token.Entities.QuittungDto;
-import mops.klausurzulassung.Services.Token.Services.QuittungService;
+import mops.klausurzulassung.Domain.QuittungDao;
+import mops.klausurzulassung.Domain.QuittungDto;
+import mops.klausurzulassung.Services.QuittungService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
-package mops.klausurzulassung.Services.Token;
+package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
-import mops.klausurzulassung.Services.Token.Services.QuittungService;
+import mops.klausurzulassung.Services.QuittungService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

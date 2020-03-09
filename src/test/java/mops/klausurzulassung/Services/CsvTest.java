@@ -1,14 +1,15 @@
-package mops;
+package mops.klausurzulassung.Services;
 
 import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.CsvService;
-import mops.klausurzulassung.organisatoren.Services.StudentService;
+import mops.klausurzulassung.Services.StudentService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class CsvTest {
 
   private CsvService csvService;
