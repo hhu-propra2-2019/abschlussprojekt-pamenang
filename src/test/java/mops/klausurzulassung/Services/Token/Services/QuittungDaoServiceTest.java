@@ -1,6 +1,8 @@
 package mops.klausurzulassung.Services.Token.Services;
 
+import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Services.Token.Entities.QuittungDao;
+import mops.klausurzulassung.Services.Token.Entities.QuittungDto;
 import mops.klausurzulassung.Services.Token.Repositories.QuittungRepository;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class QuittungDaoServiceTest {
 
     @Test
-    public void testFindPublicKeyByQuittung() throws NoSuchAlgorithmException {
+    public void testFindPublicKeyByQuittung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException {
         QuittungRepository quittungRepository = mock(QuittungRepository.class);
         QuittungService quittungService = new QuittungService(quittungRepository);
         String matr = "1234567";
@@ -28,11 +30,14 @@ public class QuittungDaoServiceTest {
 
         //Einsetzen des PublicKeys in die Quittung
         PublicKey pK = keyPairGenerator.generateKeyPair().getPublic();
-        QuittungDao quittungDao = new QuittungDao(matr, fachID, pK, "1324235");
+        QuittungDao quittungDao = new QuittungDao(matr, fachID, pK, "1324235",1);
 
         //Suchen des PublicKeys in QuittungRepository
-        QuittungDao[] quittungen = {quittungDao};
-        when(quittungRepository.findAll()).thenReturn(Arrays.asList(quittungen));
+
+
+
+
+        when(quittungRepository.findByMatrikelnummerAndFachID(matr,fachID)).thenReturn(quittungDao);
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
 
         assertEquals(pK, publicKey);
