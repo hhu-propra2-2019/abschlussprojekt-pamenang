@@ -15,7 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class ModulAuswahlTests {
-  @Autowired private MockMvc mockMvc;
+
+  @Autowired
+  private MockMvc mockMvc;
 
   @Test
   public void fuerModulAuswahlAnmelden() throws Exception {

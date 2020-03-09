@@ -1,24 +1,37 @@
 package mops.klausurzulassung.Services.Token;
 
+import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
+import mops.klausurzulassung.Services.Token.Services.QuittungService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
 import java.security.SignatureException;
+import java.security.PublicKey;
+import java.security.Signature;
 
 @Service
 public class TokenverifikationService {
 
-    //WICHTIG!!!
-    //Key muss noch angepasst werden! s. Zeile 13
-    public boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException {
+    private final QuittungService quittungService;
+
+    @Autowired
+    public TokenverifikationService(QuittungService quittungService) {
+        this.quittungService = quittungService;
+    }
+
+    public boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
 
         String HashValue = matr+fachID;
-
+        PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
+        if(publicKey == null){
+            return false;
+        }
 
         Signature sign = Signature.getInstance("SHA256withRSA");
-        //sign.initVerify(/*publicKey*/);
+        sign.initVerify(publicKey);
         byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
 

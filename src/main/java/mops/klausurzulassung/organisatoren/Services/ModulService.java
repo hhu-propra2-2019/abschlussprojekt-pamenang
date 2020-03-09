@@ -1,4 +1,4 @@
-package mops.klausurzulassung.Services;
+package mops.klausurzulassung.organisatoren.Services;
 
 import mops.klausurzulassung.organisatoren.Entities.Modul;
 import mops.klausurzulassung.organisatoren.Repositories.ModulRepository;
@@ -16,6 +16,10 @@ public class ModulService {
 
   public Iterable<Modul> allModuls() {
     return modulRepository.findAll();
+  }
+
+  public Iterable<Modul> findByOwner(String name) {
+    return modulRepository.findByOwner(name);
   }
 
   public Optional<Modul> findById(Long id) {
