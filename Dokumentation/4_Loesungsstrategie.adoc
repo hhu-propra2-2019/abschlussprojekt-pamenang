@@ -1,5 +1,27 @@
 == Abschnitt 4 Lösungsstrategie
 === Aufgabe 4.1 Einstieg
+
+[cols="1,1" options="header"]
+|===
+|Qualitätsziel | Ansätze in der Architektur
+|Einfache Benutzung | Durch möglichst einfache und minimalistisch gehaltene Benutzeroberfläche
+|Übersichtliche Oberfläche| Geht einher mit der einfachen Benutzung
+|Zuverlässig| Durch Testabdeckung wird die Zuverlässigkeit geprüft
+|===
+
 === Aufgabe 4.2 Aufbau
-=== Aufgabe 4.3 Spielstrategie
-=== Aufgabe 4.4 Anbindung
+
+Das Klausurzulassungssystem lässt sich aus folgenden Bestandteilen grob zusammensetzen:
+
+- Anbindung an die Benutzeroberfläche
+- Tokengenerierung/ -verifikation
+- Datenbank
+
+Die Datenbank dient zur Speicherung des Studenten, des Tokens und des Organisatoren.
+Die Tokengenerierung speichert den Key zur Entschlüsselung des Tokens, mit dem Studenten,
+in der Datenbank und die Tokenverifikation greift darauf zu.
+Dies alles ist dann über den Organisator und Studenten auch an die Benutzeroberfläche angeschlossen.
+
+=== Aufgabe 4.3 Anbindung
+
+Das Klausurzulassungssystem besitzt eine grafische Benutzeroberfläche. Durch mehrere Controller wird die Lokǵik mit der Oberfläche verbunden.
