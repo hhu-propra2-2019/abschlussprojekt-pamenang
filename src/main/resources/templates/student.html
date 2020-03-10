@@ -28,32 +28,16 @@
 <main th:fragment="bodycontent">
     <h1>Klausuranmeldung</h1>
     <div th:if="${meldung}">
-        <div th:if="${success}">
-
-            <form>
-                <input id="fname" name="fname" style="    width: 100%;
-                                  padding: 12px 20px;
-                                  margin: 8px 0;
-                                  box-sizing: border-box;
-                                  border: none;
-                                  background-color: #3CBC8D;
-                                  color: white; " type="text"
-                       value="Erfolgreich zur Klausur angemeldet!">
-            </form>
+        <div th:classappend="${!success} ? 'alert alert-danger'" th:text="${fehlerText}">
+            Altzulassung nicht erfolgreich!
         </div>
-        <div th:if="${!success}">
-            <form>
-                <input id="fname" name="fname" style="    width: 100%;
-                                  padding: 12px 20px;
-                                  margin: 8px 0;
-                                  box-sizing: border-box;
-                                  border: none;
-                                  background-color: #ef291f;
-                                  color: white; " type="text" value="Anmeldung fehlgeschlagen!">
-            </form>
+
+        <div th:classappend="${success} ? 'alert alert-success'"
+             th:text="${successText}">
+            Altzulassung erfolgreich!
         </div>
     </div>
-    <form th:action="@{/zulassung1/student}" method="post">
+    <form method="post" th:action="@{/zulassung1/student}">
 
         <table>
 
@@ -61,7 +45,7 @@
                 <td>Matrikelnummer:</td>
                 <td>
 
-                    <input type="text" name="matrikelnummer" th:value="${matrikelnr}">
+                    <input name="matrikelnummer" th:value="${matrikelnr}" type="text">
 
 
                 </td>
@@ -73,7 +57,7 @@
                 <td>Vorname:</td>
                 <td>
 
-                    <input type="text" name="vorname" th:value="${vorname}">
+                    <input name="vorname" th:value="${vorname}" type="text">
 
 
                 </td>
@@ -85,7 +69,7 @@
                 <td>Nachname:</td>
                 <td>
 
-                    <input type="text" name="nachname" th:value="${nachname}">
+                    <input name="nachname" th:value="${nachname}" type="text">
 
 
                 </td>
@@ -97,7 +81,7 @@
                 <td>E-Mail Adresse:</td>
                 <td>
 
-                    <input type="text" name="email" th:value="${email}">
+                    <input name="email" th:value="${email}" type="text">
 
 
                 </td>
@@ -106,10 +90,10 @@
                 </td>
             </tr>
             <tr>
-                <td>FachID: </td>
+                <td>FachID:</td>
                 <td>
 
-                    <input type="text" name="fach" th:value="${fachName}">
+                    <input name="fach" th:value="${fachName}" type="text">
 
                 </td>
                 <td>
@@ -119,7 +103,7 @@
             <tr>
                 <td>Token:</td>
                 <td>
-                    <input type="text" name="token" th:value="${zulassungToken}">
+                    <input name="token" th:value="${zulassungToken}" type="text">
 
                 </td>
                 <td>
