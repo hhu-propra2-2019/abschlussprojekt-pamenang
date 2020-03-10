@@ -1,0 +1,71 @@
+== Abschnitt 1 Einführung und Ziele
+==== Aufgabe 1.1 Aufgabenstellung
+
+Was ist das Klausurzulassungssystem?
+
+- Verwaltung von Altklausurzulassungen
+- Versenden von Klausurzulassungen per Mail
+- Zulassungen verschlüsselt über Tokensystem
+- Einreichung von Token für Klausurzulassungen
+
+Wesentliche Features:
+
+- Asymetrische, kryptographische Tokengenerierung
+- Automatische Emailversendung
+
+==== Aufgabe 1.2 Qualitätsziele
+==== Aufgabe 1.3 Stakeholder
+
+== Abschnitt 2 Randbedingungen
+==== Aufgabe 2.1 Technisch
+==== Aufgabe 2.2 Organisatorisch
+==== Aufgabe 2.3 Konventionen
+
+== Abschnitt 3 Kontextabgrenzung
+==== Aufgabe 3.1 Fachlicher Kontext
+==== Aufgabe 3.2 Technischer Kontext
+
+== Abschnitt 4 Lösungsstrategie
+==== Aufgabe 4.1 Einstieg
+==== Aufgabe 4.2 Aufbau
+==== Aufgabe 4.3 Spielstrategie
+==== Aufgabe 4.4 Anbindung
+
+== Abschnitt 5 Bausteinsicht
+==== Aufgabe 5.1 Ebene 1
+==== Aufgabe 5.2 XBoard-Protokoll
+==== Aufgabe 5.3 Spielregeln
+==== Aufgabe 5.4 Eröffnung
+
+
+== Abschnitt 6 Laufzeitsicht
+
+
+== Abschnitt 7 Verteukungssicht
+==== Aufgabe 7.1 Infrastrukutr Windows
+
+== Abschnitt 8 Konzepte
+==== Aufgabe 8.1 Abhängigkeiten
+==== Aufgabe 8.2 Domänenmodell
+==== Aufgabe 8.3 Benutzeroberfläche
+==== Aufgabe 8.4 Validierung
+==== Aufgabe 8.5 Fehlerbehandlung
+==== Aufgabe 8.6 Protokollierung
+==== Aufgabe 8.7 Testbarkeit
+
+== Abschnitt 9 Entscheidungen
+==== Aufgabe 9.1 Frontend-Anbindung
+
+== Abschnitt 10 Qualitätsszenarien
+==== Aufgabe 10.1 Qualitätsbaum
+==== Aufgabe 10.2 Bewertungsszenarien
+
+== Abschnitt 11 Risiken
+==== Aufgabe 11.1 Anbindung Frontend
+==== AUfgabe 11.2 Aufwand
+
+== Abschnitt 12 Glossar
+==== Aufgabe 12.1 Einstieg
+==== Aufgabe 12.2 Begriffe
+
+
