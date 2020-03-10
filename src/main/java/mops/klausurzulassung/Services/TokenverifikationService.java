@@ -13,6 +13,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.util.Arrays;
+import java.util.Base64;
 
 @Service
 public class TokenverifikationService {
@@ -38,7 +40,8 @@ public class TokenverifikationService {
         sign.initVerify(publicKey);
         byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
-        byte[] tokenByte = hexStringToByteArray(token);
+        byte[] tokenByte = Base64.getDecoder().decode(token);
+        System.out.println(Arrays.toString(tokenByte));
         logger.debug("Token Verifiziert");
         return sign.verify(tokenByte);
     }
