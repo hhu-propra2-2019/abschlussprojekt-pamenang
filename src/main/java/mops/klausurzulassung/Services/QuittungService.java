@@ -21,7 +21,7 @@ public class QuittungService {
     }
 
     public PublicKey findPublicKeyByQuittung(String matr, String fachID) throws NoPublicKeyInDatabaseException {
-        QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndFachID(matr,fachID);
+        QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndModulId(matr,fachID);
         if(quittungDao==null) throw new NoPublicKeyInDatabaseException("kein Public Key in Database");
         else return loadQuittungDto(quittungDao).getPublicKey();
 
@@ -29,7 +29,7 @@ public class QuittungService {
 
     private QuittungDto loadQuittungDto(QuittungDao quittungDao) {
         QuittungDto quittungDto = new QuittungDto();
-        quittungDto.setFachID(quittungDao.getFachID());
+        quittungDto.setModulId(quittungDao.getModulId());
         quittungDto.setMatrikelnummer(quittungDao.getMatrikelnummer());
         quittungDto.setPublicKey(quittungDao.getPublicKey());
         quittungDto.setToken(quittungDao.getToken());
@@ -38,11 +38,10 @@ public class QuittungService {
 
     public String findTokenByQuittung(String matr, String fachID) throws NoTokenInDatabaseException {
 
-        QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndFachID(matr,fachID);
+        QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndModulId(matr,fachID);
         if(quittungDao==null) throw new NoTokenInDatabaseException("Token wurde in der Datenbank nicht gefunden!");
 
         else return loadQuittungDto(quittungDao).getToken();
-
     }
 
     public void save(QuittungDao quittungDao) {

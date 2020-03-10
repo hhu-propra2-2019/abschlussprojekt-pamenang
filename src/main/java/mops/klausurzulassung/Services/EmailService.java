@@ -30,7 +30,10 @@ public class EmailService {
             + " "
             + student.getNachname()
             + ",\n hiermit erhälst du"
-            + " dein Klausurzulassungtoken. Dieses lautet: \n"
+            + " dein Klausurzulassungtoken für das Modul "
+            + student.getFachname() +" mit der Modul-ID "
+            + student.getModulId() +
+            ".\n Dieses lautet: \n"
             + student.getToken());
     javaMailSender.send(msg);
   }

@@ -22,8 +22,8 @@ public class QuittungDao {
   @Column(name = "Matrikelnummer")
   private String matrikelnummer;
 
-  @Column(name = "FachID")
-  private String fachID;
+  @Column(name = "ModuId")
+  private String modulId;
 
   @Column(name = "PublicKey")
   @Lob
