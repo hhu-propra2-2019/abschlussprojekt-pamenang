@@ -1,2 +1,17 @@
 == Abschnitt 9 Entscheidungen
-=== Aufgabe 9.1 Frontend-Anbindung
+=== Aufgabe 9.1 Verifizierung der Zulassungen
+
+Altklausurzulassungen sowie Neuzulassungen müssen sich über die Plattform
+für die Klausur zulassen und verifizieren. Neuzulassungen werden nicht direkt auf die Zulassungsliste
+geschrieben.
+
+=== Aufgabe 9.2 Verschlüsselungsmethode
+
+Wir haben uns für SHA256 mit RSA entschieden, da wir auf eine sichere Methode achten mussten.
+Hash-Methoden zu kleineren Basen wurden schon entschlüsselt, deshalb haben wir uns auf SHA256
+geeinigt.
+
+=== Aufgabe 9.3 Anmeldeliste
+
+Anmeldeliste werden weder erstellt noch gespeichert, da dies nach reichlicher Überlegung
+und Absprache mit dem Dozenten nicht in unser Aufgabengebiet fällt.

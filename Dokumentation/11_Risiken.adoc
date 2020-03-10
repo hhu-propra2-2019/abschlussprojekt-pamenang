@@ -1,3 +1,13 @@
 == Abschnitt 11 Risiken
-=== Aufgabe 11.1 Anbindung Frontend
-=== AUfgabe 11.2 Aufwand
+=== Aufgabe 11.1 Tokenverschlüsselung
+
+Token wird über SHA256 mit RSA verschlüsselt. Falls SHA256 dekodiert werden kann, ist
+es nicht mehr sicher.
+
+=== Aufgabe 11.2 Kontrolle über Organisator
+
+Organisator ist in der Verantwortung und Kontrolle über alle Funktionen der Anwendung.
+Das impliziert das der Organisator sicherstellen muss, das die Rechte nicht an Außenstehende
+fallen und die Plattform für fremde Zwecke genutzt wird. Da die Kontrolle dem Organisator obliegt
+und nicht der Anwendung, kann die Plattform keine Verantwortung dafür übernehmen, dennoch ist dies ein
+Risiko für die Anwendung.
