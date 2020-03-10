@@ -37,7 +37,7 @@ public class StudentenController {
         token.getAccount().getRoles());
   }
 
-  @Secured({"ROLE_studentin","ROLE_orga"})
+  @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{zulassungToken}/{fachName}/{matrikelnr}")
   public String studentansichtMitToken(
       @PathVariable String zulassungToken,
@@ -50,27 +50,26 @@ public class StudentenController {
     model.addAttribute("zulassungToken", zulassungToken);
     model.addAttribute("matrikelnr", matrikelnr);
     model.addAttribute("fachName", fachName);
-    model.addAttribute("student",false);
-    if(token.getAccount().getPrincipal().toString().equals("studentin"))
-      model.addAttribute("student",true);
+    model.addAttribute("student", false);
+    if (token.getAccount().getPrincipal().toString().equals("studentin"))
+      model.addAttribute("student", true);
     return "student";
   }
 
   @GetMapping("/student")
-  @Secured({"ROLE_studentin","ROLE_orga"})
+  @Secured({"ROLE_studentin", "ROLE_orga"})
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
     System.out.println(token.getAccount().getPrincipal());
-    model.addAttribute("student",false);
-    if(token.getAccount().getPrincipal().toString().equals("studentin"))
-      model.addAttribute("student",true);
+    model.addAttribute("student", false);
+    if (token.getAccount().getPrincipal().toString().equals("studentin"))
+      model.addAttribute("student", true);
     return "student";
   }
 
-
   @PostMapping("/student")
-  @Secured({"ROLE_studentin","ROLE_orga"})
+  @Secured({"ROLE_studentin", "ROLE_orga"})
   public String empfangeDaten(
       KeycloakAuthenticationToken keycloakAuthenticationToken,
       Model model,
@@ -102,9 +101,9 @@ public class StudentenController {
     model.addAttribute("fehlerText", "Altzulassung nicht erfolgreich!");
     model.addAttribute("successText", "Altzulassung erfolgreich!");
     model.addAttribute("meldung", true);
-    model.addAttribute("student",false);
-    if(keycloakAuthenticationToken.getAccount().getPrincipal().toString().equals("studentin"))
-      model.addAttribute("student",true);
+    model.addAttribute("student", false);
+    if (keycloakAuthenticationToken.getAccount().getPrincipal().toString().equals("studentin"))
+      model.addAttribute("student", true);
     return "student";
   }
 }

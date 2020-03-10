@@ -28,13 +28,10 @@
 <main th:fragment="bodycontent">
     <h1>Klausuranmeldung</h1>
     <div th:if="${meldung}">
-        <div th:classappend="${!success} ? 'alert alert-danger'" th:text="${fehlerText}">
-            Altzulassung nicht erfolgreich!
+        <div th:classappend="${!success} ? 'alert alert-danger'" th:if="${!success}" th:text="${fehlerText}">
         </div>
-
-        <div th:classappend="${success} ? 'alert alert-success'"
+        <div th:classappend="${success} ? 'alert alert-success'" th:if="${success}"
              th:text="${successText}">
-            Altzulassung erfolgreich!
         </div>
     </div>
     <form method="post" th:action="@{/zulassung1/student}">
