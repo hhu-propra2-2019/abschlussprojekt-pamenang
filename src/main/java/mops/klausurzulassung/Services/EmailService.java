@@ -37,7 +37,7 @@ public class EmailService {
             + " dein Klausurzulassungtoken. Dieses lautet: \n"
             + student.getToken()
             + "\n"
-            + generateValidTokenLink(student));
+            + "This is your e-mail body. It contains a link to <a href='http//www.google.com'>Google</a>.");
     System.out.println(msg.getText());
     javaMailSender.send(msg);
     logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
