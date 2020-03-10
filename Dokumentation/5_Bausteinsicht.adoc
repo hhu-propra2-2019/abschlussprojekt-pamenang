@@ -1,2 +1,24 @@
 == Abschnitt 5 Bausteinsicht
 === Aufgabe 5.1 Ebene 1
+
+    Das Klausurzulassungssystem fällt in 4 verschiedene Subsysteme.
+
+[cols="1,1" options="header"]
+|===
+|Subsystem | Kurzbeschreibung
+| Tokensystem| Erstellt und verifiziert Token
+| Organisatoren | Lädt Zulassungsliste hoch
+| Studenten| Verifiziert den Studententoken
+| Email-Service| Verschickt Emails an Studenten
+|===
+
+=== Aufgabe 5.2 Tokensystem
+==== Zweck/Verantwortlichkeit
+Dieses Subsystem ist zuständig für die Tokengenerierung- und verifikation. Das Subsystembekommt vom Organisatorensystem die Strings MatrNr und FachID übergeben, generiert einen Token und gibt einen String zurück. In der Tokenverifikation werden drei Strings übergeben die MatrNr, die FachID und der Token.
+
+
+=== Aufgabe 5.3 Organisatoren
+
+
+=== Aufgabe 5.4 Studenten
+=== Aufgabe 5.5 Email-Service
