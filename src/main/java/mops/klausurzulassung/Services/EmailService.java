@@ -29,11 +29,12 @@ public class EmailService {
   public void sendMail(Student student, long id) {
     try {
       String body =
-          "Dear, <br/><b>Greetings</b><br/>link <a href='http://test.com'></a> <br/><a "
-              + "href='https://google.com'></a>";
+          "Dear, <br/><b>Greetings</b><br/>link: <a href='http://test.com'> Link</a> <br/><a "
+              + "href='https://google.com'>Link2</a>";
       MimeMessage message = this.javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
-      helper.setTo(student.getEmail());
+      helper.setFrom("pamenang@web.de");
+      helper.setTo("tobi.as99@web.de");
       helper.setSubject("Klausurzulassungstoken " + student.getFachname());
       helper.setText(body, true);
       this.javaMailSender.send(message);
@@ -78,5 +79,4 @@ public class EmailService {
         .path(studnachname)
         .toUriString();
   }
-
 }
