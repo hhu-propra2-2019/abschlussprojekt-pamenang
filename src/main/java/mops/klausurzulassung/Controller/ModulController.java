@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
+@SessionScope
 @RequestMapping("/zulassung1")
 public class ModulController {
 
@@ -74,7 +76,12 @@ public class ModulController {
     model.addAttribute("modul", currentModul);
     model.addAttribute("error", errorMessage);
     model.addAttribute("success", successMessage);
+    resetMessages();
     return "modulAuswahl";
+  }
+
+  private void resetMessages() {
+    setMessages(null, null);
   }
 
   @Secured("ROLE_orga")
@@ -132,7 +139,7 @@ public class ModulController {
     model.addAttribute("fristAbgelaufen", false);
     model.addAttribute("error", errorMessage);
     model.addAttribute("success", successMessage);
-
+    resetMessages();
     return "modulAnsicht";
   }
 
