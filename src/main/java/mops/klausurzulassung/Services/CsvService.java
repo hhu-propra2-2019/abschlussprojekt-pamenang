@@ -4,6 +4,8 @@ import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Student;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +21,7 @@ import java.util.List;
 public class CsvService {
 
   private StudentService studentService;
+  private Logger logger = LoggerFactory.getLogger(CsvService.class);
 
   public CsvService(StudentService studentService) {
     this.studentService = studentService;
@@ -36,23 +39,22 @@ public class CsvService {
   public List<Student> getStudentListFromInputFile(MultipartFile multipartFile, Long id)
       throws IOException {
     List<Student> studentList = new ArrayList<>();
-
     Iterable<CSVRecord> records =
         CSVFormat.DEFAULT.parse(
             new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
-
     for (CSVRecord record : records) {
       studentList.add(createStudentFromInputStream(record, id));
     }
+
+    logger.debug("Studentenliste wurde aus Csv-Datei erstellt!");
+
     return studentList;
   }
 
   public void putStudentOntoList(CSVWriter writer, Student student) {
-    String[] list = {
-      String.valueOf(student.getMatrikelnummer()), student.getNachname(), student.getVorname()
-    };
-
+    String[] list = {String.valueOf(student.getMatrikelnummer()), student.getNachname(), student.getVorname()};
     writer.writeNext(list, false);
+    logger.debug("Studenten in Csv-Liste geschrieben");
   }
 
   public Student createStudentFromInputStream(CSVRecord record, Long id) {
@@ -71,23 +73,30 @@ public class CsvService {
     return new Student(vorname, nachname, email, matrikelnummer, modulId, fachname, token);
   }
 
-  public void writeCsvFile(Long id, List<Student> students) throws IOException {
-    File outputFile = new File("klausurliste_" + id + ".csv");
-    FileWriter fileWriter = new FileWriter(outputFile);
-    CSVWriter writer = new CSVWriter(fileWriter);
+  public void writeCsvFile(Long id, List<Student> students)  {
+    File outputFile = new File("klausurliste_"+id+".csv");
+    FileWriter fileWriter = null;
 
-    Iterable<Student> altzugelassene = studentService.findByModulId(id);
-
-    if (altzugelassene != null) {
-      for (Student student : altzugelassene) {
-        students.add(student);
+    try {
+      fileWriter = new FileWriter(outputFile);
+      CSVWriter writer = new CSVWriter(fileWriter);
+      Iterable<Student> altzugelassene = studentService.findByModulId(id);
+      if (altzugelassene != null) {
+        for (Student student : altzugelassene) {
+          students.add(student);
+        }
       }
+
+      for (Student student : students) {
+        putStudentOntoList(writer, student);
+        writer.flush();
+      }
+      writer.close();
+    } catch (IOException e) {
+      logger.error(e.getMessage());
     }
 
-    for (Student student : students) {
-      putStudentOntoList(writer, student);
-      writer.flush();
-    }
-    writer.close();
+
+
   }
 }

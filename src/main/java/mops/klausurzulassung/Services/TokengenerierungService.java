@@ -3,6 +3,8 @@ package mops.klausurzulassung.Services;
 import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Domain.QuittungDto;
 import mops.klausurzulassung.Services.QuittungService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.security.SignatureException;
 @Service
 public class TokengenerierungService {
 
+    private Logger logger = LoggerFactory.getLogger(TokengenerierungService.class);
     private final QuittungService quittungService;
 
     @Autowired
@@ -37,10 +40,11 @@ public class TokengenerierungService {
     public String erstellenToken(String matr, String fachID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
         String HashValue = erstellenHashValue(matr, fachID);
-
         KeyPair pair = KeyPaarGenerierung();
         PrivateKey privateKey = pair.getPrivate();
         Signature sign = Signature.getInstance("SHA256withRSA");
+        logger.debug("Sign SHA256 with RSA");
+
         sign.initSign(privateKey);
         byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
@@ -48,10 +52,12 @@ public class TokengenerierungService {
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
+
         QuittungDto quittungDto = new QuittungDto(matr, fachID, publicKey, bytesToHex(token));
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
+        logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
 
         return bytesToHex(token);
     }
@@ -59,6 +65,7 @@ public class TokengenerierungService {
     private KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
         keyPairGen.initialize(2048);
+        logger.debug("Generiere KeyPaar");
         return keyPairGen.generateKeyPair();
     }
 
