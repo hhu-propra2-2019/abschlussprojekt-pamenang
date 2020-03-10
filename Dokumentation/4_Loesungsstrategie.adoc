@@ -1,0 +1,5 @@
+== Abschnitt 4 Lösungsstrategie
+=== Aufgabe 4.1 Einstieg
+=== Aufgabe 4.2 Aufbau
+=== Aufgabe 4.3 Spielstrategie
+=== Aufgabe 4.4 Anbindung
