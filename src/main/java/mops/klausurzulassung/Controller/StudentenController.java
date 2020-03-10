@@ -99,6 +99,8 @@ public class StudentenController {
     }
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
+    model.addAttribute("fehlerText", "Altzulassung nicht erfolgreich!");
+    model.addAttribute("successText", "Altzulassung erfolgreich!");
     model.addAttribute("meldung", true);
     model.addAttribute("student",false);
     if(keycloakAuthenticationToken.getAccount().getPrincipal().toString().equals("studentin"))
