@@ -6,9 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
@@ -24,6 +27,20 @@ public class EmailService {
   }
 
   public void sendMail(Student student, long id) {
+    try {
+      String body =
+          "Dear, <br/><b>Greetings</b><br/>link <a href='http://test.com'></a> <br/><a "
+              + "href='https://google.com'></a>";
+      MimeMessage message = this.javaMailSender.createMimeMessage();
+      MimeMessageHelper helper = new MimeMessageHelper(message, true);
+      helper.setTo(student.getEmail());
+      helper.setSubject("Klausurzulassungstoken " + student.getFachname());
+      helper.setText(body, true);
+      this.javaMailSender.send(message);
+    } catch (MessagingException e1) {
+      e1.printStackTrace();
+    }
+    /*
     SimpleMailMessage msg = new SimpleMailMessage();
     msg.setFrom(FROM_EMAIL);
     msg.setTo(student.getEmail());
@@ -39,7 +56,7 @@ public class EmailService {
             + "\n"
             + generateValidTokenLink(student, id));
     System.out.println(msg.getText());
-    javaMailSender.send(msg);
+    javaMailSender.send(msg);*/
     logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
   }
 
