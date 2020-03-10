@@ -129,7 +129,7 @@ public class ModulController {
     model.addAttribute("modul", name);
     model.addAttribute("id", id);
     model.addAttribute("student", new Student("", "", "", null, id, null, null));
-    model.addAttribute("papierZulassung", true);
+    model.addAttribute("papierZulassung", false);
     model.addAttribute("error", errorMessage);
     model.addAttribute("success", successMessage);
 
@@ -187,7 +187,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
-  public String altzulassungHinzufuegen(@ModelAttribute @Valid Student student, Boolean papierZulasssung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException, NoPublicKeyInDatabaseException {
+  public String altzulassungHinzufuegen(@ModelAttribute @Valid Student student, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException, NoPublicKeyInDatabaseException {
     model.addAttribute("account", createAccountFromPrincipal(token));
 
     String email = student.getEmail();
@@ -197,7 +197,7 @@ public class ModulController {
     student.setModulId(id);
 
     try {
-      System.out.println("Papier 1: "+papierZulasssung);
+      System.out.println("Papier 1: "+papierZulassung);
       String tokenString = quittungService.findTokenByQuittung(matnr.toString(), id.toString());
 
       student.setToken(tokenString);
@@ -205,15 +205,13 @@ public class ModulController {
       student.setFachname(modulname);
       studentService.save(student);
       setMessages(null, "Student "+matnr+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
-      System.out.println("EMAILS verschickt!");
-      //emailService.sendMail(student);
+      emailService.sendMail(student);
 
     } catch (NoTokenInDatabaseException e) {
       System.out.println("Exception: "+e);
       System.out.println("Catch");
-      System.out.println("Papier: "+papierZulasssung);
-      if (papierZulasssung != null) {
-        System.out.println("Hier wollen wir hin!!!!");
+      System.out.println("Papier: "+papierZulassung);
+      if (papierZulassung == true) {
         erstelleTokenUndSendeEmail(student, student.getModulId());
       } else {
         setMessages("Student " + matnr + " hat keine Zulassung in diesem Modul!", null);
@@ -234,17 +232,16 @@ public class ModulController {
 
       String modulname = modulService.findById(id).get().getName();
       student.setFachname(modulname);
-      System.out.println("EMAILS !");
-      //emailService.sendMail(student);
+      emailService.sendMail(student);
 
     } catch (NoPublicKeyInDatabaseException e){
       String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
       student.setToken(tokenString);
+      String modulname = modulService.findById(id).get().getName();
+      student.setFachname(modulname);
+      studentService.save(student);
 
-    String modulname = modulService.findById(id).get().getName();
-    student.setFachname(modulname);
-      System.out.println("Hallo EMAILS !");
-    //emailService.sendMail(student);
+      emailService.sendMail(student);
     }
   }
 

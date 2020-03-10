@@ -157,8 +157,8 @@
                               th:if="${#fields.hasErrors('email')}"></span>
                     </div>
                     <div>
-                        <input id="papierZulassung" name="papierZulassung" th:checked="${papierZulassung}"
-                               type="checkbox" value="">
+                        <input id="papierZulassung" name="papierZulassung"
+                               type="checkbox" th:selected="${papierZulassung}">
                         <label for="papierZulassung">Student hat Zulassung auf Papier</label>
                     </div>
                     <div class="buttonModal">
