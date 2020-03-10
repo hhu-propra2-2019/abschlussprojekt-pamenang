@@ -37,8 +37,8 @@ public class StudentenController {
         token.getAccount().getRoles());
   }
 
+  @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{zulassungToken}/{fachName}/{matrikelnr}")
-  @Secured("ROLE_studentin")
   public String studentansichtMitToken(
       @PathVariable String zulassungToken,
       @PathVariable String fachName,
@@ -50,21 +50,26 @@ public class StudentenController {
     model.addAttribute("zulassungToken", zulassungToken);
     model.addAttribute("matrikelnr", matrikelnr);
     model.addAttribute("fachName", fachName);
-
+    model.addAttribute("student", false);
+    if (token.getAccount().getPrincipal().toString().equals("studentin"))
+      model.addAttribute("student", true);
     return "student";
   }
 
   @GetMapping("/student")
-  @Secured("ROLE_studentin")
+  @Secured({"ROLE_studentin", "ROLE_orga"})
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
-
+    System.out.println(token.getAccount().getPrincipal());
+    model.addAttribute("student", false);
+    if (token.getAccount().getPrincipal().toString().equals("studentin"))
+      model.addAttribute("student", true);
     return "student";
   }
 
   @PostMapping("/student")
-  @Secured("ROLE_studentin")
+  @Secured({"ROLE_studentin", "ROLE_orga"})
   public String empfangeDaten(
       KeycloakAuthenticationToken keycloakAuthenticationToken,
       Model model,
@@ -74,18 +79,31 @@ public class StudentenController {
       String vorname,
       String nachname,
       String email)
-          throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, NoPublicKeyInDatabaseException {
+      throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
+          NoPublicKeyInDatabaseException {
 
-    //boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token);
-    boolean value = true;
-    if(value){
-      Student student =new Student(vorname, nachname, email, Long.parseLong(matrikelnummer), Long.parseLong(fach),null, token);
+    boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token);
+    if (value) {
+      Student student =
+          new Student(
+              vorname,
+              nachname,
+              email,
+              Long.parseLong(matrikelnummer),
+              Long.parseLong(fach),
+              null,
+              token);
       StudentService studentenservice = new StudentService(studentRepository);
       studentenservice.save(student);
     }
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
+    model.addAttribute("fehlerText", "Altzulassung nicht erfolgreich!");
+    model.addAttribute("successText", "Altzulassung erfolgreich!");
     model.addAttribute("meldung", true);
+    model.addAttribute("student", false);
+    if (keycloakAuthenticationToken.getAccount().getPrincipal().toString().equals("studentin"))
+      model.addAttribute("student", true);
     return "student";
   }
 }
