@@ -4,7 +4,6 @@ import mops.klausurzulassung.Domain.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -29,13 +28,12 @@ public class EmailService {
   public void sendMail(Student student, long id) {
     try {
       String body =
-          "Dear, <br/><b>Greetings</b><br/>link: <a href='http://test.com'> Link</a> <br/><a "
-              + "href='https://google.com'>Link2</a>";
+          "Hallo, " + student.getVorname() + "<br> Klicke auf den Link, um dich zu zulassen: <a href='" + generateValidTokenLink(student, id) + "'>Zulassung erhalten</a>";
       MimeMessage message = this.javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
       helper.setFrom("pamenang@web.de");
-      helper.setTo("tobi.as99@web.de");
-      helper.setSubject("Klausurzulassungstoken " + student.getFachname());
+      helper.setTo(student.getEmail().toString());
+      helper.setSubject("Klausurzulassungstoken " + id);
       helper.setText(body, true);
       this.javaMailSender.send(message);
     } catch (MessagingException e1) {
