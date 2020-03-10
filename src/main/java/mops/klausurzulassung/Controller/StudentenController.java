@@ -41,12 +41,7 @@ public class StudentenController {
 
   @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{zulassungToken}/{fachName}/{matrikelnr}")
-  public String studentansichtMitToken(
-      @PathVariable String zulassungToken,
-      @PathVariable String fachName,
-      @PathVariable long matrikelnr,
-      Model model,
-      KeycloakAuthenticationToken token) {
+  public String studentansichtMitToken(@PathVariable String zulassungToken, @PathVariable String fachName, @PathVariable long matrikelnr, Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
     model.addAttribute("zulassungToken", zulassungToken);
@@ -72,29 +67,13 @@ public class StudentenController {
 
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
-  public String empfangeDaten(
-      KeycloakAuthenticationToken keycloakAuthenticationToken,
-      Model model,
-      String matrikelnummer,
-      String token,
-      String fach,
-      String vorname,
-      String nachname,
-      String email)
+  public String empfangeDaten(KeycloakAuthenticationToken keycloakAuthenticationToken, Model model, String matrikelnummer, String token, String fach, String vorname, String nachname, String email)
       throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
           NoPublicKeyInDatabaseException {
 
     boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token);
     if (value) {
-      Student student =
-          new Student(
-              vorname,
-              nachname,
-              email,
-              Long.parseLong(matrikelnummer),
-              Long.parseLong(fach),
-              null,
-              token);
+      Student student = new Student(vorname, nachname, email, Long.parseLong(matrikelnummer), Long.parseLong(fach), null, token);
       StudentService studentenservice = new StudentService(studentRepository);
       studentenservice.save(student);
     }
