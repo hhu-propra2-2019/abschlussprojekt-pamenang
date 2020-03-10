@@ -2,7 +2,6 @@ package mops.klausurzulassung.Domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,7 +9,6 @@ import javax.persistence.Lob;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity(name = "students")
 public class Student {
 
@@ -21,4 +19,5 @@ public class Student {
   private Long modulId;
   private String fachname;
   @Lob private String token;
+  public Student() {}
 }
