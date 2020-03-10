@@ -1,29 +1,23 @@
 package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
-import mops.klausurzulassung.Domain.Student;
-import mops.klausurzulassung.Services.CsvService;
-import mops.klausurzulassung.Services.EmailService;
-import mops.klausurzulassung.Services.TokengenerierungService;
 import mops.klausurzulassung.Domain.Modul;
-import mops.klausurzulassung.Services.ModulService;
-import mops.klausurzulassung.Services.StudentService;
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
+import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.Services.*;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -143,7 +137,7 @@ public class ModulController {
         String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
         System.out.println("TEST "+tokenString);
         student.setToken(tokenString);
-        emailService.sendMail(student);
+        //emailService.sendMail(student);
       }
       csvService.writeCsvFile(id, students);
       setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
@@ -151,15 +145,38 @@ public class ModulController {
     }
     return "redirect:/zulassung1/modul" + "/" + id;
   }
+  /*@RequestMapping(value = "/files/{file_name}", method = RequestMethod.GET)
+  @ResponseBody
+  public FileSystemResource getFile(@PathVariable("file_name") String fileName) {
+    return new FileSystemResource(myService.getFileFor(fileName));
+  }
+}*/
 
   @Secured("ROLE_orga")
-  @PostMapping("/modul/{id}/download")
-  public String downloadListe() {
-
-    // Liste muss noch herunter geladen werden
-
+  @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+  @ResponseBody
+  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
+    model.addAttribute("account", createAccountFromPrincipal(token));
     setMessages(null, "Klausurliste wurde erfolgreich heruntergeladen.");
-    return "redirect:/zulassung1/modulHinzufuegen";
+
+
+
+    response.setContentType("text/csv");
+    response.setHeader("Content-Disposition", "attachment; filename=\"klausurliste.csv\"");
+    try
+    {
+      OutputStream outputStream = response.getOutputStream();
+      File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
+      outputStream.write(klausurliste.toString().getBytes());
+      outputStream.flush();
+      outputStream.close();
+    }
+    catch(Exception e)
+    {
+      System.out.println(e.toString());
+    }
+    //return new FileSystemResource(new File("klausurliste_"+Long.toString(id)+".csv"));
+    //return "redirect:/zulassung1/modulHinzufuegen";
   }
 
   @Secured("ROLE_orga")
@@ -178,7 +195,7 @@ public class ModulController {
       System.out.println("Student:" + email + " " + vorname + " " + nachname + " " + matnr + " " + modulId);
       String tokenString = tokengenerierungService.erstellenToken(matnr.toString(), id.toString());
       student.setToken(tokenString);
-      emailService.sendMail(student);
+      //emailService.sendMail(student);
 
       setMessages(null, "Quittung für Student " + matnr + " ist neu verschickt worden!");
 
