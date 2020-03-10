@@ -145,12 +145,6 @@ public class ModulController {
     }
     return "redirect:/zulassung1/modul" + "/" + id;
   }
-  /*@RequestMapping(value = "/files/{file_name}", method = RequestMethod.GET)
-  @ResponseBody
-  public FileSystemResource getFile(@PathVariable("file_name") String fileName) {
-    return new FileSystemResource(myService.getFileFor(fileName));
-  }
-}*/
 
   @Secured("ROLE_orga")
   @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -159,10 +153,11 @@ public class ModulController {
     model.addAttribute("account", createAccountFromPrincipal(token));
     setMessages(null, "Klausurliste wurde erfolgreich heruntergeladen.");
 
-
+    String fachname = modulService.findById(id).get().getName();
 
     response.setContentType("text/csv");
-    response.setHeader("Content-Disposition", "attachment; filename=\"klausurliste.csv\"");
+    String newFilename = "\"klausurliste_"+fachname+".csv\"";
+    response.setHeader("Content-Disposition", "attachment; filename="+newFilename);
     try
     {
       OutputStream outputStream = response.getOutputStream();
