@@ -23,7 +23,7 @@ public class EmailService {
     this.javaMailSender = javaMailSender;
   }
 
-  public void sendMail(Student student) {
+  public void sendMail(Student student, long id) {
     SimpleMailMessage msg = new SimpleMailMessage();
     msg.setFrom(FROM_EMAIL);
     msg.setTo(student.getEmail());
@@ -37,17 +37,17 @@ public class EmailService {
             + " dein Klausurzulassungtoken. Dieses lautet: \n"
             + student.getToken()
             + "\n"
-            + "This is your e-mail body. It contains a link to <a href='http//www.google.com'>Google</a>.");
+            + generateValidTokenLink(student, id));
     System.out.println(msg.getText());
     javaMailSender.send(msg);
     logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
   }
 
   /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
-  public String generateValidTokenLink(Student student) {
+  public String generateValidTokenLink(Student student, long id) {
     String studentAddUri = "/zulassung1/student/";
     String token = student.getToken() + "/";
-    String fachID = student.getModulId() + "/";
+    String fachID = id + "/";
     String matrikelnr = Long.toString(student.getMatrikelnummer()) + "/";
     String studvorname = student.getVorname() + "/";
     String studnachname = student.getNachname() + "/";
