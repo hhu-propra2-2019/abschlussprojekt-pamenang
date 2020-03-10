@@ -50,6 +50,25 @@ public class StudentenController {
     model.addAttribute("zulassungToken", zulassungToken);
     model.addAttribute("matrikelnr", matrikelnr);
     model.addAttribute("fachName", fachName);
+    model.addAttribute("student",true);
+
+    return "student";
+  }
+
+  @GetMapping("/student/{zulassungToken}/{fachName}/{matrikelnr}")
+  @Secured("ROLE_orga")
+  public String studentansichtMitTokenorga(
+      @PathVariable String zulassungToken,
+      @PathVariable String fachName,
+      @PathVariable long matrikelnr,
+      Model model,
+      KeycloakAuthenticationToken token) {
+    model.addAttribute("account", createAccountFromPrincipal(token));
+    model.addAttribute("meldung", false);
+    model.addAttribute("zulassungToken", zulassungToken);
+    model.addAttribute("matrikelnr", matrikelnr);
+    model.addAttribute("fachName", fachName);
+    model.addAttribute("student",false);
 
     return "student";
   }
@@ -59,7 +78,16 @@ public class StudentenController {
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
+    model.addAttribute("student",true);
+    return "student";
+  }
 
+  @GetMapping("/student")
+  @Secured("ROLE_orga")
+  public String studentansichtorga(Model model, KeycloakAuthenticationToken token) {
+    model.addAttribute("account", createAccountFromPrincipal(token));
+    model.addAttribute("meldung", false);
+    model.addAttribute("student",false);
     return "student";
   }
 
@@ -94,6 +122,42 @@ public class StudentenController {
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
     model.addAttribute("meldung", true);
+    model.addAttribute("student", true);
+    return "student";
+  }
+
+  @PostMapping("/student")
+  @Secured("ROLE_orga")
+  public String empfangeDatenorga(
+      KeycloakAuthenticationToken keycloakAuthenticationToken,
+      Model model,
+      String matrikelnummer,
+      String token,
+      String fach,
+      String vorname,
+      String nachname,
+      String email)
+      throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
+      NoPublicKeyInDatabaseException {
+
+    boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token);
+    if (value) {
+      Student student =
+          new Student(
+              vorname,
+              nachname,
+              email,
+              Long.parseLong(matrikelnummer),
+              Long.parseLong(fach),
+              null,
+              token);
+      StudentService studentenservice = new StudentService(studentRepository);
+      studentenservice.save(student);
+    }
+    model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
+    model.addAttribute("success", value);
+    model.addAttribute("meldung", true);
+    model.addAttribute("student", true);
     return "student";
   }
 }
