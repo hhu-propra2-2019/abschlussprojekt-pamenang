@@ -14,11 +14,22 @@
 
 === Aufgabe 5.2 Tokensystem
 ==== Zweck/Verantwortlichkeit
-Dieses Subsystem ist zuständig für die Tokengenerierung- und verifikation. Das Subsystembekommt vom Organisatorensystem die Strings MatrNr und FachID übergeben, generiert einen Token und gibt einen String zurück. In der Tokenverifikation werden drei Strings übergeben die MatrNr, die FachID und der Token.
+Dieses Subsystem ist zuständig für die Tokengenerierung- und verifikation. Das Subsystem bekommt vom Organisatorensystem die Strings MatrNr und FachID übergeben, generiert einen Token und gibt einen String zurück. In der Tokenverifikation werden drei Strings übergeben die MatrNr, die FachID und der Token.
 
 
 === Aufgabe 5.3 Organisatoren
 
+Organisatoren haben die Möglichkeit ein Modul zu erstellen welches die Veranstatlung bzw. das Fach repräsentiert.
+Das Modul hat eine eigene Fachid damit jedem Modul mehrere Studenten zugeordnet werden können.
+Der Organisator kann eine Liste (csv-file) in der Applikation hochladen. Diese wird eingelesen und aus dieser Liste werden Studenten Objekte erstellt.
+Diese Studenten werden dann abgeglichen mit den Studenten die schon eine Altzulassung haben und daraus wird eine Klausurzulassungsliste erstellt.
+Desweiteren besteht die Möglichkeit als Organistor, falls die Zulassungen von Studenten erreicht worden sind, für jeden einzelnen Studenten ein Token generieren zu lassen und es per Email weiterzuleiten.
 
 === Aufgabe 5.4 Studenten
+
+Der Student hat die Möglichkeit mithilfe des Tokens welches er per Email geschickt bekommen hat sich für die Klausur im nächsten Jahr wieder zuzulassen.
+In der Email, welche er bekommt, kann er auf einen Link klicken und wird automatisch auf ein Formular weitergeleitet welches schon mit dem Token ausgefüllt wurde.
+Hier muss er noch ggf. ein paar Informationen eingeben und kann sich ganz einfach als zugelassen verifizieren.
 === Aufgabe 5.5 Email-Service
+
+Der Email-Service ist dazu da um Emails an die verschiedenen Studenten zu schicken, welche eine Zulassung erhalten haben.
