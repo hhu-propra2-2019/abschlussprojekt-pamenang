@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -137,7 +138,7 @@ public class ModulController {
         String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
         System.out.println("TEST "+tokenString);
         student.setToken(tokenString);
-        //emailService.sendMail(student);
+        emailService.sendMail(student);
       }
       csvService.writeCsvFile(id, students);
       setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
@@ -154,24 +155,16 @@ public class ModulController {
     setMessages(null, "Klausurliste wurde erfolgreich heruntergeladen.");
 
     String fachname = modulService.findById(id).get().getName();
-
     response.setContentType("text/csv");
     String newFilename = "\"klausurliste_"+fachname+".csv\"";
     response.setHeader("Content-Disposition", "attachment; filename="+newFilename);
-    try
-    {
-      OutputStream outputStream = response.getOutputStream();
-      File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
-      outputStream.write(klausurliste.toString().getBytes());
-      outputStream.flush();
-      outputStream.close();
-    }
-    catch(Exception e)
-    {
-      System.out.println(e.toString());
-    }
-    //return new FileSystemResource(new File("klausurliste_"+Long.toString(id)+".csv"));
-    //return "redirect:/zulassung1/modulHinzufuegen";
+    OutputStream outputStream = response.getOutputStream();
+    String header = "Matrikelnummer,Nachname,Vorname\n";
+    outputStream.write(header.getBytes());
+    File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
+    outputStream.write(Files.readAllBytes(klausurliste.toPath()));
+    outputStream.flush();
+    outputStream.close();
   }
 
   @Secured("ROLE_orga")
@@ -190,7 +183,7 @@ public class ModulController {
       System.out.println("Student:" + email + " " + vorname + " " + nachname + " " + matnr + " " + modulId);
       String tokenString = tokengenerierungService.erstellenToken(matnr.toString(), id.toString());
       student.setToken(tokenString);
-      //emailService.sendMail(student);
+      emailService.sendMail(student);
 
       setMessages(null, "Quittung für Student " + matnr + " ist neu verschickt worden!");
 
