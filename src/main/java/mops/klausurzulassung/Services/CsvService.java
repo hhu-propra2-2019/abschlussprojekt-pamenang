@@ -1,6 +1,5 @@
 package mops.klausurzulassung.Services;
 
-
 import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Student;
 import org.apache.commons.csv.CSVFormat;
@@ -14,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class CsvService {
   }
 
   /*CsvImportService kümmert sich um ein Multipartfile welches ein .csv File repräsentiert. Aus diesem File werden Studenten-Objekte
-    generiert die als Liste weitergegeben werden*/
+  generiert die als Liste weitergegeben werden*/
 
   // Reihenfolge im input.csv:
   // Vorname, Nachname, Email, Matrikelnummer
@@ -36,9 +36,12 @@ public class CsvService {
   // Reihenfolge im output.csv:
   // Matrikelnummer, Nachname, Vorname
 
-  public List<Student> getStudentListFromInputFile(MultipartFile multipartFile, Long id) throws IOException {
+  public List<Student> getStudentListFromInputFile(MultipartFile multipartFile, Long id)
+      throws IOException {
     List<Student> studentList = new ArrayList<>();
-    Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(new InputStreamReader(multipartFile.getInputStream()));
+    Iterable<CSVRecord> records =
+        CSVFormat.DEFAULT.parse(
+            new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
     for (CSVRecord record : records) {
       studentList.add(createStudentFromInputStream(record, id));
     }

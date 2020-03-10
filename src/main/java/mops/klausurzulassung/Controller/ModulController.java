@@ -1,14 +1,13 @@
 package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
+import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.CsvService;
 import mops.klausurzulassung.Services.EmailService;
-import mops.klausurzulassung.Services.TokengenerierungService;
-import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Services.ModulService;
 import mops.klausurzulassung.Services.StudentService;
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
+import mops.klausurzulassung.Services.TokengenerierungService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.security.access.annotation.Secured;
@@ -38,14 +37,18 @@ public class ModulController {
   private final ModulService modulService;
   private final CsvService csvService;
   private final StudentService studentService;
+  private final EmailService emailService;
+  private final TokengenerierungService tokengenerierungService;
   private String errorMessage;
   private String successMessage;
   private Modul currentModul = new Modul();
-  private final EmailService emailService;
 
-  private final TokengenerierungService tokengenerierungService;
-
-  public ModulController(ModulService modulService, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService) {
+  public ModulController(
+      ModulService modulService,
+      CsvService csvService,
+      StudentService studentService,
+      TokengenerierungService tokengenerierungService,
+      EmailService emailService) {
     this.modulService = modulService;
     this.csvService = csvService;
     this.studentService = studentService;
@@ -77,7 +80,10 @@ public class ModulController {
   @Secured("ROLE_orga")
   @PostMapping("/modulHinzufuegen")
   public String newModul(
-      @ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
+      @ModelAttribute @Valid Modul modul,
+      Model model,
+      KeycloakAuthenticationToken token,
+      Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     modul.setOwner(principal.getName());
     this.currentModul = modul;
@@ -108,7 +114,8 @@ public class ModulController {
 
       setMessages(null, "Das Modul " + modulName + " wurde gelöscht!");
     } else {
-      setMessages("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", null);
+      setMessages(
+          "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", null);
     }
     return "redirect:/zulassung1/modulHinzufuegen";
   }
@@ -131,7 +138,12 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}")
-  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String uploadListe(
+      @PathVariable Long id,
+      Model model,
+      KeycloakAuthenticationToken token,
+      @RequestParam("datei") MultipartFile file)
+      throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     if (file.isEmpty()) {
       setMessages("Datei ist leer oder es wurde keine Datei ausgewählt!", null);
@@ -140,14 +152,15 @@ public class ModulController {
 
       for (Student student : students) {
         System.out.println("Tokens werden generiert und verschickt!");
-        String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
-        System.out.println("TEST "+tokenString);
+        String tokenString =
+            tokengenerierungService.erstellenToken(
+                student.getMatrikelnummer().toString(), id.toString());
+        System.out.println("TEST " + tokenString);
         student.setToken(tokenString);
         emailService.sendMail(student);
       }
       csvService.writeCsvFile(id, students);
       setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
-
     }
     return "redirect:/zulassung1/modul" + "/" + id;
   }
@@ -164,7 +177,12 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
-  public String altzulassungHinzufuegen(@ModelAttribute @Valid Student student, Boolean fristAbgelaufen, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String altzulassungHinzufuegen(
+      @ModelAttribute @Valid Student student,
+      boolean fristAbgelaufen,
+      @PathVariable Long id,
+      Model model,
+      KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
 
     String email = student.getEmail();
@@ -173,10 +191,18 @@ public class ModulController {
     Long matnr = student.getMatrikelnummer();
     Long modulId = id;
 
-    if (fristAbgelaufen == null) {
+    if (!fristAbgelaufen) {
 
-      System.out.println("Student:" + email + " " + vorname + " " + nachname + " " + matnr + " " + modulId);
-      String tokenString = tokengenerierungService.erstellenToken(matnr.toString(), id.toString());
+      System.out.println(
+          "Student:" + email + " " + vorname + " " + nachname + " " + matnr + " " + modulId);
+      String tokenString = null;
+      try {
+        tokenString = tokengenerierungService.erstellenToken(matnr.toString(), id.toString());
+      } catch (Exception e) {
+        e.printStackTrace();
+        setMessages("Es gab ein Problem bei der Tokengenerierung", null);
+        return "redirect:/zulassung1/modul/" + id;
+      }
       student.setToken(tokenString);
       emailService.sendMail(student);
 
@@ -184,17 +210,17 @@ public class ModulController {
 
     } else {
       System.out.println("Datenbank wird durchsucht");
-      String tokenString = tokengenerierungService.erstellenToken(matnr.toString(), id.toString());
-
-      if (tokenString != null){
-        studentService.save(new Student(vorname, nachname, email, matnr, id,null, tokenString));
-        setMessages(null, "Altzulassung des Students "+matnr+" wurde erfolgreich eingetragen.");
+      String tokenString = null;
+      try {
+        tokenString = tokengenerierungService.erstellenToken(matnr.toString(), id.toString());
+      } catch (Exception e) {
+        e.printStackTrace();
+        setMessages("Es gab ein Problem bei der Tokengenerierung", null);
+        return "redirect:/zulassung1/modul/" + id;
       }
 
-
-      if (tokenString == null){
-        setMessages("Student "+matnr+" wurde nicht gefunden.",null);
-      }
+      studentService.save(new Student(vorname, nachname, email, matnr, id, null, tokenString));
+      setMessages(null, "Altzulassung des Students " + matnr + " wurde erfolgreich eingetragen.");
     }
     return "redirect:/zulassung1/modul/" + id;
   }
