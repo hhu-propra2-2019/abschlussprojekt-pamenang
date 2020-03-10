@@ -47,18 +47,6 @@ public class TokengenerierungTest {
   }
 
   @Test
-  public void testBytesToHex(){
-    QuittungService quittungService = mock(QuittungService.class);
-
-    byte[] bytes ={10};
-    TokengenerierungService tg = new TokengenerierungService(quittungService);
-    String test = tg.bytesToHex(bytes);
-
-    assertEquals(test,"0A");
-
-  }
-
-  @Test
   public void testTokengenerierung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     QuittungRepository repository = mock(QuittungRepository.class);
     QuittungService quittungService = new QuittungService(repository);
