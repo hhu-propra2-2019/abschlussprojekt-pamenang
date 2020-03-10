@@ -35,23 +35,31 @@ public class EmailService {
             + student.getNachname()
             + ",\n hiermit erhälst du"
             + " dein Klausurzulassungtoken. Dieses lautet: \n"
-            + student.getToken());
+            + student.getToken()
+            + "\n"
+            + generateValidTokenLink(student));
+    System.out.println(msg.getText());
     javaMailSender.send(msg);
-    logger.debug("Email wurde an: "+student.getEmail() +" abgeschickt");
+    logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
   }
 
   /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
-  public String generateValidTokenLink(Student student){
+  public String generateValidTokenLink(Student student) {
     String studentAddUri = "/zulassung1/student/";
-    String token = student.getToken()+"/";
-    String fachName = student.getFachname()+ "/";
-    String matrikelnr = Long.toString(student.getMatrikelnummer());
+    String token = student.getToken() + "/";
+    String fachID = student.getModulId() + "/";
+    String matrikelnr = Long.toString(student.getMatrikelnummer()) + "/";
+    String studvorname = student.getVorname() + "/";
+    String studnachname = student.getNachname() + "/";
+    String email = student.getEmail();
     return ServletUriComponentsBuilder.fromCurrentContextPath()
-            .path(studentAddUri)
-            .path(token)
-            .path(fachName)
-            .path(matrikelnr)
-            .toUriString();
+        .path(studentAddUri)
+        .path(token)
+        .path(fachID)
+        .path(matrikelnr)
+        .path(studvorname)
+        .path(studnachname)
+        .toUriString();
   }
 
 }
