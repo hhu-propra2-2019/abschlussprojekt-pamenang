@@ -12,7 +12,6 @@ import javax.persistence.Lob;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "students")
-@NoArgsConstructor
 public class Student {
 
   private String vorname;
