@@ -2,7 +2,6 @@ package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Domain.QuittungDto;
-import mops.klausurzulassung.Services.QuittungService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +59,7 @@ public class TokengenerierungService {
         quittungService.save(quittungDao);
         logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
 
-        String s = Base64.getEncoder().encodeToString(token);
-        System.out.println(s);
-        return s;
+        return Base64.getEncoder().encodeToString(token);
     }
 
     private KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {

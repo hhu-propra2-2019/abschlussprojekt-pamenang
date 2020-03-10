@@ -41,7 +41,6 @@ public class TokenverifikationService {
         byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
         byte[] tokenByte = Base64.getDecoder().decode(token);
-        System.out.println(Arrays.toString(tokenByte));
         logger.debug("Token Verifiziert");
         return sign.verify(tokenByte);
     }
