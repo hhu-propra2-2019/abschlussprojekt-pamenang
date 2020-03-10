@@ -36,9 +36,4 @@ public class MainController {
     return "mainpage";
   }
 
-  @GetMapping("/logout")
-  public String logout(HttpServletRequest request) throws Exception {
-    request.logout();
-    return "redirect:/zulassung1";
-  }
 }
