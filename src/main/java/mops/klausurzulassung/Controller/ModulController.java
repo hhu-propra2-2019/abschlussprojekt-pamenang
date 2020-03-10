@@ -8,6 +8,8 @@ import mops.klausurzulassung.Services.TokengenerierungService;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Services.ModulService;
 import mops.klausurzulassung.Services.StudentService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -133,10 +136,23 @@ public class ModulController {
   @PostMapping("/modul/{id}")
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    if (file.isEmpty()) {
+
+    Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname","Nachname","Email","Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
+
+    boolean countColumns = true;
+
+    for (CSVRecord record : records) {
+      if (record.size() != 4){
+        countColumns = false;
+      }
+    }
+    if (countColumns == false){
+      setMessages("Datei hat eine falsche Anzahl von Einträgen pro Zeile!", null);
+    }
+    else if (file.isEmpty()) {
       setMessages("Datei ist leer oder es wurde keine Datei ausgewählt!", null);
     } else {
-      List<Student> students = csvService.getStudentListFromInputFile(file, id);
+      List<Student> students = csvService.getStudentListFromInputFile(records, id);
 
       for (Student student : students) {
         System.out.println("Tokens werden generiert und verschickt!");
