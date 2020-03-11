@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +63,9 @@ public class CsvTest {
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,1,\nRebecca,Fröhlich,refro100@hhu.de,2658447,1".getBytes());
 
     when(multipartFile.getInputStream()).thenReturn(input);
-    List<Student> studentList = csvService.getStudentListFromInputFile(multipartFile, 1L);
+    Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname","Nachname","Email","Matrikelnummer").parse(new InputStreamReader(input));
+
+    List<Student> studentList = csvService.getStudentListFromInputFile(records, 1L);
 
     assertEquals(students, studentList);
 
@@ -84,16 +87,20 @@ public class CsvTest {
     FileWriter fileWriter = new FileWriter(outputFile);
     CSVWriter writer = new CSVWriter(fileWriter);
 
+    String[] header = {"Vorname","Nachname","Email","Matrikelnummer"};
+    writer.writeNext(header, false);
     String[] list = {student.getVorname(), student.getNachname(), student.getEmail(), String.valueOf(student.getMatrikelnummer())};
     writer.writeNext(list, false);
     writer.flush();
     writer.close();
 
     Reader input = new FileReader("studenten.csv");
-    Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(input);
+    Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname","Nachname","Email","Matrikelnummer").withSkipHeaderRecord().parse(input);
+
 
     Student cara = null;
     for (CSVRecord record : records) {
+      System.out.println("Record: "+record);
       cara = csvService.createStudentFromInputStream(record, 1L);
     }
 

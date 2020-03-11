@@ -71,7 +71,7 @@ public class TokengenerierungService {
 
     private QuittungDao erstelleQuittungDao(QuittungDto quittungDto){
         QuittungDao quittungDao = new QuittungDao();
-        quittungDao.setFachID(quittungDto.getFachID());
+        quittungDao.setModulId(quittungDto.getModulId());
         quittungDao.setMatrikelnummer(quittungDto.getMatrikelnummer());
         quittungDao.setPublicKey(quittungDto.getPublicKey());
         quittungDao.setToken(quittungDto.getToken());

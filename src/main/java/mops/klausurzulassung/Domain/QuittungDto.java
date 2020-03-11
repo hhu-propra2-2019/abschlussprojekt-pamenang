@@ -13,7 +13,7 @@ import java.security.PublicKey;
 @NoArgsConstructor
 public class QuittungDto {
     private String matrikelnummer;
-    private String fachID;
+    private String modulId;
     private PublicKey publicKey;
     private String token;
 
