@@ -1,0 +1,20 @@
+== Abschnitt 11 Risiken
+=== Aufgabe 11.1 Tokenverschlüsselung
+
+Token wird über SHA256 mit RSA verschlüsselt. Falls SHA256 dekodiert werden kann, ist
+es nicht mehr sicher.
+
+=== Aufgabe 11.2 Kontrolle über Organisator
+
+Organisator ist in der Verantwortung und Kontrolle über alle Funktionen der Anwendung.
+Das impliziert das der Organisator sicherstellen muss, das die Rechte nicht an Außenstehende
+fallen und die Plattform für fremde Zwecke genutzt wird. Da die Kontrolle dem Organisator obliegt
+und nicht der Anwendung, kann die Plattform keine Verantwortung dafür übernehmen, dennoch ist dies ein
+Risiko für die Anwendung.
+
+=== Aufgabe 11.3 Email
+
+Wenn der Student die individuelle Mail mit dem für den Studenten individuellen Token verliert
+oder nicht mehr findet, kann der Student sich nicht mehr für die Klausur zulassen. Damit wäre
+seine vorher erlangte Zulassung verloren. Es gibt die Möglichkeit sich beim Organisator zu melden,
+welcher den Studenten manuell eine neue Mail zusendet.

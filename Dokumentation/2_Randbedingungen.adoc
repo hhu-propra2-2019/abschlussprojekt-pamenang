@@ -1,0 +1,30 @@
+== Abschnitt 2 Randbedingungen
+=== Aufgabe 2.1 Technisch
+
+[cols="1,1" options="header"]
+|===
+|Randbedingungen | Erläuterungen und Hintergrund
+| Implementierung in Java| Entwicklung unter Java 11
+| Datenbank | Betrieb der Datenbank läuft auf MySQL. Dient zur Speicherung der Token, Studenten und Organisatoren
+|===
+=== Aufgabe 2.2 Organisatorisch
+
+[cols="1,1" options="header"]
+|===
+|Randbedingungen | Erläuterungen und Hintergrund
+|Team | Team bestehend aus 9 motivierten Studenten, die im GitHub Projekt zu finden sind
+| Zeitplan | Beginn der Entwicklung am 03. März 2020, vorläufige Fertigstellung am 13. März. Ende der Entwicklung am 27. März
+| Entwicklungswerkzeuge | Entwurf mit Stift und Papier. Erstellung der Quelltexte in IntelliJ. Erleichertung der Arbeit durch Gradle und Docker
+| Konfigurations- und Versionsverwaltung | Git bei GitHub
+| Testwerkzeuge und -prozesse | JUnit Vintage für Integrationstest sowie Spring Test
+|===
+
+=== Aufgabe 2.3 Konventionen
+
+[cols="1,1" options="header"]
+|===
+|Randbedingungen | Erläuterungen und Hintergrund
+| Sprache (Deutsch vs. Englisch)| Dokumentation sowie Kommunikation innerhalb der Gruppe auf Deutsch. Bennung von Klassen, Methoden sowie Variablen auf Deutsch außer gängige Anglizismen
+| Coderichtlinien für Java | Prüfung durch CheckStyle, SpotBugs und Google-Java-Format
+| Architekturdokumentation | Gliederung nach dem arc42-Template
+|===
