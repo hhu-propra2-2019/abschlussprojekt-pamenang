@@ -1,15 +1,24 @@
 package mops.klausurzulassung.Services;
 
+import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.Repositories.ModulRepository;
 import mops.klausurzulassung.Repositories.StudentRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+
 
 @Service
 public class StudentService {
   private final StudentRepository studentRepository;
+  private final ModulRepository modulRepository;
 
-  public StudentService(StudentRepository studentRepository) {
+  public StudentService(StudentRepository studentRepository,ModulRepository modulRepository) {
     this.studentRepository = studentRepository;
+    this.modulRepository = modulRepository;
   }
 
   public Iterable<Student> findByModulId(Long id) {
@@ -22,5 +31,14 @@ public class StudentService {
 
   public void save(Student student) {
     studentRepository.save(student);
+  }
+
+  public boolean isFristAbgelaufen(String fachId){
+    Optional<Modul> modul =modulRepository.findById(fachId);
+    Calendar cal = Calendar.getInstance();
+    Date date = cal.getTime();
+    return modul.get().getFrist().before(date);
+
+
   }
 }
