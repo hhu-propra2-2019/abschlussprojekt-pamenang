@@ -28,9 +28,10 @@ public class EmailService {
   public void sendMail(Student student) {
     try {
       String body =
-          "<h1>Hallo, "
+          "<link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css' rel='stylesheet'>"
+              + "<h3>Hallo, "
               + student.getVorname()
-              + "</h1><br> Klicke auf den <a href='"
+              + "</h3><br> Klicke auf den <a href='"
               + generateValidTokenLink(student)
               + "'>Link</a>, um dich zu zulassen.<br> Bitte verliere den Token nicht, sonst ist es nicht möglich sich für die Klausur zu zuzlassen.<br>Token: "
               + student.getToken();
