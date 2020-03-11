@@ -27,14 +27,14 @@ import java.security.SignatureException;
 @Controller
 public class StudentenController {
 
-  @Autowired TokenverifikationService tokenverifikation;
+  @Autowired
+  TokenverifikationService tokenverifikation;
   @Autowired StudentRepository studentRepository;
   @Autowired StudentService studentService;
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
-    return new Account(
-        principal.getName(),
+    return new Account(principal.getName(),
         principal.getKeycloakSecurityContext().getIdToken().getEmail(),
         null,
         token.getAccount().getRoles());
@@ -42,15 +42,7 @@ public class StudentenController {
 
   @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{zulassungToken}/{fachID}/{matrikelnr}/{vorname}/{nachname}/")
-  public String studentansichtMitToken(
-      @PathVariable String zulassungToken,
-      @PathVariable String fachID,
-      @PathVariable long matrikelnr,
-      @PathVariable String vorname,
-      @PathVariable String nachname,
-      Model model,
-      KeycloakAuthenticationToken token) {
-  
+  public String studentansichtMitToken(@PathVariable String zulassungToken, @PathVariable String fachID, @PathVariable long matrikelnr, @PathVariable String vorname, @PathVariable String nachname, Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
     model.addAttribute("zulassungToken", zulassungToken);
@@ -69,7 +61,6 @@ public class StudentenController {
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
-    System.out.println(token.getAccount().getPrincipal());
     model.addAttribute("student", false);
     if (token.getAccount().getPrincipal().toString().equals("studentin"))
       model.addAttribute("student", true);
