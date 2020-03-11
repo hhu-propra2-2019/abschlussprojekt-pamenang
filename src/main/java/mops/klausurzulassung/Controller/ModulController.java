@@ -3,14 +3,24 @@ package mops.klausurzulassung.Controller;
 import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
-import mops.klausurzulassung.Services.*;
+import mops.klausurzulassung.Services.CsvService;
+import mops.klausurzulassung.Services.EmailService;
+import mops.klausurzulassung.Services.ModulService;
+import mops.klausurzulassung.Services.StudentService;
+import mops.klausurzulassung.Services.TokengenerierungService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -71,8 +81,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modulHinzufuegen")
-  public String newModul(
-      @ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
+  public String newModul(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     modul.setOwner(principal.getName());
     this.currentModul = modul;
@@ -165,6 +174,10 @@ public class ModulController {
     outputStream.write(Files.readAllBytes(klausurliste.toPath()));
     outputStream.flush();
     outputStream.close();
+
+    if (klausurliste.exists()) {
+      klausurliste.delete();
+    }
   }
 
   @Secured("ROLE_orga")
