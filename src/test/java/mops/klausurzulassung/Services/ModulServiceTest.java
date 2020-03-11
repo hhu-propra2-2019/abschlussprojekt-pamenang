@@ -20,20 +20,26 @@ public class ModulServiceTest {
   private ModulService modulService;
 
   @BeforeEach
-  public void initilize(){
+  public void initilize() {
+
     modulRepository = mock(ModulRepository.class);
     csvService = mock(CsvService.class);
     studentService = mock(StudentService.class);
     tokengenerierungService = mock(TokengenerierungService.class);
     emailService = mock(EmailService.class);
     quittungService = mock(QuittungService.class);
-    modulService = new ModulService(modulRepository,csvService,studentService, tokengenerierungService,emailService,quittungService);
-
+    modulService =
+        new ModulService(
+            modulRepository,
+            csvService,
+            studentService,
+            tokengenerierungService,
+            emailService,
+            quittungService);
   }
 
-
   @Test
-  void testStudentIsEmptyIsEmpty(){
+  void testStudentIsEmptyIsEmpty() {
     Student student = new Student();
     student.setVorname("Joshua");
     student.setNachname("Müller");
@@ -42,14 +48,21 @@ public class ModulServiceTest {
     boolean b = modulService.studentIsEmpty(student);
     assertTrue(b);
   }
+
   @Test
-  void testStudentIsEmptyIsNotEmpty(){
+  void testStudentIsEmptyIsNotEmpty() {
     Student student = new Student();
     student.setVorname("Joshua");
     student.setNachname("Müller");
     student.setEmail("joshua.müller@web.de");
     student.setMatrikelnummer((long) 1231);
+
     boolean b = modulService.studentIsEmpty(student);
+
     assertFalse(b);
   }
 }
+
+
+
+
