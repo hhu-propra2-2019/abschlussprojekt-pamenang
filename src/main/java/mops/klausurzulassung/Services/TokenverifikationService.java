@@ -2,6 +2,8 @@ package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Services.QuittungService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +13,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.util.Arrays;
+import java.util.Base64;
 
 @Service
 public class TokenverifikationService {
 
     private final QuittungService quittungService;
+    private Logger logger = LoggerFactory.getLogger(TokenverifikationService.class);
 
     @Autowired
     public TokenverifikationService(QuittungService quittungService) {
@@ -27,6 +32,7 @@ public class TokenverifikationService {
         String HashValue = matr+fachID;
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
         if(publicKey == null){
+            logger.error("Public Key ist null");
             return false;
         }
 
@@ -34,18 +40,8 @@ public class TokenverifikationService {
         sign.initVerify(publicKey);
         byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
-
-        byte[] tokenByte = hexStringToByteArray(token);
+        byte[] tokenByte = Base64.getDecoder().decode(token);
+        logger.debug("Token Verifiziert");
         return sign.verify(tokenByte);
-    }
-
-    byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i+1), 16));
-        }
-        return data;
     }
 }

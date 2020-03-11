@@ -1,6 +1,7 @@
 package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
+import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
+@SessionScope
 @RequestMapping("/zulassung1")
 public class ModulController {
 
@@ -44,12 +47,11 @@ public class ModulController {
   private final CsvService csvService;
   private final StudentService studentService;
   private final QuittungService quittungService;
+  private final EmailService emailService;
+  private final TokengenerierungService tokengenerierungService;
   private String errorMessage;
   private String successMessage;
   private Modul currentModul = new Modul();
-  private final EmailService emailService;
-
-  private final TokengenerierungService tokengenerierungService;
 
   public ModulController(ModulService modulService, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService, QuittungService quittungService) {
     this.modulService = modulService;
@@ -78,13 +80,21 @@ public class ModulController {
     model.addAttribute("modul", currentModul);
     model.addAttribute("error", errorMessage);
     model.addAttribute("success", successMessage);
+    resetMessages();
     return "modulAuswahl";
+  }
+
+  private void resetMessages() {
+    setMessages(null, null);
   }
 
   @Secured("ROLE_orga")
   @PostMapping("/modulHinzufuegen")
   public String newModul(
-      @ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
+      @ModelAttribute @Valid Modul modul,
+      Model model,
+      KeycloakAuthenticationToken token,
+      Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     modul.setOwner(principal.getName());
     this.currentModul = modul;
@@ -115,7 +125,8 @@ public class ModulController {
 
       setMessages(null, "Das Modul " + modulName + " wurde gelöscht!");
     } else {
-      setMessages("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", null);
+      setMessages(
+          "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", null);
     }
     return "redirect:/zulassung1/modulHinzufuegen";
   }
@@ -132,7 +143,7 @@ public class ModulController {
     model.addAttribute("papierZulassung", false);
     model.addAttribute("error", errorMessage);
     model.addAttribute("success", successMessage);
-
+    resetMessages();
     return "modulAnsicht";
   }
 
@@ -170,7 +181,6 @@ public class ModulController {
       }
       csvService.writeCsvFile(id, students);
       setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
-
     }
     return "redirect:/zulassung1/modul" + "/" + id;
   }
@@ -206,7 +216,7 @@ public class ModulController {
       studentService.save(student);
       setMessages(null, "Student "+matnr+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
       emailService.sendMail(student);
-
+      
     } catch (NoTokenInDatabaseException e) {
       System.out.println("Exception: "+e);
       System.out.println("Catch");

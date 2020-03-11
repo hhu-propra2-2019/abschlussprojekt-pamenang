@@ -14,8 +14,8 @@ import javax.persistence.Table;
 
 @Data
 @AllArgsConstructor
-@Entity(name = "students")
 @NoArgsConstructor
+@Entity(name = "students")
 public class Student {
 
   @Column(name="Vorname")
@@ -42,4 +42,3 @@ public class Student {
   private String token;
 
 }
-

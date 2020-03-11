@@ -5,6 +5,8 @@ import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Domain.QuittungDto;
 import mops.klausurzulassung.Repositories.QuittungRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,7 @@ import java.security.PublicKey;
 public class QuittungService {
 
     private final QuittungRepository quittungRepository;
+
 
     @Autowired
     public QuittungService(QuittungRepository quittungRepository) {
@@ -40,8 +43,8 @@ public class QuittungService {
 
         QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndModulId(matr,fachID);
         if(quittungDao==null) throw new NoTokenInDatabaseException("Token wurde in der Datenbank nicht gefunden!");
-
         else return loadQuittungDto(quittungDao).getToken();
+
     }
 
     public void save(QuittungDao quittungDao) {

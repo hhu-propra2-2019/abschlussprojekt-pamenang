@@ -1,6 +1,8 @@
 package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Domain.Student;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +15,8 @@ public class EmailService {
 
   private static final String FROM_EMAIL = "pamenang@web.de";
   private JavaMailSender javaMailSender;
+
+  private Logger logger = LoggerFactory.getLogger(EmailService.class);
 
   @Autowired
   public EmailService(JavaMailSender javaMailSender) {
@@ -36,6 +40,7 @@ public class EmailService {
             ".\n Dieses lautet: \n"
             + student.getToken());
     javaMailSender.send(msg);
+    logger.debug("Email wurde an: "+student.getEmail() +" abgeschickt");
   }
 
   /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
