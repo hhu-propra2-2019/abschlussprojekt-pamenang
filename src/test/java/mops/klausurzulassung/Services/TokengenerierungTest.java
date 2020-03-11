@@ -14,12 +14,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.any;
 
-public class TokengenerierungTest {
+class TokengenerierungTest {
 
 
 
   @Test
-  public void testErstellenHashValue() {
+  void testErstellenHashValue() {
     String matr = "3333333";
     String fach = "propra1";
     QuittungService quittungService = mock(QuittungService.class);
@@ -31,7 +31,7 @@ public class TokengenerierungTest {
   }
 
   @Test
-  public void testTokengenerierung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void testTokengenerierung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     QuittungRepository repository = mock(QuittungRepository.class);
     QuittungService quittungService = new QuittungService(repository);
     String matr = "1234567";
@@ -45,7 +45,7 @@ public class TokengenerierungTest {
   }
 
   @Test
-  public void testSlashToAt(){
+  void testSlashToAt(){
     QuittungRepository repository = mock(QuittungRepository.class);
     QuittungService quittungService = new QuittungService(repository);
     TokengenerierungService tg = new TokengenerierungService(quittungService);

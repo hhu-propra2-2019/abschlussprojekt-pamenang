@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 
-public class TokenverifkationTest {
+class TokenverifkationTest {
 
     @Test
-    public void testAtToSlash(){
+    void testAtToSlash(){
         String at = "@";
         QuittungRepository quittungRepository = mock(QuittungRepository.class);
         QuittungService quittungService = new QuittungService(quittungRepository);
