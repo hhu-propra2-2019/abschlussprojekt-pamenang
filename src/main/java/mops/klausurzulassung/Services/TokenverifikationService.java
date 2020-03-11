@@ -33,6 +33,8 @@ public class TokenverifikationService {
             return false;
         }
 
+        token = atToSlash(token);
+
         String HashValue = matr+fachID;
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
         if(publicKey == null){
@@ -47,5 +49,18 @@ public class TokenverifikationService {
         byte[] tokenByte = Base64.getDecoder().decode(token);
         logger.debug("Token Verifiziert");
         return sign.verify(tokenByte);
+    }
+
+     String atToSlash(String token) {
+        String var = "";
+        for (int i = 0; i < token.length(); i++){
+            char c = token.charAt(i);
+            if(c == '@'){
+                var += "/";
+            }else{
+                var += c;
+            }
+        }
+        return var;
     }
 }

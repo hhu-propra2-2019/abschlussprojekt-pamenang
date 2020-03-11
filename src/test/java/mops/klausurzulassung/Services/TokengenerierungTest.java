@@ -60,4 +60,14 @@ public class TokengenerierungTest {
     verify(repository,times(1)).save(any());
   }
 
+  @Test
+  public void testSlashToAt(){
+    QuittungRepository repository = mock(QuittungRepository.class);
+    QuittungService quittungService = new QuittungService(repository);
+    TokengenerierungService tg = new TokengenerierungService(quittungService);
+
+    String ergebnis = tg.slashToAt("hallo//welt");
+
+    assertEquals(ergebnis, "hallo@@welt");
+  }
 }
