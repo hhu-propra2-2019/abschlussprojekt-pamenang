@@ -53,13 +53,25 @@ public class TokengenerierungService {
         byte[] token = sign.sign();
 
 
-        QuittungDto quittungDto = new QuittungDto(matr, fachID, publicKey, Base64.getEncoder().encodeToString(token));
+        String base64Token = Base64.getEncoder().encodeToString(token);
+        String var = "";
+        for (int i = 0; i < base64Token.length(); i++){
+            char c = base64Token.charAt(i);
+            if(c == '/'){
+                var += "@";
+            }else{
+                var += c;
+            }
+        }
+        base64Token = var;
+
+        QuittungDto quittungDto = new QuittungDto(matr, fachID, publicKey, base64Token);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
         logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
 
-        return Base64.getEncoder().encodeToString(token);
+        return base64Token;
     }
 
     private KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
