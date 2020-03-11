@@ -142,11 +142,13 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-  @ResponseBody
-  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
+  public String downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
     resetMessages();
     model.addAttribute("account", createAccountFromPrincipal(token));
-    modulService.download(id, response);
+    String[] messages = modulService.download(id, response);
+    setMessages(messages[0],messages[1]);
+
+    return "redirect:/zulassung1/modul/" + id;
   }
 
   @Secured("ROLE_orga")

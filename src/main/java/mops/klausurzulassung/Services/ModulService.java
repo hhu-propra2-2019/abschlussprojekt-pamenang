@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -122,23 +125,27 @@ public class ModulService {
     return messages;
   }
 
-  public HttpServletResponse download(Long id, HttpServletResponse response) throws IOException {
-    String fachname = findById(id).get().getName();
-    response.setContentType("text/csv");
-    String newFilename = "\"klausurliste_"+fachname+".csv\"";
-    response.setHeader("Content-Disposition", "attachment; filename="+newFilename);
-    OutputStream outputStream = response.getOutputStream();
-    String header = "Matrikelnummer,Nachname,Vorname\n";
-    outputStream.write(header.getBytes());
-    File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
-    outputStream.write(Files.readAllBytes(klausurliste.toPath()));
-    outputStream.flush();
-    outputStream.close();
+  public String[] download(Long id, HttpServletResponse response) throws IOException {
 
-    if (klausurliste.exists()) {
+    File klausurliste = new File("klausurliste_" + Long.toString(id) + ".csv");
+    if (klausurliste.exists()){
+      String fachname = findById(id).get().getName();
+      response.setContentType("text/csv");
+      String newFilename = "\"klausurliste_" + fachname + ".csv\"";
+      response.setHeader("Content-Disposition", "attachment; filename=" + newFilename);
+      OutputStream outputStream = response.getOutputStream();
+      String header = "Matrikelnummer,Nachname,Vorname\n";
+      outputStream.write(header.getBytes());
+      outputStream.write(Files.readAllBytes(klausurliste.toPath()));
+      outputStream.flush();
+      outputStream.close();
       klausurliste.delete();
+      successMessage = "Datei wurde erfolgreich heruntergeladen! Bitte denken Sie dran am Ende des Semesters das Modul zu löschen.";
+    } else {
+      errorMessage = "Keine Zulassungsliste hochgeladen!";
     }
-    return response;
+    String[] messages = {errorMessage, successMessage};
+    return messages;
   }
 
   public String[] altzulassungVerarbeiten(Student student, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
