@@ -2,6 +2,7 @@ package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Domain.QuittungDao;
+import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Repositories.QuittungRepository;
 import mops.klausurzulassung.Services.QuittungService;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,29 @@ public class QuittungDaoServiceTest {
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
 
         assertEquals(pK, publicKey);
+
+    }
+
+    @Test
+    public void testFindTokenByQuittung() throws NoSuchAlgorithmException, NoTokenInDatabaseException {
+
+        QuittungRepository quittungRepository = mock(QuittungRepository.class);
+        QuittungService quittungService = new QuittungService(quittungRepository);
+        String matr = "1234567";
+        String fachID = "1111";
+
+
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+
+        PublicKey pK = keyPairGenerator.generateKeyPair().getPublic();
+        QuittungDao quittungDao = new QuittungDao(matr, fachID, pK, "1324235",1);
+
+        when(quittungRepository.findByMatrikelnummerAndModulId(matr,fachID)).thenReturn(quittungDao);
+        String token = quittungService.findTokenByQuittung(matr, fachID);
+
+        assertEquals("1324235", token);
+
 
     }
 }
