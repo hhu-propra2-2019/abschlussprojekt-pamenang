@@ -28,10 +28,15 @@ public class EmailService {
   public void sendMail(Student student, long id) {
     try {
       String body =
-          "<h1>Hallo, " + student.getVorname() + "</h1><br> Klicke auf den <a href='" + generateValidTokenLink(student, id) + "'>Link</a>, um dich zu zulassen.<br> Bitte verliere den Token nicht, sonst ist es nicht möglich sich für die Klausur zu zuzlassen.<br>Token: " + student.getToken();
+          "<h1>Hallo, "
+              + student.getVorname()
+              + "</h1><br> Klicke auf den <a href='"
+              + generateValidTokenLink(student, id)
+              + "'>Link</a>, um dich zu zulassen.<br> Bitte verliere den Token nicht, sonst ist es nicht möglich sich für die Klausur zu zuzlassen.<br>Token: "
+              + student.getToken();
       MimeMessage message = this.javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
-      helper.setFrom("pamenang@web.de");
+      helper.setFrom(FROM_EMAIL);
       helper.setTo(student.getEmail().toString());
       helper.setSubject("Klausurzulassungstoken " + id);
       helper.setText(body, true);
