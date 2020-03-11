@@ -66,7 +66,7 @@ public class TokengenerierungService {
         return base64Token;
     }
 
-    private String slashToAt(String base64Token) {
+    String slashToAt(String base64Token) {
         String var = "";
         for (int i = 0; i < base64Token.length(); i++){
             char c = base64Token.charAt(i);
