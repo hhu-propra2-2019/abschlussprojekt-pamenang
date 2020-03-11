@@ -29,7 +29,7 @@ public class TokenverifikationService {
 
     public boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
 
-        if(token.length() < 88){
+        if(token.length() != 88){
             return false;
         }
 
