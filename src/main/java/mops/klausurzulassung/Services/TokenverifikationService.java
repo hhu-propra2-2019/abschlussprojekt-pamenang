@@ -1,7 +1,6 @@
 package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
-import mops.klausurzulassung.Services.QuittungService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.PublicKey;
 import java.security.Signature;
-import java.util.Arrays;
 import java.util.Base64;
 
 @Service

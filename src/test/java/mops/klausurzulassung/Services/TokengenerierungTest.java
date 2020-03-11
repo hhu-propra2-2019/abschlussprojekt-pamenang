@@ -1,8 +1,6 @@
 package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Repositories.QuittungRepository;
-import mops.klausurzulassung.Services.QuittungService;
-import mops.klausurzulassung.Services.TokengenerierungService;
 import org.junit.jupiter.api.Test;
 
 import java.security.InvalidKeyException;
@@ -16,12 +14,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.any;
 
-public class TokengenerierungTest {
+class TokengenerierungTest {
 
 
 
   @Test
-  public void testErstellenHashValue() {
+  void testErstellenHashValue() {
     String matr = "3333333";
     String fach = "propra1";
     QuittungService quittungService = mock(QuittungService.class);
@@ -33,21 +31,7 @@ public class TokengenerierungTest {
   }
 
   @Test
-  public void testStudentenToken() {
-    String matr = "3333333";
-    String fach = "propra1";
-    String token = "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3";
-    QuittungService quittungService = mock(QuittungService.class);
-
-    TokengenerierungService tg = new TokengenerierungService(quittungService);
-    String ergebnis = tg.erstellenQuittung(matr, fach, token);
-
-    assertEquals(
-        ergebnis, "3333333propra1a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
-  }
-
-  @Test
-  public void testTokengenerierung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void testTokengenerierung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     QuittungRepository repository = mock(QuittungRepository.class);
     QuittungService quittungService = new QuittungService(repository);
     String matr = "1234567";
@@ -61,7 +45,7 @@ public class TokengenerierungTest {
   }
 
   @Test
-  public void testSlashToAt(){
+  void testSlashToAt(){
     QuittungRepository repository = mock(QuittungRepository.class);
     QuittungService quittungService = new QuittungService(repository);
     TokengenerierungService tg = new TokengenerierungService(quittungService);
