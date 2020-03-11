@@ -151,37 +151,7 @@ public class ModulController {
   @PostMapping("/modul/{id}")
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
     model.addAttribute("account", createAccountFromPrincipal(token));
-
-    Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
-
-    boolean countColumns = true;
-
-    for (CSVRecord record : records) {
-      if (record.size() != 4) {
-        countColumns = false;
-      }
-    }
-
-    records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").withSkipHeaderRecord().parse(new InputStreamReader(file.getInputStream()));
-
-    System.out.println();
-
-    if (!countColumns) {
-      setMessages("Datei hat eine falsche Anzahl von Einträgen pro Zeile!", null);
-    } else if (file.isEmpty()) {
-      setMessages("Datei ist leer oder es wurde keine Datei ausgewählt!", null);
-    } else {
-      List<Student> students = csvService.getStudentListFromInputFile(records, id);
-
-      System.out.println(students.toString());
-
-      for (Student student : students) {
-        System.out.println("students :"+student);
-        erstelleTokenUndSendeEmail(student, id);
-      }
-      csvService.writeCsvFile(id, students);
-      setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
-    }
+    modulService.verarbeiteUploadliste(id, file);
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 
