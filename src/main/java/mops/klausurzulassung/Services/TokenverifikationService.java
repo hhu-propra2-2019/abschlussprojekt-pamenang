@@ -51,7 +51,7 @@ public class TokenverifikationService {
         return sign.verify(tokenByte);
     }
 
-    private String atToSlash(String token) {
+     String atToSlash(String token) {
         String var = "";
         for (int i = 0; i < token.length(); i++){
             char c = token.charAt(i);
