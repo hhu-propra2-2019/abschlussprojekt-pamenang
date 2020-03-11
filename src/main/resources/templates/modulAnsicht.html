@@ -201,7 +201,7 @@
 
     <div align="left">
         <label> Hier können Sie die Klausurliste zum Modul <span th:text="${modul}">Propra</span> downladen!
-            <form action="#" method="post" th:action="'/zulassung1/modul' +'/' + ${id}+'/download'">
+            <form action="#" method="get" th:action="'/zulassung1/modul' +'/' + ${id}+'/klausurliste'">
                 <button class="btn btn-outline-dark" type="submit">Download!</button>
             </form>
         </label>
