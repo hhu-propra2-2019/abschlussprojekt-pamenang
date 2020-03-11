@@ -1,0 +1,8 @@
+== Abschnitt 6 Laufzeitsicht
+
+Vor dem Semester kann der Organisator ein Modul für seine eigene Vorlesung erstellen.
+Innerhalb des Semesters können Studenten sich mit Altzulassungen zur neuen Klausur mit dem Token verifizieren.
+Sobald die Neuzulassungen feststehen kann der Organisator die Zulassungsliste hochladen, manuell prüfen und
+die Zulassungen per Mail an die Studenten versenden. Studenten mit Neu- sowie auch Altzulassungen können sich
+mit dem erhaltenen Key verifizieren. Organisatoren kann nach Ablauf der Frist manuell Studenten zulassen und am Ende
+des Semesters das Modul löschen.
