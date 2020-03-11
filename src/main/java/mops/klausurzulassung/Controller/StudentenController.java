@@ -82,8 +82,8 @@ public class StudentenController {
       throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
           NoPublicKeyInDatabaseException {
 
-    boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token);
-    if (!studentService.isFristAbgelaufen(fach) && value) {
+    boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token) && !studentService.isFristAbgelaufen(Long.parseLong(fach));
+    if (value) {
       Student student = new Student(vorname, nachname, email, Long.parseLong(matrikelnummer), Long.parseLong(fach), null, token);
       studentService.save(student);
     }

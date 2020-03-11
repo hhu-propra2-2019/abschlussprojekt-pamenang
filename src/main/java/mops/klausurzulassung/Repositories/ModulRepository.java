@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ModulRepository extends CrudRepository<Modul, Long> {
   Iterable<Modul> findByOwner(String name);
-  Optional<Modul> findById(String fachId);
+  Optional<Modul> findById(Long fachId);
 }

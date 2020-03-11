@@ -34,8 +34,8 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public boolean isFristAbgelaufen(String fachId){
-    Optional<Modul> modul =modulRepository.findById(fachId);
+  public boolean isFristAbgelaufen(Long fachId){
+    Optional<Modul> modul = modulRepository.findById(fachId);
     LocalDate date = LocalDate.now();
     LocalDate frist = LocalDate.parse(modul.get().getFrist());
     return frist.isBefore(date);
