@@ -3,6 +3,7 @@ package mops.klausurzulassung.Domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,5 +29,6 @@ public class Modul {
   private String owner;
 
   @Column(name="frist")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date frist;
 }
