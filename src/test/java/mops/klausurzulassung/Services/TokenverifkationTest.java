@@ -11,14 +11,14 @@ class TokenverifkationTest {
 
     @Test
     void testAtToSlash(){
-        String at = "@";
+        String at = "hallo@@welt";
         QuittungRepository quittungRepository = mock(QuittungRepository.class);
         QuittungService quittungService = new QuittungService(quittungRepository);
         TokenverifikationService tokenverifikationService = new TokenverifikationService(quittungService);
 
         String slash = tokenverifikationService.atToSlash(at);
 
-        assertEquals("/",slash);
+        assertEquals("hallo//welt",slash);
 
     }
 
