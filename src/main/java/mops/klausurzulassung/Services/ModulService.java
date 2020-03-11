@@ -7,6 +7,7 @@ import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Repositories.ModulRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -152,6 +153,7 @@ public class ModulService {
     } else {
       errorMessage = "Keine Zulassungsliste hochgeladen!";
     }
+    response.sendRedirect("redirect:/zulassung1/modul/" + id);
     String[] messages = {errorMessage, successMessage};
     return messages;
   }
@@ -199,7 +201,7 @@ public class ModulService {
 
       String modulname = findById(id).get().getName();
       student.setFachname(modulname);
-      emailService.sendMail(student);
+      //emailService.sendMail(student);
 
     } catch (NoPublicKeyInDatabaseException e){
       String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
@@ -207,7 +209,7 @@ public class ModulService {
       String modulname = findById(id).get().getName();
       student.setFachname(modulname);
       studentService.save(student);
-      emailService.sendMail(student);
+      //emailService.sendMail(student);
     }
   }
 

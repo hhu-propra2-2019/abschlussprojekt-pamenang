@@ -105,12 +105,12 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}/delete")
-  public String deleteModul(Model model, @PathVariable Long id, KeycloakAuthenticationToken token) {
+  @ResponseBody
+  public void deleteModul(Model model, @PathVariable Long id, KeycloakAuthenticationToken token) {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
     String [] messages = modulService.deleteStudentsFromModul(id);
     setMessages(messages[0],messages[1]);
-    return "redirect:/zulassung1/modulHinzufuegen";
   }
 
   @Secured("ROLE_orga")
