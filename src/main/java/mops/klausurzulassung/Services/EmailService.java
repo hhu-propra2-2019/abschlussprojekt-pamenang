@@ -25,20 +25,20 @@ public class EmailService {
     this.javaMailSender = javaMailSender;
   }
 
-  public void sendMail(Student student, long id) {
+  public void sendMail(Student student) {
     try {
       String body =
           "<h1>Hallo, "
               + student.getVorname()
               + "</h1><br> Klicke auf den <a href='"
-              + generateValidTokenLink(student, id)
+              + generateValidTokenLink(student)
               + "'>Link</a>, um dich zu zulassen.<br> Bitte verliere den Token nicht, sonst ist es nicht möglich sich für die Klausur zu zuzlassen.<br>Token: "
               + student.getToken();
       MimeMessage message = this.javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
       helper.setFrom(FROM_EMAIL);
       helper.setTo(student.getEmail().toString());
-      helper.setSubject("Klausurzulassungstoken " + id);
+      helper.setSubject("Klausurzulassungstoken " + student.getModulId());
       helper.setText(body, true);
       this.javaMailSender.send(message);
     } catch (MessagingException e1) {
@@ -48,10 +48,10 @@ public class EmailService {
   }
 
   /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
-  public String generateValidTokenLink(Student student, long id) {
+  public String generateValidTokenLink(Student student) {
     String studentAddUri = "/zulassung1/student/";
     String token = student.getToken() + "/";
-    String fachID = id + "/";
+    String fachID = student.getModulId() + "/";
     String matrikelnr = Long.toString(student.getMatrikelnummer()) + "/";
     String studvorname = student.getVorname() + "/";
     String studnachname = student.getNachname() + "/";
