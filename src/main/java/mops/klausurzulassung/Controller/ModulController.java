@@ -100,7 +100,6 @@ public class ModulController {
       this.currentModul = new Modul();
     }
 
-    resetMessages();
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
@@ -133,7 +132,6 @@ public class ModulController {
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}")
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
-    resetMessages();
     model.addAttribute("account", createAccountFromPrincipal(token));
     String [] messages = modulService.verarbeiteUploadliste(id, file);
     setMessages(messages[0],messages[1]);
@@ -143,7 +141,6 @@ public class ModulController {
   @Secured("ROLE_orga")
   @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   public String downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
-    resetMessages();
     model.addAttribute("account", createAccountFromPrincipal(token));
     String[] messages = modulService.download(id, response);
     setMessages(messages[0],messages[1]);
@@ -154,7 +151,6 @@ public class ModulController {
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
   public String altzulassungHinzufuegen(@ModelAttribute @Valid Student student, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException, NoPublicKeyInDatabaseException {
-    resetMessages();
     model.addAttribute("account", createAccountFromPrincipal(token));
 
     String[] messages = modulService.altzulassungVerarbeiten(student, papierZulassung, id);
