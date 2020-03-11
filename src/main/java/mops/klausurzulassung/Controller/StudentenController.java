@@ -40,13 +40,23 @@ public class StudentenController {
   }
 
   @Secured({"ROLE_studentin", "ROLE_orga"})
-  @GetMapping("/student/{zulassungToken}/{fachName}/{matrikelnr}")
-  public String studentansichtMitToken(@PathVariable String zulassungToken, @PathVariable String fachName, @PathVariable long matrikelnr, Model model, KeycloakAuthenticationToken token) {
+  @GetMapping("/student/{zulassungToken}/{fachID}/{matrikelnr}/{vorname}/{nachname}/")
+  public String studentansichtMitToken(
+      @PathVariable String zulassungToken,
+      @PathVariable String fachID,
+      @PathVariable long matrikelnr,
+      @PathVariable String vorname,
+      @PathVariable String nachname,
+      Model model,
+      KeycloakAuthenticationToken token) {
+  
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
     model.addAttribute("zulassungToken", zulassungToken);
     model.addAttribute("matrikelnr", matrikelnr);
-    model.addAttribute("fachName", fachName);
+    model.addAttribute("fach", fachID);
+    model.addAttribute("vorname", vorname);
+    model.addAttribute("nachname", nachname);
     model.addAttribute("student", false);
     if (token.getAccount().getPrincipal().toString().equals("studentin"))
       model.addAttribute("student", true);
