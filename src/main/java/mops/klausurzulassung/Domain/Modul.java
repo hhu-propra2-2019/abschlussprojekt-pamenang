@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Data
 @Entity
@@ -25,4 +26,7 @@ public class Modul {
 
   @Column(name = "owner")
   private String owner;
+
+  @Column(name="frist")
+  private Date frist;
 }
