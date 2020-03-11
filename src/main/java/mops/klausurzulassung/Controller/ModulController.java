@@ -50,22 +50,12 @@ import java.util.Optional;
 public class ModulController {
 
   private final ModulService modulService;
-  private final CsvService csvService;
-  private final StudentService studentService;
-  private final QuittungService quittungService;
-  private final EmailService emailService;
-  private final TokengenerierungService tokengenerierungService;
   private String errorMessage;
   private String successMessage;
   private Modul currentModul = new Modul();
 
-  public ModulController(ModulService modulService, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService, QuittungService quittungService) {
+  public ModulController(ModulService modulService) {
     this.modulService = modulService;
-    this.csvService = csvService;
-    this.studentService = studentService;
-    this.tokengenerierungService = tokengenerierungService;
-    this.emailService = emailService;
-    this.quittungService = quittungService;
   }
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
@@ -90,10 +80,6 @@ public class ModulController {
     return "modulAuswahl";
   }
 
-  private void resetMessages() {
-    setMessages(null, null);
-  }
-
   @Secured("ROLE_orga")
   @PostMapping("/modulHinzufuegen")
   public String newModul(
@@ -101,6 +87,7 @@ public class ModulController {
       Model model,
       KeycloakAuthenticationToken token,
       Principal principal) {
+
     model.addAttribute("account", createAccountFromPrincipal(token));
     modul.setOwner(principal.getName());
     this.currentModul = modul;
@@ -112,28 +99,17 @@ public class ModulController {
       setMessages(null, "Neues Modul wurde erfolgreich hinzugefügt!");
       this.currentModul = new Modul();
     }
+
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}/delete")
   public String deleteModul(Model model, @PathVariable Long id, KeycloakAuthenticationToken token) {
+
     model.addAttribute("account", createAccountFromPrincipal(token));
-    Optional<Modul> modul = modulService.findById(id);
-    if (modul.isPresent()) {
-      String modulName = modul.get().getName();
-      modulService.delete(modul.get());
-
-      Iterable<Student> students = studentService.findByModulId(id);
-      for (Student student : students) {
-        studentService.delete(student);
-      }
-
-      setMessages(null, "Das Modul " + modulName + " wurde gelöscht!");
-    } else {
-      setMessages(
-          "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", null);
-    }
+    String [] messages = modulService.deleteStudentsFromModul(id);
+    setMessages(messages[0],messages[1]);
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
@@ -157,62 +133,19 @@ public class ModulController {
   @PostMapping("/modul/{id}")
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
     model.addAttribute("account", createAccountFromPrincipal(token));
-
-    Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
-
-    boolean countColumns = true;
-
-    for (CSVRecord record : records) {
-      if (record.size() != 4) {
-        countColumns = false;
-      }
-    }
-
-    records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").withSkipHeaderRecord().parse(new InputStreamReader(file.getInputStream()));
-
-    System.out.println();
-
-    if (!countColumns) {
-      setMessages("Datei hat eine falsche Anzahl von Einträgen pro Zeile!", null);
-    } else if (file.isEmpty()) {
-      setMessages("Datei ist leer oder es wurde keine Datei ausgewählt!", null);
-    } else {
-      List<Student> students = csvService.getStudentListFromInputFile(records, id);
-
-      System.out.println(students.toString());
-
-      for (Student student : students) {
-        System.out.println("students :"+student);
-        erstelleTokenUndSendeEmail(student, id);
-      }
-      csvService.writeCsvFile(id, students);
-      setMessages(null, "Zulassungsliste wurde erfolgreich verarbeitet.");
-    }
+    String [] messages = modulService.verarbeiteUploadliste(id, file);
+    setMessages(messages[0],messages[1]);
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 
   @Secured("ROLE_orga")
   @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-  @ResponseBody
-  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
+  public String downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
     model.addAttribute("account", createAccountFromPrincipal(token));
-    setMessages(null, "Klausurliste wurde erfolgreich heruntergeladen.");
+    String[] messages = modulService.download(id, response);
+    setMessages(messages[0],messages[1]);
 
-    String fachname = modulService.findById(id).get().getName();
-    response.setContentType("text/csv");
-    String newFilename = "\"klausurliste_"+fachname+".csv\"";
-    response.setHeader("Content-Disposition", "attachment; filename="+newFilename);
-    OutputStream outputStream = response.getOutputStream();
-    String header = "Matrikelnummer,Nachname,Vorname\n";
-    outputStream.write(header.getBytes());
-    File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
-    outputStream.write(Files.readAllBytes(klausurliste.toPath()));
-    outputStream.flush();
-    outputStream.close();
-
-    if (klausurliste.exists()) {
-      klausurliste.delete();
-    }
+    return "redirect:/zulassung1/modul/" + id;
   }
 
   @Secured("ROLE_orga")
@@ -220,59 +153,18 @@ public class ModulController {
   public String altzulassungHinzufuegen(@ModelAttribute @Valid Student student, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException, NoPublicKeyInDatabaseException {
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-    String email = student.getEmail();
-    String vorname = student.getVorname();
-    String nachname = student.getNachname();
-    Long matnr = student.getMatrikelnummer();
-    student.setModulId(id);
-
-    try {
-      System.out.println("Papier 1: "+papierZulassung);
-      String tokenString = quittungService.findTokenByQuittung(matnr.toString(), id.toString());
-
-      student.setToken(tokenString);
-      String modulname = modulService.findById(id).get().getName();
-      student.setFachname(modulname);
-      studentService.save(student);
-      setMessages(null, "Student "+matnr+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
-      emailService.sendMail(student);
-      
-    } catch (NoTokenInDatabaseException e) {
-      System.out.println("Exception: "+e);
-      System.out.println("Catch");
-      System.out.println("Papier: "+papierZulassung);
-      if (papierZulassung == true) {
-        erstelleTokenUndSendeEmail(student, student.getModulId());
-      } else {
-        setMessages("Student " + matnr + " hat keine Zulassung in diesem Modul!", null);
-      }
-    }
+    String[] messages = modulService.altzulassungVerarbeiten(student, papierZulassung, id);
+    setMessages(messages[0],messages[1]);
     return "redirect:/zulassung1/modul/" + id;
+  }
+
+  private void resetMessages() {
+    setMessages(null, null);
   }
 
   private void setMessages(String errorMessage, String successMessage) {
     this.errorMessage = errorMessage;
     this.successMessage = successMessage;
-  }
-
-  public void erstelleTokenUndSendeEmail(Student student, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
-
-    try {
-      quittungService.findPublicKeyByQuittung(student.getMatrikelnummer().toString(), student.getModulId().toString());
-
-      String modulname = modulService.findById(id).get().getName();
-      student.setFachname(modulname);
-      emailService.sendMail(student);
-
-    } catch (NoPublicKeyInDatabaseException e){
-      String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
-      student.setToken(tokenString);
-      String modulname = modulService.findById(id).get().getName();
-      student.setFachname(modulname);
-      studentService.save(student);
-
-      emailService.sendMail(student);
-    }
   }
 
 }

@@ -78,9 +78,12 @@ public class CsvService {
       fileWriter = new FileWriter(outputFile);
       CSVWriter writer = new CSVWriter(fileWriter);
       Iterable<Student> altzugelassene = studentService.findByModulId(id);
+
       if (altzugelassene != null) {
         for (Student student : altzugelassene) {
-          students.add(student);
+          if (!students.contains(student)){
+            students.add(student);
+          }
         }
       }
 
