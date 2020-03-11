@@ -211,7 +211,7 @@ public class ModulService {
     }
   }
 
-  private boolean studentIsEmpty(Student student) {
+  boolean studentIsEmpty(Student student) {
     if(student.getVorname().isEmpty() || student.getNachname().isEmpty() || student.getEmail().isEmpty() ||student.getMatrikelnummer() == null){
       return true;
     }
