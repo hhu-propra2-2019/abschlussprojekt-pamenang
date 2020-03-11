@@ -73,6 +73,8 @@ public class ModulService {
   }
 
   public String[] verarbeiteUploadliste(Long id, MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
+    successMessage = null;
+    errorMessage = null;
     Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
 
     boolean countColumns = true;
@@ -108,6 +110,8 @@ public class ModulService {
   }
 
   public String[] deleteStudentsFromModul(Long id) {
+    successMessage = null;
+    errorMessage = null;
     Optional<Modul> modul = findById(id);
     if (modul.isPresent()) {
       String modulName = modul.get().getName();
@@ -122,11 +126,14 @@ public class ModulService {
     } else {
       errorMessage = "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.";
     }
+
     String[] messages = {errorMessage, successMessage};
     return messages;
   }
 
   public String[] download(Long id, HttpServletResponse response) throws IOException {
+    successMessage = null;
+    errorMessage = null;
 
     File klausurliste = new File("klausurliste_" + Long.toString(id) + ".csv");
     if (klausurliste.exists()){
@@ -150,6 +157,9 @@ public class ModulService {
   }
 
   public String[] altzulassungVerarbeiten(Student student, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
+    successMessage = null;
+    errorMessage = null;
+
     if (!studentIsEmpty(student)){
       Long matnr = student.getMatrikelnummer();
       student.setModulId(id);
