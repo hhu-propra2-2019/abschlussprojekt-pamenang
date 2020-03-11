@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -30,5 +31,5 @@ public class Modul {
 
   @Column(name="frist")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
-  private Date frist;
+  private String frist;
 }
