@@ -16,6 +16,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,11 +26,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.io.InputStreamReader;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -156,13 +162,27 @@ public class ModulController {
   }
 
   @Secured("ROLE_orga")
-  @PostMapping("/modul/{id}/download")
-  public String downloadListe() {
-
-    // Liste muss noch herunter geladen werden
-
+  @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+  @ResponseBody
+  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
+    model.addAttribute("account", createAccountFromPrincipal(token));
     setMessages(null, "Klausurliste wurde erfolgreich heruntergeladen.");
-    return "redirect:/zulassung1/modulHinzufuegen";
+
+    String fachname = modulService.findById(id).get().getName();
+    response.setContentType("text/csv");
+    String newFilename = "\"klausurliste_"+fachname+".csv\"";
+    response.setHeader("Content-Disposition", "attachment; filename="+newFilename);
+    OutputStream outputStream = response.getOutputStream();
+    String header = "Matrikelnummer,Nachname,Vorname\n";
+    outputStream.write(header.getBytes());
+    File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
+    outputStream.write(Files.readAllBytes(klausurliste.toPath()));
+    outputStream.flush();
+    outputStream.close();
+
+    if (klausurliste.exists()) {
+      klausurliste.delete();
+    }
   }
 
   @Secured("ROLE_orga")
