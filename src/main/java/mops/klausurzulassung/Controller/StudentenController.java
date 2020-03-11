@@ -50,9 +50,6 @@ public class StudentenController {
     model.addAttribute("fach", fachID);
     model.addAttribute("vorname", vorname);
     model.addAttribute("nachname", nachname);
-    model.addAttribute("student", false);
-    if (token.getAccount().getPrincipal().toString().equals("studentin"))
-      model.addAttribute("student", true);
     return "student";
   }
 
@@ -62,8 +59,11 @@ public class StudentenController {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
     model.addAttribute("student", false);
-    if (token.getAccount().getPrincipal().toString().equals("studentin"))
+    if (token.getAccount().getPrincipal().toString().equals("studentin")){
       model.addAttribute("student", true);
+      System.out.println(token.getAccount().getPrincipal().toString());
+    }
+
     return "student";
   }
 

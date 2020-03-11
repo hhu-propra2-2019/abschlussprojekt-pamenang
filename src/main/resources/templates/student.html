@@ -19,7 +19,7 @@
             <li class="active">
                 <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
             </li>
-            <li th:if="${!student}">
+            <li th:if="${!#lists.contains(account.roles, 'studentin')}">
                 <a href="/zulassung1/modulHinzufuegen" th:href="@{/zulassung1/modulHinzufuegen}">Orga</a>
             </li>
         </ul>
@@ -67,18 +67,6 @@
                 <td>
 
                     <input name="nachname" th:value="${nachname}" type="text">
-
-
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-            <tr>
-                <td>E-Mail Adresse:</td>
-                <td>
-
-                    <input name="email" th:value="${email}" type="text">
 
 
                 </td>
