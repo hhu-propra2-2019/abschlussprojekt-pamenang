@@ -28,7 +28,7 @@ public class EmailService {
   public void sendMail(Student student, long id) {
     try {
       String body =
-          "Hallo, " + student.getVorname() + "<br> Klicke auf den Link, um dich zu zulassen: <a href='" + generateValidTokenLink(student, id) + "'>Zulassung erhalten</a>";
+          "<h1>Hallo, " + student.getVorname() + "</h1><br> Klicke auf den <a href='" + generateValidTokenLink(student, id) + "'>Link</a>, um dich zu zulassen.<br> Bitte verliere den Token nicht, sonst ist es nicht möglich sich für die Klausur zu zuzlassen.<br>Token: " + student.getToken();
       MimeMessage message = this.javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
       helper.setFrom("pamenang@web.de");
@@ -39,23 +39,6 @@ public class EmailService {
     } catch (MessagingException e1) {
       e1.printStackTrace();
     }
-    /*
-    SimpleMailMessage msg = new SimpleMailMessage();
-    msg.setFrom(FROM_EMAIL);
-    msg.setTo(student.getEmail());
-    msg.setSubject("Klausurzulassungstoken " + student.getFachname());
-    msg.setText(
-        "Grüezi "
-            + student.getVorname()
-            + " "
-            + student.getNachname()
-            + ",\n hiermit erhälst du"
-            + " dein Klausurzulassungtoken. Dieses lautet: \n"
-            + student.getToken()
-            + "\n"
-            + generateValidTokenLink(student, id));
-    System.out.println(msg.getText());
-    javaMailSender.send(msg);*/
     logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
   }
 
