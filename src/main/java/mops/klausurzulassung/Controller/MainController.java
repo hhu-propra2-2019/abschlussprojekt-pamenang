@@ -9,19 +9,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.annotation.SessionScope;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
+@SessionScope
 @RequestMapping("/zulassung1")
 public class MainController {
-
-  EmailService emailService;
-
-  @Autowired
-  public MainController(EmailService emailService) {
-    this.emailService = emailService;
-  }
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
@@ -41,9 +36,4 @@ public class MainController {
     return "mainpage";
   }
 
-  @GetMapping("/logout")
-  public String logout(HttpServletRequest request) throws Exception {
-    request.logout();
-    return "redirect:/zulassung1";
-  }
 }

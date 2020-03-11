@@ -157,9 +157,9 @@
                               th:if="${#fields.hasErrors('email')}"></span>
                     </div>
                     <div>
-                        <input id="fristAbgelaufen" name="fristAbgelaufen" th:selected="${fristAbgelaufen}"
-                               type="checkbox">
-                        <label for="fristAbgelaufen">Frist ist abgelaufen</label>
+                        <input id="papierZulassung" name="papierZulassung"
+                               type="checkbox" th:selected="${papierZulassung}">
+                        <label for="papierZulassung">Student hat Zulassung auf Papier</label>
                     </div>
                     <div class="buttonModal">
                         <input align="center" class="btn btn-primary" type="submit" value="Abschicken">
@@ -189,7 +189,7 @@
     <form action="#" align="left" enctype="multipart/form-data" method="post"
           th:action="'/zulassung1/modul'+'/'+${id}">
         <div>
-            <label>Wählen Sie eine Zulassungsliste (.csv) aus Ihrem Dateimanager aus! <br>
+            <label>Wählen Sie eine Zulassungsliste (.csv) aus Ihrem Dateimanager aus! (Spaltentitle: Vorname, Nachname, Email, Matrikelnummer)<br>
                 <input accept=".csv" name="datei" size="50" type="file">
             </label>
             <br>
@@ -201,7 +201,7 @@
 
     <div align="left">
         <label> Hier können Sie die Klausurliste zum Modul <span th:text="${modul}">Propra</span> downladen!
-            <form action="#" method="post" th:action="'/zulassung1/modul' +'/' + ${id}+'/download'">
+            <form action="#" method="get" th:action="'/zulassung1/modul' +'/' + ${id}+'/klausurliste'">
                 <button class="btn btn-outline-dark" type="submit">Download!</button>
             </form>
         </label>

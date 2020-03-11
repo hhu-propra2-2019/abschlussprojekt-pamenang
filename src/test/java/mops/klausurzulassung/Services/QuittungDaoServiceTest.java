@@ -36,7 +36,7 @@ public class QuittungDaoServiceTest {
 
 
 
-        when(quittungRepository.findByMatrikelnummerAndFachID(matr,fachID)).thenReturn(quittungDao);
+        when(quittungRepository.findByMatrikelnummerAndModulId(matr,fachID)).thenReturn(quittungDao);
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
 
         assertEquals(pK, publicKey);

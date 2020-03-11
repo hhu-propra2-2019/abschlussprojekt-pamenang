@@ -35,13 +35,10 @@ public class CsvService {
 
   // Reihenfolge im output.csv:
   // Matrikelnummer, Nachname, Vorname
-
-  public List<Student> getStudentListFromInputFile(MultipartFile multipartFile, Long id)
-      throws IOException {
+  
+  public List<Student> getStudentListFromInputFile(Iterable<CSVRecord> records, Long id) throws IOException {
     List<Student> studentList = new ArrayList<>();
-    Iterable<CSVRecord> records =
-        CSVFormat.DEFAULT.parse(
-            new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
+
     for (CSVRecord record : records) {
       studentList.add(createStudentFromInputStream(record, id));
     }
@@ -62,10 +59,10 @@ public class CsvService {
     String vorname, nachname, email, fachname, token;
     Long matrikelnummer, modulId;
 
-    vorname = record.get(0);
-    nachname = record.get(1);
-    email = record.get(2);
-    matrikelnummer = Long.parseLong(record.get(3));
+    vorname = record.get("Vorname");
+    nachname = record.get("Nachname");
+    email = record.get("Email");
+    matrikelnummer = Long.parseLong(record.get("Matrikelnummer"));
     modulId = id;
     fachname = null;
     token = null;

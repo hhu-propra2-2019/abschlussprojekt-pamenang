@@ -1,0 +1,29 @@
+== Abschnitt 3 Kontextabgrenzung
+=== Aufgabe 3.1 Fachlicher Kontext
+
+==== Studenten (Benutzer)
+
+    Der Student bekommt eine Mail mit einer Zulassungsbenachrichtigung und dem zugehörigen Token, nachdem er die Klausurzulassung bestanden hat. Der Student kann den Token
+    auf der Weboberfläche einlösen, wenn er sich zur neuen Klausur zulassen möchte. Er bekommt eine visuelle Bestätigung ob dies erfolgreich war.
+
+==== Organisator (Benutzer)
+
+    Der Organisator reicht eine Zulassungsliste ein und kann Studenten manuell zulassen.
+
+=== Aufgabe 3.2 Technischer Kontext
+
+==== Tokengenerierung
+
+    Token wird generiert und durch asymetrische Kryptographie verschlüsselt.
+
+==== Tokenverifikation
+
+    Token wird durch Public Key, gespeiechert in der Datenbank, verifiziert.
+
+==== Email-Service
+
+    Versendet Emails mit Zulassungsbenachrichtigung an Studenten.
+
+==== Key-Cloak (Fremdsystem)
+
+    Kümmert sich um die Anmeldung.

@@ -1,0 +1,41 @@
+== Abschnitt 1 Einführung und Ziele
+=== Aufgabe 1.1 Aufgabenstellung
+
+Was ist das Klausurzulassungssystem?
+
+- Verwaltung von Altklausurzulassungen
+- Versenden von Klausurzulassungen per Mail
+- Zulassungen verschlüsselt über Tokensystem
+- Einreichung von Token für Klausurzulassungen
+
+Wesentliche Features:
+
+- Asymetrische, kryptographische Tokengenerierung
+- Automatische Emailversendung
+
+=== Aufgabe 1.2 Qualitätsziele
+
+[cols="1,1" options="header"]
+|===
+|Qualitätsziel | Motivation und Erläuterung
+| Einfache Benutzeroberfläche| Angenehme und selbsterklärende User Experience
+| Automatiserung der Systemabläufe | Menschliche Fehlervermeidung und Vereinfachung für Nutzer
+| Sichere Tokengenerierung| Eindeutige und sichere Tokenerstellung um Fälschungen zu vermeiden
+|===
+
+
+=== Aufgabe 1.3 Stakeholder
+
+[cols="1,1" options="header"]
+|===
+|Wer? | Interesse/Bezug
+| Studenten|
+- wollen sich für Klausuren anmelden
+
+- unkomplizierte Anmeldung
+
+| Organisatoren |
+- einfache Übermittlung der Zulassungen an Studenten
+
+- wollen Verantwortlichkeiten an Studenten abgeben
+|===

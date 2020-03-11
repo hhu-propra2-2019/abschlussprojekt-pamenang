@@ -2,7 +2,6 @@ package mops.klausurzulassung.Services;
 
 import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Domain.QuittungDto;
-import mops.klausurzulassung.Services.QuittungService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import java.security.KeyPairGenerator;
 import java.security.Signature;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.Base64;
 
 @Service
 public class TokengenerierungService {
@@ -53,36 +53,25 @@ public class TokengenerierungService {
         byte[] token = sign.sign();
 
 
-        QuittungDto quittungDto = new QuittungDto(matr, fachID, publicKey, bytesToHex(token));
+        QuittungDto quittungDto = new QuittungDto(matr, fachID, publicKey, Base64.getEncoder().encodeToString(token));
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
         logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
 
-        return bytesToHex(token);
+        return Base64.getEncoder().encodeToString(token);
     }
 
     private KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
-        keyPairGen.initialize(2048);
+        keyPairGen.initialize(512);
         logger.debug("Generiere KeyPaar");
         return keyPairGen.generateKeyPair();
     }
 
-    String bytesToHex(byte[] bytes) {
-        final char[] hexArray = "0123456789ABCDEF".toCharArray();
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
     private QuittungDao erstelleQuittungDao(QuittungDto quittungDto){
         QuittungDao quittungDao = new QuittungDao();
-        quittungDao.setFachID(quittungDto.getFachID());
+        quittungDao.setModulId(quittungDto.getModulId());
         quittungDao.setMatrikelnummer(quittungDto.getMatrikelnummer());
         quittungDao.setPublicKey(quittungDto.getPublicKey());
         quittungDao.setToken(quittungDto.getToken());
