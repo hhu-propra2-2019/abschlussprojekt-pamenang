@@ -29,18 +29,20 @@ public class EmailServiceTests {
   @Test
   public void test_sendMail_checkForMethodCalls() {
     // Arrange
+    long id = 5;
     Student student = new Student("t1", "t2", "t3", 1234L, 1L, "t4", "token");
     // Act
-    emailService.sendMail(student, 5);
+    emailService.sendMail(student, id);
     // Assert
     verify(javaMailSender, times(1)).send((SimpleMailMessage) any());
   }
 
   @Test
   public void test_generateValidToken_CheckIfSuccessfullyGeneratedLink() {
+    long id = 5;
     Student student = new Student("t1", "t2", "t3", (long) 1234, (long) 1, "t4", "token");
-    String link = emailService.generateValidTokenLink(student, 5);
+    String link = emailService.generateValidTokenLink(student, id);
     System.out.println(link);
-    Assertions.assertThat(link).contains("token/t4/1234");
+    Assertions.assertThat(link).contains("token/5/1234/t1/t2");
   }
 }
