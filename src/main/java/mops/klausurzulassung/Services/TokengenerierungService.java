@@ -33,10 +33,6 @@ public class TokengenerierungService {
         return matr+fach;
     }
 
-    public String erstellenQuittung(String matr, String fach, String token){
-        return matr+fach+token;
-    }
-
     public String erstellenToken(String matr, String fachID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
         String HashValue = erstellenHashValue(matr, fachID);

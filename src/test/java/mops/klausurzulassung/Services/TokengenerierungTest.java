@@ -33,20 +33,6 @@ public class TokengenerierungTest {
   }
 
   @Test
-  public void testStudentenToken() {
-    String matr = "3333333";
-    String fach = "propra1";
-    String token = "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3";
-    QuittungService quittungService = mock(QuittungService.class);
-
-    TokengenerierungService tg = new TokengenerierungService(quittungService);
-    String ergebnis = tg.erstellenQuittung(matr, fach, token);
-
-    assertEquals(
-        ergebnis, "3333333propra1a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
-  }
-
-  @Test
   public void testTokengenerierung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     QuittungRepository repository = mock(QuittungRepository.class);
     QuittungService quittungService = new QuittungService(repository);
