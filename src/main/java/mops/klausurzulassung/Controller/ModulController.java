@@ -5,21 +5,14 @@ import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
-import mops.klausurzulassung.Services.CsvService;
-import mops.klausurzulassung.Services.EmailService;
-import mops.klausurzulassung.Services.QuittungService;
-import mops.klausurzulassung.Services.TokengenerierungService;
-import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Services.ModulService;
-import mops.klausurzulassung.Services.StudentService;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,20 +22,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.io.InputStreamReader;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
-import java.util.List;
-import java.util.Optional;
 
 @Controller
 @SessionScope
@@ -105,12 +99,12 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}/delete")
-  @ResponseBody
-  public void deleteModul(Model model, @PathVariable Long id, KeycloakAuthenticationToken token) {
+  public String deleteModul(Model model, @PathVariable Long id, KeycloakAuthenticationToken token) {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
     String [] messages = modulService.deleteStudentsFromModul(id);
     setMessages(messages[0],messages[1]);
+    return "redirect:/zulassung1/modulHinzufuegen";
   }
 
   @Secured("ROLE_orga")
@@ -138,14 +132,12 @@ public class ModulController {
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 
-  @Secured("ROLE_orga")
   @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-  public String downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
+  @ResponseBody
+  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
     model.addAttribute("account", createAccountFromPrincipal(token));
     String[] messages = modulService.download(id, response);
     setMessages(messages[0],messages[1]);
-
-    return "redirect:/zulassung1/modul/" + id;
   }
 
   @Secured("ROLE_orga")

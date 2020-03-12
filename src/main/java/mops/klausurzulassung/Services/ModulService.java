@@ -88,7 +88,6 @@ public class ModulService {
 
     records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").withSkipHeaderRecord().parse(new InputStreamReader(file.getInputStream()));
 
-    System.out.println();
 
     if (!countColumns) {
       errorMessage = "Datei hat eine falsche Anzahl von Einträgen pro Zeile!";
@@ -97,10 +96,8 @@ public class ModulService {
     } else {
       List<Student> students = csvService.getStudentListFromInputFile(records, id);
 
-      System.out.println(students.toString());
 
       for (Student student : students) {
-        System.out.println("students :"+student);
         erstelleTokenUndSendeEmail(student, id);
       }
       csvService.writeCsvFile(id, students);
@@ -132,28 +129,31 @@ public class ModulService {
     return messages;
   }
 
-  public String[] download(Long id, HttpServletResponse response) throws IOException {
-    successMessage = null;
+  public String[] download(@PathVariable Long id, HttpServletResponse response) throws IOException {
     errorMessage = null;
+    successMessage = null;
 
-    File klausurliste = new File("klausurliste_" + Long.toString(id) + ".csv");
-    if (klausurliste.exists()){
+    try {
+      File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
+      Path path = klausurliste.toPath();
+      byte[] bytes = Files.readAllBytes(path);
+
       String fachname = findById(id).get().getName();
       response.setContentType("text/csv");
-      String newFilename = "\"klausurliste_" + fachname + ".csv\"";
-      response.setHeader("Content-Disposition", "attachment; filename=" + newFilename);
+      String newFilename = "\"klausurliste_"+fachname+".csv\"";
+      response.setHeader("Content-Disposition", "attachment; filename="+newFilename);
       OutputStream outputStream = response.getOutputStream();
       String header = "Matrikelnummer,Nachname,Vorname\n";
       outputStream.write(header.getBytes());
-      outputStream.write(Files.readAllBytes(klausurliste.toPath()));
+      outputStream.write(bytes);
       outputStream.flush();
       outputStream.close();
       klausurliste.delete();
-      successMessage = "Datei wurde erfolgreich heruntergeladen! Bitte denken Sie dran am Ende des Semesters das Modul zu löschen.";
-    } else {
-      errorMessage = "Keine Zulassungsliste hochgeladen!";
+
+    } catch (NoSuchFileException e){
+      errorMessage = "Bitte erst eine Zulassungsliste hochladen!";
+      response.sendRedirect("/zulassung1/modul" + "/" + id);
     }
-    response.sendRedirect("redirect:/zulassung1/modul/" + id);
     String[] messages = {errorMessage, successMessage};
     return messages;
   }
@@ -167,7 +167,6 @@ public class ModulService {
       student.setModulId(id);
 
       try {
-        System.out.println("ID: "+id+" Matnr: "+matnr);
         String tokenString = quittungService.findTokenByQuittung(matnr.toString(), id.toString());
         student.setToken(tokenString);
         String modulname = findById(id).get().getName();
