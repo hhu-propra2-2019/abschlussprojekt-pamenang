@@ -201,7 +201,7 @@ public class ModulService {
       quittungService.findPublicKeyByQuittung(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
       if (isAltzulassung){
-        //emailService.sendMail(student);
+        emailService.sendMail(student);
       }
 
     } catch (NoPublicKeyInDatabaseException e){
@@ -211,7 +211,7 @@ public class ModulService {
       if (isAltzulassung){
         studentService.save(student);
       }
-      //emailService.sendMail(student);
+      emailService.sendMail(student);
     }
   }
 

@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.Optional;
 
 @RequestMapping("/zulassung1")
 @SessionScope
@@ -47,10 +48,18 @@ public class StudentenController {
   @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{tokenLink}/{fachLink}/{matrikelnummerLink}/{vornameLink}/{nachnameLink}/")
   public String studentansichtMitToken(@PathVariable String tokenLink, @PathVariable Long fachLink, @PathVariable Long matrikelnummerLink, @PathVariable String vornameLink, @PathVariable String nachnameLink, Model model, KeycloakAuthenticationToken keyToken) {
-    Student student = new Student(vornameLink, nachnameLink, null, matrikelnummerLink, fachLink, null, tokenLink);
+    Student student = studentService.findByToken(tokenLink).get();
+    StudentDto studentDto = StudentDto.builder()
+            .email(student.getEmail())
+            .fachname(student.getFachname())
+            .matrikelnummer(student.getMatrikelnummer())
+            .modulId(student.getModulId())
+            .nachname(student.getNachname())
+            .token(student.getToken())
+            .vorname(student.getVorname()).build();
     model.addAttribute("account", createAccountFromPrincipal(keyToken));
     model.addAttribute("meldung", false);
-    model.addAttribute("studentObj", student);
+    model.addAttribute("studentDto", studentDto);
     return "student";
   }
 
