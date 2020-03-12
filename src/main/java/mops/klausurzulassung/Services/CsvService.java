@@ -75,6 +75,7 @@ public class CsvService {
     FileWriter fileWriter = null;
 
     try {
+
       fileWriter = new FileWriter(outputFile);
       CSVWriter writer = new CSVWriter(fileWriter);
       Iterable<Student> altzugelassene = studentService.findByModulId(id);

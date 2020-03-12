@@ -196,7 +196,7 @@ public class ModulService {
   private void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
 
     try {
-      System.out.println("Try");
+
       quittungService.findPublicKeyByQuittung(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
       String modulname = findById(id).get().getName();
@@ -207,7 +207,7 @@ public class ModulService {
       }
 
     } catch (NoPublicKeyInDatabaseException e){
-      System.out.println("Catch");
+
       String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
       student.setToken(tokenString);
       String modulname = findById(id).get().getName();
