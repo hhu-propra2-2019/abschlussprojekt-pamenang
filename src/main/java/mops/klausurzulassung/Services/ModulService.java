@@ -47,10 +47,6 @@ public class ModulService {
     this.successMessage = null;
   }
 
-  public Iterable<Modul> allModuls() {
-    return modulRepository.findAll();
-  }
-
   public Iterable<Modul> findByOwner(String name) {
     return modulRepository.findByOwner(name);
   }
