@@ -2,12 +2,10 @@ package mops.klausurzulassung.Services;
 
 import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Modul;
-import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Repositories.ModulRepository;
-import mops.klausurzulassung.Repositories.QuittungRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
@@ -266,15 +264,11 @@ public class ModulServiceTest {
     student.setNachname("Müller");
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
-
+    student.setModulId((long) 1);
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
 
-    KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
-    keyPairGen.initialize(512);
-    KeyPair keyPair = keyPairGen.generateKeyPair();
-    PublicKey aPublic = keyPair.getPublic();
 
-    when(quittungService.findPublicKeyByQuittung("1231", "123")).thenReturn(aPublic);
+    when(quittungService.findPublicKeyByQuittung(anyString(),anyString())).thenReturn(any());
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
     modulService.erstelleTokenUndSendeEmail(student, (long) 1,true);
@@ -284,13 +278,36 @@ public class ModulServiceTest {
   }
 
   @Test
-  void erstelleTokenUndSendeMailWithException() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
+  void erstelleTokenUndSendeMailWithExceptionMitAltzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
 
     Student student = new Student();
     student.setVorname("Joshua");
     student.setNachname("Müller");
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
+    student.setModulId((long) 1);
+
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
+
+    when(quittungService.findPublicKeyByQuittung(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
+    when(modulRepository.findById((long) 1)).thenReturn(modul);
+
+    modulService.erstelleTokenUndSendeEmail(student, (long) 1,false);
+
+    verify(studentService,times(0)).save(student);
+    verify(emailService,times(1)).sendMail(student);
+
+  }
+
+  @Test
+  void erstelleTokenUndSendeMailWithExceptionOhneAltzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
+
+    Student student = new Student();
+    student.setVorname("Joshua");
+    student.setNachname("Müller");
+    student.setEmail("joshua@gmail.com");
+    student.setMatrikelnummer((long) 1231);
+    student.setModulId((long) 1);
 
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
 
@@ -299,6 +316,7 @@ public class ModulServiceTest {
 
     modulService.erstelleTokenUndSendeEmail(student, (long) 1,true);
 
+    verify(studentService,times(1)).save(student);
     verify(emailService,times(1)).sendMail(student);
 
   }
