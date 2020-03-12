@@ -26,41 +26,52 @@
     </nav>
 </header>
 <main th:fragment="bodycontent">
-    <h1>Klausuranmeldung</h1>
-    <div th:if="${meldung}">
-        <div th:classappend="${!success} ? 'alert alert-danger'" th:if="${!success}" th:text="${fehlerText}">
-        </div>
-        <div th:classappend="${success} ? 'alert alert-success'" th:if="${success}"
-             th:text="${successText}">
-        </div>
-    </div>
+    <h1 class="text-center">Klausuranmeldung</h1>
 
 
-    <form method="post" th:action="@{/zulassung1/modulHinzufuegen}">
-        <div class="form-group">
-            <label for="matrikelnummer">Bitte geben Sie ihre Matrikelnummer ein.</label>
-            <input id="matrikelnummer" name="matrikelnummer" th:value="${matrikelnr}" type="text">
-        </div>
-        <div class="form-group">
-            <label for="vorname">Bitte geben Sie ihren Vornamen ein.</label>
-            <input id="vorname" name="vorname" th:value="${vorname}" type="text">
-        </div>
-        <div class="form-group">
-            <label for="nachname">Bitte geben Sie ihren Nachname ein.</label>
-            <input id="nachname" name="nachname" th:value="${nachname}" type="text">
-        </div>
-        <div class="form-group">
-            <label for="fach">Bitte geben Sie ihre FachId ein.</label>
-            <input id="fach"  name="fach"th:value="${fach}" type="text">
-        </div>
-        <div class="form-group">
-            <label for="token">Bitte geben Sie ihren Token ein.</label>
-            <input id="token" name="token" th:value="${zulassungToken}" type="text">
+    <div class="container">
+        <h5 class="lead text-center"> Hier kannst du mithilfe deines Tokens deine Altklausurzulassung einreichen.</h5>
+        <br>
+
+
+        <div th:if="${meldung}">
+            <div th:classappend="${!success} ? 'alert alert-danger'" th:if="${!success}" th:text="${fehlerText}">
+            </div>
+            <div th:classappend="${success} ? 'alert alert-success'" th:if="${success}"
+                 th:text="${successText}">
+            </div>
         </div>
 
-        <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
+        <form method="post" th:action="@{/zulassung1/student}">
+
+            <div class="form-group">
+                <label for="matrikelnummer">Bitte geben Sie ihre Matrikelnummer ein.</label>
+                <input class="form-control" id="matrikelnummer" name="matrikelnummer" th:value="${matrikelnr}" th:placeholder="Matrikelnummer"
+                       type="text">
+            </div>
+            <div class="form-group">
+                <label for="vorname">Bitte geben Sie ihren Vornamen ein.</label>
+                <input class="form-control" id="vorname" name="vorname" th:value="${vorname}" th:placeholder="Vorname" type="text">
+            </div>
+            <div class="form-group">
+                <label for="nachname">Bitte geben Sie ihren Nachname ein.</label>
+                <input class="form-control" id="nachname" name="nachname" th:value="${nachname}" th:placeholder="Nachname" type="text">
+            </div>
+            <div class="form-group">
+                <label for="fach">Bitte geben Sie ihre FachId ein.</label>
+                <input class="form-control" id="fach" name="fach" th:value="${fach}" th:placeholder="Fach-Id"type="text">
+            </div>
+            <div class="form-group">
+                <label for="token">Bitte geben Sie ihren Token ein.</label>
+                <input class="form-control" id="token" name="token" th:value="${zulassungToken}" th:placeholder="Token" type="text">
+            </div>
+
+            <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
+
 
     </form>
+    </div>
+
 </main>
 </body>
 </html>
