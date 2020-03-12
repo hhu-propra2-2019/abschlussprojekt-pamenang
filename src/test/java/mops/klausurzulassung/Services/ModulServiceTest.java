@@ -5,8 +5,6 @@ import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Repositories.ModulRepository;
-import org.bouncycastle.math.raw.Mod;
-import org.checkerframework.checker.nullness.Opt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,14 +16,20 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ModulServiceTest {
 
@@ -126,7 +130,15 @@ public class ModulServiceTest {
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447".getBytes());
 
+    List<Student> students = new ArrayList<>();
+    students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, null, null));
+    students.add(new Student("Rebecca", "Fröhlich", "refro100@hhu.de", 2658447L, 1L, null, null));
+
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
+
     when(multipartFile.getInputStream()).thenReturn(input);
+    when(csvService.getStudentListFromInputFile(any(), any())).thenReturn(students);
+    when(modulRepository.findById(anyLong())).thenReturn(modul);
 
     String successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
     String success = modulService.verarbeiteUploadliste(69L, multipartFile)[1];
