@@ -192,7 +192,7 @@ public class ModulService {
       student.setFachname(modulname);
 
       if (isAltzulassung){
-       // emailService.sendMail(student);
+        emailService.sendMail(student);
       }
 
     } catch (NoPublicKeyInDatabaseException e){
@@ -204,7 +204,7 @@ public class ModulService {
       if (isAltzulassung){
         studentService.save(student);
       }
-      //emailService.sendMail(student);
+      emailService.sendMail(student);
     }
   }
 
