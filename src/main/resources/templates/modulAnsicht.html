@@ -134,7 +134,7 @@
                     <div class="form-group">
                         <label for="matrikelnummer">Bitte geben Sie die Matrikelnummer des Students ein.</label>
                         <input class="form-control" id="matrikelnummer" name="matrikelnummer"
-                               placeholder="Matrikelnummer"
+                               placeholder="Matrikelnummer" type="number"
                                th:errorclass="is-invalid" th:value="*{matrikelnummer}" type="text">
                         <span class="text-danger" th:errors="*{matrikelnummer}"
                               th:if="${#fields.hasErrors('matrikelnummer')}"></span>
