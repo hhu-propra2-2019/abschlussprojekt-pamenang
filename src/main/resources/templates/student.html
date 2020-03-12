@@ -46,24 +46,34 @@
 
             <div class="form-group">
                 <label for="matrikelnummer">Bitte geben Sie ihre Matrikelnummer ein.</label>
-                <input class="form-control" id="matrikelnummer" name="matrikelnummer" th:value="${matrikelnr}" th:placeholder="Matrikelnummer"
-                       type="text">
+                <input class="form-control" id="matrikelnummer" name="matrikelnummer" th:value="${matrikelnummer}" th:placeholder="Matrikelnummer"
+                       th:errorclass="is-invalid" type="text">
+                <span class="text-danger" th:errors="*{matrikelnummer}"
+                      th:if="${#fields.hasErrors('matrikelnummer')}"></span>
             </div>
             <div class="form-group">
                 <label for="vorname">Bitte geben Sie ihren Vornamen ein.</label>
-                <input class="form-control" id="vorname" name="vorname" th:value="${vorname}" th:placeholder="Vorname" type="text">
+                <input class="form-control" id="vorname" name="vorname" th:value="${vorname}" th:placeholder="Vorname" th:errorclass="is-invalid" type="text">
+                <span class="text-danger" th:errors="*{vorname}"
+                      th:if="${#fields.hasErrors('vorname')}"></span>
             </div>
             <div class="form-group">
                 <label for="nachname">Bitte geben Sie ihren Nachname ein.</label>
-                <input class="form-control" id="nachname" name="nachname" th:value="${nachname}" th:placeholder="Nachname" type="text">
+                <input class="form-control" id="nachname" name="nachname" th:value="${nachname}" th:placeholder="Nachname" th:errorclass="is-invalid" type="text">
+                <span class="text-danger" th:errors="*{nachname}"
+                      th:if="${#fields.hasErrors('nachname')}"></span>
             </div>
             <div class="form-group">
                 <label for="fach">Bitte geben Sie ihre FachId ein.</label>
-                <input class="form-control" id="fach" name="fach" th:value="${fach}" th:placeholder="Fach-Id"type="text">
+                <input class="form-control" id="fach" name="fach" th:value="${fach}" th:placeholder="Fach-Id" th:errorclass="is-invalid" type="text">
+                <span class="text-danger" th:errors="*{fach}"
+                      th:if="${#fields.hasErrors('fach')}"></span>
             </div>
             <div class="form-group">
                 <label for="token">Bitte geben Sie ihren Token ein.</label>
-                <input class="form-control" id="token" name="token" th:value="${zulassungToken}" th:placeholder="Token" type="text">
+                <input class="form-control" id="token" name="token" th:value="${token}" th:placeholder="Token" th:errorclass="is-invalid" type="text">
+                <span class="text-danger" th:errors="*{token}"
+                      th:if="${#fields.hasErrors('token')}"></span>
             </div>
 
             <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
