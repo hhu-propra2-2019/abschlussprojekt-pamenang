@@ -31,7 +31,7 @@ public class TokenverifikationService {
             return false;
         }
 
-        token = atToSlash(token);
+        token =  token.replaceAll("@", "/");
 
         String HashValue = matr+fachID;
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);

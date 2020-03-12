@@ -29,6 +29,7 @@
     <h1 class="text-center">Klausuranmeldung</h1>
 
 
+
     <div class="container">
         <h5 class="lead text-center"> Hier kannst du mithilfe deines Tokens deine Altklausurzulassung einreichen.</h5>
         <br>
@@ -41,6 +42,7 @@
                  th:text="${successText}">
             </div>
         </div>
+
 
         <form method="post" th:action="@{/zulassung1/student}" th:object="${studentObj}">
 
@@ -72,7 +74,6 @@
             </div>
 
             <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
-
 
     </form>
     </div>
