@@ -155,7 +155,6 @@ public class ModulService {
       student.setModulId(id);
 
       try {
-        System.out.println("ID: "+id+" Matnr: "+matnr);
         String tokenString = quittungService.findTokenByQuittung(matnr.toString(), id.toString());
         student.setToken(tokenString);
         String modulname = findById(id).get().getName();
