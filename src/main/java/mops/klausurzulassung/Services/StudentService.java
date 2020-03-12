@@ -40,4 +40,8 @@ public class StudentService {
     LocalDate frist = LocalDate.parse(modul.get().getFrist());
     return frist.isBefore(date);
   }
+
+  public Optional<Student> findByToken(String token){
+    return studentRepository.findByToken(token);
+  }
 }

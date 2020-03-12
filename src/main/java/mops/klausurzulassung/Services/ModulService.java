@@ -1,5 +1,6 @@
 package mops.klausurzulassung.Services;
 
+import mops.klausurzulassung.Domain.AltzulassungStudentDto;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
@@ -147,35 +148,35 @@ public class ModulService {
     return messages;
   }
 
-  public String[] altzulassungVerarbeiten(Student student, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
+  public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
     successMessage = null;
     errorMessage = null;
 
-    if (!studentIsEmpty(student)){
-      Long matnr = student.getMatrikelnummer();
-      student.setModulId(id);
-
+      String modulname = findById(id).get().getName();
+      Student  student = Student.builder()
+              .email(studentDto.getEmail())
+              .fachname(modulname)
+              .vorname(studentDto.getVorname())
+              .nachname(studentDto.getNachname())
+              .matrikelnummer(studentDto.getMatrikelnummer())
+              .modulId(id)
+              .build();
       try {
-        String tokenString = quittungService.findTokenByQuittung(matnr.toString(), id.toString());
-        student.setToken(tokenString);
-        String modulname = findById(id).get().getName();
-        student.setFachname(modulname);
+
+        String token = quittungService.findTokenByQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
+        student.setToken(token);
         studentService.save(student);
-        successMessage = "Student "+matnr+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.";
+        successMessage = "Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.";
         emailService.sendMail(student);
 
       } catch (NoTokenInDatabaseException e) {
         if (papierZulassung) {
           erstelleTokenUndSendeEmail(student, student.getModulId(), true);
-          successMessage = "Student "+matnr+" wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
+          successMessage = "Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
         } else {
-          errorMessage = "Student " + matnr + " hat keine Zulassung in diesem Modul!";
+          errorMessage = "Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!";
         }
       }
-    }
-    else {
-      errorMessage = "Bitte Daten eingeben!";
-    }
 
 
     String[] messages = {errorMessage, successMessage};
@@ -188,9 +189,6 @@ public class ModulService {
 
       quittungService.findPublicKeyByQuittung(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
-      String modulname = findById(id).get().getName();
-      student.setFachname(modulname);
-
       if (isAltzulassung){
         emailService.sendMail(student);
       }
@@ -199,8 +197,6 @@ public class ModulService {
 
       String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
       student.setToken(tokenString);
-      String modulname = findById(id).get().getName();
-      student.setFachname(modulname);
       if (isAltzulassung){
         studentService.save(student);
       }
