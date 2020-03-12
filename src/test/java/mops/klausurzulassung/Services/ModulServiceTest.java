@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -219,14 +220,15 @@ public class ModulServiceTest {
     student.setNachname("Müller");
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
-    Optional<Modul> modul = Optional.of(new Modul((long)1,"name","owner","2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
 
-    when(quittungService.findTokenByQuittung("123","123")).thenThrow(new NoTokenInDatabaseException("ERROR"));
+    when(quittungService.findTokenByQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
+            "ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
 
     String[] strings = modulService.altzulassungVerarbeiten(student, true, (long) 1);
-    String successMessage = "Student "+ "1231"+" wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
-    assertEquals(successMessage,strings[1]);
+    String successMessage = "Student " + "1231" + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
+    assertEquals(successMessage, strings[1]);
   }
 }
