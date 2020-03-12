@@ -1,5 +1,6 @@
 package mops.klausurzulassung.Services;
 
+import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Repositories.ModulRepository;
@@ -15,7 +16,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,6 +54,45 @@ public class ModulServiceTest {
             emailService,
             quittungService
         );
+  }
+
+  @Test
+  void deleteExistingModulWithStudents() {
+    long modulID = 1L;
+    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner"));
+    when(modulRepository.findById(modulID)).thenReturn(modul);
+    ArrayList<Student> students = new ArrayList<>();
+    students.add(new Student());
+    when(studentService.findByModulId(modulID)).thenReturn(students);
+
+    String[] result = modulService.deleteStudentsFromModul(modulID);
+
+    assertNull(result[0]);
+    assertEquals("Das Modul fname wurde gelöscht!", result[1]);
+  }
+
+  @Test
+  void deleteExistingModulWithoutStudents() {
+    long modulID = 1L;
+    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner"));
+    when(modulRepository.findById(modulID)).thenReturn(modul);
+
+    String[] result = modulService.deleteStudentsFromModul(modulID);
+
+    assertNull(result[0]);
+    assertEquals("Das Modul fname wurde gelöscht!", result[1]);
+  }
+
+  @Test
+  void deleteNonExistingModul() {
+    long modulID = 1L;
+    Optional<Modul> modul = Optional.empty();
+    when(modulRepository.findById(modulID)).thenReturn(modul);
+
+    String[] result = modulService.deleteStudentsFromModul(modulID);
+
+    assertEquals("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", result[0]);
+    assertNull(result[1]);
   }
 
   @Test
