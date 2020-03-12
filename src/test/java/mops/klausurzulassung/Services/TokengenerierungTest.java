@@ -43,15 +43,4 @@ class TokengenerierungTest {
     assertThat(token).isNotNull();
     verify(repository,times(1)).save(any());
   }
-
-  @Test
-  void testSlashToAt(){
-    QuittungRepository repository = mock(QuittungRepository.class);
-    QuittungService quittungService = new QuittungService(repository);
-    TokengenerierungService tg = new TokengenerierungService(quittungService);
-
-    String ergebnis = tg.slashToAt("hallo//welt");
-
-    assertEquals(ergebnis, "hallo@@welt");
-  }
 }
