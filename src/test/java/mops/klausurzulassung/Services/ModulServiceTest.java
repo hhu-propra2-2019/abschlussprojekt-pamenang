@@ -189,7 +189,7 @@ public class ModulServiceTest {
     student.setNachname("Müller");
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
-    Optional<Modul> modul = Optional.of(new Modul((long)1,"name","owner"));
+    Optional<Modul> modul = Optional.of(new Modul((long)1,"name","owner","2000-01-01"));
 
     when(quittungService.findTokenByQuittung("123","123")).thenReturn("132");
     when(modulRepository.findById((long) 1)).thenReturn(modul);
@@ -207,7 +207,7 @@ public class ModulServiceTest {
     student.setNachname("Müller");
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
-    Optional<Modul> modul = Optional.of(new Modul((long)1,"name","owner"));
+    Optional<Modul> modul = Optional.of(new Modul((long)1,"name","owner","2000-01-01"));
 
     when(quittungService.findTokenByQuittung("123","123")).thenThrow(new NoTokenInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
