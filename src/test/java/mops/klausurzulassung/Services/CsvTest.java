@@ -2,10 +2,9 @@ package mops.klausurzulassung.Services;
 
 import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Student;
-import mops.klausurzulassung.Services.CsvService;
-import mops.klausurzulassung.Services.StudentService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,10 +21,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,12 +38,18 @@ public class CsvTest {
 
   private CsvService csvService;
   private MultipartFile multipartFile;
-  private CSVRecord record;
   private StudentService studentService;
+
+  @BeforeEach
+  public void setUp(){
+    this.studentService = mock(StudentService.class);
+    this.csvService = new CsvService(studentService);
+    this.multipartFile = mock(MultipartFile.class);
+  }
 
   @Test
   public void getStudentListFromInputFileTest() throws IOException {
-    csvService = new CsvService(studentService);
+
     this.multipartFile = mock(MultipartFile.class);
 
     List<Student> students = new ArrayList<>();
@@ -79,7 +86,6 @@ public class CsvTest {
 
   @Test
   public void createStudentFromInputStreamTest() throws IOException {
-    csvService = new CsvService(studentService);
 
     Student student = new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, "ProPra2", "123Ldnd");
 
@@ -117,7 +123,6 @@ public class CsvTest {
 
   @Test
   public void putStudentOntoListTest() throws IOException {
-    this.csvService = new CsvService(studentService);
 
     ArrayList<Student> students = new ArrayList<>();
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, "ProPra2", "123Ldnd"));
@@ -147,5 +152,70 @@ public class CsvTest {
     if (file.exists()) {
       file.delete();
     }
+  }
+
+  @Test
+  public void altzulassungUndNeuzulassungInCsvFile() throws IOException {
+
+    List<Student> students = new ArrayList<>();
+    students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2657396L, 1L, null, null));
+    students.add(new Student("Rebecca", "Fröhlich", "refro100@hhu.de", 2658447L, 1L, null, null));
+
+    Student gustav = new Student("Gustav", "Schweden", "gusch@hh.de", 4326465L, 1L, null, null);
+    Student karl = new Student("Karl", "Schweden", "kasch@hh.de", 6345144L, 1L, null, null);
+    Student[] altzugelassene = {gustav, karl};
+    Iterable<Student> iterable = Arrays.asList(altzugelassene);
+
+    File outputFile = new File("klausurliste_1.csv");
+
+    System.out.println("Test: "+iterable.toString());
+    when(studentService.findByModulId(1L)).thenReturn(iterable);
+
+    csvService.writeCsvFile(1L,students);
+
+    assertTrue(outputFile.exists());
+
+    BufferedReader br = new BufferedReader(new FileReader("klausurliste_1.csv"));
+    String line1 = br.readLine();
+    String line2 = br.readLine();
+    String line3 = br.readLine();
+    String line4 = br.readLine();
+
+    assertEquals(null, br.readLine());
+    assertEquals("2657396,Überschär,Cara",line1);
+    assertEquals("2658447,Fröhlich,Rebecca",line2);
+    assertEquals("4326465,Schweden,Gustav",line3);
+    assertEquals("6345144,Schweden,Karl",line4);
+  }
+
+  @Test
+  public void doppelterStudentaltzulassungUndNeuzulassung() throws IOException {
+    List<Student> students = new ArrayList<>();
+    students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2657396L, 1L, null, null));
+    students.add(new Student("Rebecca", "Fröhlich", "refro100@hhu.de", 2658447L, 1L, null, null));
+
+    Student gustav = new Student("Gustav", "Schweden", "gusch@hh.de", 4326465L, 1L, null, null);
+    Student cara = new Student("Cara", "Überschär", "caueb100@hhu.de", 2657396L, 1L, null, null);
+    Student[] altzugelassene = {gustav, cara};
+    Iterable<Student> iterable = Arrays.asList(altzugelassene);
+
+    File outputFile = new File("klausurliste_1.csv");
+
+    System.out.println("Test: "+iterable.toString());
+    when(studentService.findByModulId(1L)).thenReturn(iterable);
+
+    csvService.writeCsvFile(1L,students);
+
+    assertTrue(outputFile.exists());
+
+    BufferedReader br = new BufferedReader(new FileReader("klausurliste_1.csv"));
+    String line1 = br.readLine();
+    String line2 = br.readLine();
+    String line3 = br.readLine();
+
+    assertEquals(null,br.readLine());
+    assertEquals("2657396,Überschär,Cara",line1);
+    assertEquals("2658447,Fröhlich,Rebecca",line2);
+    assertEquals("4326465,Schweden,Gustav",line3);
   }
 }
