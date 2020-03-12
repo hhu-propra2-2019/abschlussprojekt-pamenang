@@ -182,7 +182,7 @@ public class ModulService {
     return messages;
   }
 
-  private void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
+  void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
 
     try {
 
@@ -192,7 +192,7 @@ public class ModulService {
       student.setFachname(modulname);
 
       if (isAltzulassung){
-        //emailService.sendMail(student);
+        emailService.sendMail(student);
       }
 
     } catch (NoPublicKeyInDatabaseException e){
@@ -204,7 +204,7 @@ public class ModulService {
       if (isAltzulassung){
         studentService.save(student);
       }
-      //emailService.sendMail(student);
+      emailService.sendMail(student);
     }
   }
 
