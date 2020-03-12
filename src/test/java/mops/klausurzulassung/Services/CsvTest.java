@@ -53,14 +53,14 @@ public class CsvTest {
     FileWriter fileWriter = new FileWriter(outputFile);
     CSVWriter writer = new CSVWriter(fileWriter);
 
-    String[] cara = {"Cara", "Überschär", "caueb100@hhu.de", "2659396", "1"};
-    String[] rebecca = {"Rebecca", "Fröhlich", "refro100@hhu.de", "2658447", "1"};
+    String[] cara = {"Cara", "Überschär", "caueb100@hhu.de", "2659396"};
+    String[] rebecca = {"Rebecca", "Fröhlich", "refro100@hhu.de", "2658447"};
     writer.writeNext(cara, false);
     writer.writeNext(rebecca, false);
     writer.flush();
     writer.close();
 
-    InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,1,\nRebecca,Fröhlich,refro100@hhu.de,2658447,1".getBytes());
+    InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447".getBytes());
 
     when(multipartFile.getInputStream()).thenReturn(input);
     Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname","Nachname","Email","Matrikelnummer").parse(new InputStreamReader(input));

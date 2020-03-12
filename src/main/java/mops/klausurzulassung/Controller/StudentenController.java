@@ -29,6 +29,7 @@ public class StudentenController {
 
   @Autowired TokenverifikationService tokenverifikation;
   @Autowired StudentRepository studentRepository;
+  @Autowired StudentService studentService;
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
@@ -81,15 +82,14 @@ public class StudentenController {
       throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
           NoPublicKeyInDatabaseException {
 
-    boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token);
+    boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token) && !studentService.isFristAbgelaufen(Long.parseLong(fach));
     if (value) {
       Student student = new Student(vorname, nachname, email, Long.parseLong(matrikelnummer), Long.parseLong(fach), null, token);
-      StudentService studentenservice = new StudentService(studentRepository);
-      studentenservice.save(student);
+      studentService.save(student);
     }
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
-    model.addAttribute("fehlerText", "Altzulassung nicht erfolgreich!");
+    model.addAttribute("fehlerText", "Altzulassung nicht erfolgreich möglicherweise Frist abgelaufen!");
     model.addAttribute("successText", "Altzulassung erfolgreich!");
     model.addAttribute("meldung", true);
     model.addAttribute("student", false);

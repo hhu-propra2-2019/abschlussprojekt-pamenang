@@ -8,6 +8,7 @@ import mops.klausurzulassung.Repositories.ModulRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -86,11 +89,9 @@ public class ModulService {
     } else {
       List<Student> students = csvService.getStudentListFromInputFile(records, id);
 
-      System.out.println(students.toString());
 
       for (Student student : students) {
-        System.out.println("students :"+student);
-        erstelleTokenUndSendeEmail(student, id);
+        erstelleTokenUndSendeEmail(student, id, false);
       }
       csvService.writeCsvFile(id, students);
       successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
@@ -121,26 +122,30 @@ public class ModulService {
     return messages;
   }
 
-  public String[] download(Long id, HttpServletResponse response) throws IOException {
-    successMessage = null;
+  public String[] download(@PathVariable Long id, HttpServletResponse response) throws IOException {
     errorMessage = null;
+    successMessage = null;
 
-    File klausurliste = new File("klausurliste_" + Long.toString(id) + ".csv");
-    if (klausurliste.exists()){
+    try {
+      File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
+      Path path = klausurliste.toPath();
+      byte[] bytes = Files.readAllBytes(path);
+
       String fachname = findById(id).get().getName();
       response.setContentType("text/csv");
-      String newFilename = "\"klausurliste_" + fachname + ".csv\"";
-      response.setHeader("Content-Disposition", "attachment; filename=" + newFilename);
+      String newFilename = "\"klausurliste_"+fachname+".csv\"";
+      response.setHeader("Content-Disposition", "attachment; filename="+newFilename);
       OutputStream outputStream = response.getOutputStream();
       String header = "Matrikelnummer,Nachname,Vorname\n";
       outputStream.write(header.getBytes());
-      outputStream.write(Files.readAllBytes(klausurliste.toPath()));
+      outputStream.write(bytes);
       outputStream.flush();
       outputStream.close();
       klausurliste.delete();
-      successMessage = "Datei wurde erfolgreich heruntergeladen! Bitte denken Sie dran am Ende des Semesters das Modul zu löschen.";
-    } else {
-      errorMessage = "Keine Zulassungsliste hochgeladen!";
+
+    } catch (NoSuchFileException e){
+      errorMessage = "Bitte erst eine Zulassungsliste hochladen!";
+      response.sendRedirect("/zulassung1/modul" + "/" + id);
     }
     String[] messages = {errorMessage, successMessage};
     return messages;
@@ -155,7 +160,6 @@ public class ModulService {
       student.setModulId(id);
 
       try {
-        System.out.println("ID: "+id+" Matnr: "+matnr);
         String tokenString = quittungService.findTokenByQuittung(matnr.toString(), id.toString());
         student.setToken(tokenString);
         String modulname = findById(id).get().getName();
@@ -166,7 +170,7 @@ public class ModulService {
 
       } catch (NoTokenInDatabaseException e) {
         if (papierZulassung) {
-          erstelleTokenUndSendeEmail(student, student.getModulId());
+          erstelleTokenUndSendeEmail(student, student.getModulId(), true);
           successMessage = "Student "+matnr+" wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
         } else {
           errorMessage = "Student " + matnr + " hat keine Zulassung in diesem Modul!";
@@ -182,22 +186,29 @@ public class ModulService {
     return messages;
   }
 
-  private void erstelleTokenUndSendeEmail(Student student, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
+  private void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
 
     try {
+
       quittungService.findPublicKeyByQuittung(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
       String modulname = findById(id).get().getName();
       student.setFachname(modulname);
-      emailService.sendMail(student);
+
+      if (isAltzulassung){
+        //emailService.sendMail(student);
+      }
 
     } catch (NoPublicKeyInDatabaseException e){
+
       String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
       student.setToken(tokenString);
       String modulname = findById(id).get().getName();
       student.setFachname(modulname);
-      studentService.save(student);
-      emailService.sendMail(student);
+      if (isAltzulassung){
+        studentService.save(student);
+      }
+      //emailService.sendMail(student);
     }
   }
 
