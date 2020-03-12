@@ -1,5 +1,6 @@
 package mops.klausurzulassung.Services;
 
+import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
@@ -9,7 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -26,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,6 +46,7 @@ public class ModulServiceTest {
   private EmailService emailService;
   private QuittungService quittungService;
   private ModulService modulService;
+  private HttpServletResponse response;
 
   @BeforeEach
   public void initilize() {
@@ -50,6 +57,7 @@ public class ModulServiceTest {
     tokengenerierungService = mock(TokengenerierungService.class);
     emailService = mock(EmailService.class);
     quittungService = mock(QuittungService.class);
+    response = mock(HttpServletResponse.class);
     modulService =
         new ModulService(
             modulRepository,
@@ -219,14 +227,56 @@ public class ModulServiceTest {
     student.setNachname("Müller");
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
-    Optional<Modul> modul = Optional.of(new Modul((long)1,"name","owner","2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
 
-    when(quittungService.findTokenByQuittung("123","123")).thenThrow(new NoTokenInDatabaseException("ERROR"));
+    when(quittungService.findTokenByQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
+            "ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
 
     String[] strings = modulService.altzulassungVerarbeiten(student, true, (long) 1);
-    String successMessage = "Student "+ "1231"+" wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
-    assertEquals(successMessage,strings[1]);
+    String successMessage = "Student " + "1231" + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
+    assertEquals(successMessage, strings[1]);
+  }
+  
+  @Test
+  void downloadMitVorhandenerListe() throws IOException {
+    ServletOutputStream outputStream = mock(ServletOutputStream.class);
+
+    File outputFile = new File("klausurliste_1.csv");
+    FileWriter fileWriter = new FileWriter(outputFile);
+    CSVWriter writer = new CSVWriter(fileWriter);
+
+    String[] cara = {"2659396","Überschär","Cara"};
+    String[] rebecca = {"2658447","Fröhlich","Rebecca"};
+    writer.writeNext(cara, false);
+    writer.writeNext(rebecca, false);
+    writer.flush();
+    writer.close();
+
+    Modul propra2 = new Modul(1L, "ProPra2","orga","2000-12-12");
+    Optional<Modul> modul = Optional.of(propra2);
+
+    when(modulService.findById(1L)).thenReturn(modul);
+
+    when(response.getOutputStream()).thenReturn(outputStream);
+
+    String[] messages = modulService.download(1L, response);
+
+    String[] expectedMessages = {null,null};
+
+    assertEquals(expectedMessages[0],messages[0]);
+    assertEquals(expectedMessages[1],messages[1]);
+    assertEquals(false,outputFile.exists());
+  }
+
+  @Test
+  void downloadOhneListe() throws IOException {
+
+    String[] messages = modulService.download(1L, response);
+
+    String[] expectedMessages = {"Bitte erst eine Zulassungsliste hochladen!",null};
+    assertEquals(expectedMessages[0],messages[0]);
+    assertEquals(expectedMessages[1],messages[1]);
   }
 }
