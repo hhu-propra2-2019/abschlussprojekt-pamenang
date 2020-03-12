@@ -57,7 +57,7 @@ public class ModulServiceTest {
   @Test
   void deleteExistingModulWithStudents() {
     long modulID = 1L;
-    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner"));
+    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12"));
     when(modulRepository.findById(modulID)).thenReturn(modul);
     ArrayList<Student> students = new ArrayList<>();
     students.add(new Student());
@@ -72,7 +72,7 @@ public class ModulServiceTest {
   @Test
   void deleteExistingModulWithoutStudents() {
     long modulID = 1L;
-    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner"));
+    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12"));
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
     String[] result = modulService.deleteStudentsFromModul(modulID);
