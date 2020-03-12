@@ -34,79 +34,31 @@
              th:text="${successText}">
         </div>
     </div>
-    <form method="post" th:action="@{/zulassung1/student}">
-
-        <table>
-
-            <tr>
-                <td>Matrikelnummer:</td>
-                <td>
-
-                    <input name="matrikelnummer" th:value="${matrikelnr}" type="text">
 
 
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-            <tr>
-                <td>Vorname:</td>
-                <td>
+    <form method="post" th:action="@{/zulassung1/modulHinzufuegen}">
+        <div class="form-group">
+            <label for="matrikelnummer">Bitte geben Sie ihre Matrikelnummer ein.</label>
+            <input id="matrikelnummer" name="matrikelnummer" th:value="${matrikelnr}" type="text">
+        </div>
+        <div class="form-group">
+            <label for="vorname">Bitte geben Sie ihren Vornamen ein.</label>
+            <input id="vorname" name="vorname" th:value="${vorname}" type="text">
+        </div>
+        <div class="form-group">
+            <label for="nachname">Bitte geben Sie ihren Nachname ein.</label>
+            <input id="nachname" name="nachname" th:value="${nachname}" type="text">
+        </div>
+        <div class="form-group">
+            <label for="fach">Bitte geben Sie ihre FachId ein.</label>
+            <input id="fach"  name="fach"th:value="${fach}" type="text">
+        </div>
+        <div class="form-group">
+            <label for="token">Bitte geben Sie ihren Token ein.</label>
+            <input id="token" name="token" th:value="${zulassungToken}" type="text">
+        </div>
 
-                    <input name="vorname" th:value="${vorname}" type="text">
-
-
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-            <tr>
-                <td>Nachname:</td>
-                <td>
-
-                    <input name="nachname" th:value="${nachname}" type="text">
-
-
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-            <tr>
-                <td>FachID:</td>
-                <td>
-
-                    <input name="fach" th:value="${fach}" type="text">
-
-                </td>
-                <td>
-                    <p>(Wie auf Quittung)</p>
-                </td>
-            </tr>
-            <tr>
-                <td>Token:</td>
-                <td>
-                    <input name="token" th:value="${zulassungToken}" type="text">
-
-                </td>
-                <td>
-                    <p>(64-stellig)</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input name="action" type="submit" value="Klausurzulassung erhalten">
-                </td>
-                <td>
-                    <p></p>
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-        </table>
+        <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
 
     </form>
 </main>
