@@ -1,6 +1,5 @@
 package mops.klausurzulassung.Controller;
 
-import mops.klausurzulassung.Controller.StudentenController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class Studententest {
+class Studententest {
 
   @MockBean
   StudentenController student;
@@ -28,13 +27,13 @@ public class Studententest {
   private WebApplicationContext context;
 
   @Test
-  public void fuerAltzulassungAnmelden() throws Exception {
+  void fuerAltzulassungAnmelden() throws Exception {
     mockMvc.perform(get("/student")).andExpect(status().is3xxRedirection()).andDo(print());
   }
 
   @WithMockUser(username = "niemand", password = "nichts")
   @Test
-  public void anmeldung() throws Exception {
+  void anmeldung() throws Exception {
     mockMvc.perform(get("/student")).andExpect(status().isForbidden());
   }
 }
