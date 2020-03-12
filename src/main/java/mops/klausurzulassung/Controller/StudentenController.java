@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,15 +44,12 @@ public class StudentenController {
   }
 
   @Secured({"ROLE_studentin", "ROLE_orga"})
-  @GetMapping("/student/{token}/{fach}/{matrikelnummer}/{vorname}/{nachname}/")
-  public String studentansichtMitToken(@PathVariable String token, @PathVariable String fach, @PathVariable long matrikelnummer, @PathVariable String vorname, @PathVariable String nachname, Model model, KeycloakAuthenticationToken keyToken) {
+  @GetMapping("/student/{tokenLink}/{fachLink}/{matrikelnummerLink}/{vornameLink}/{nachnameLink}/")
+  public String studentansichtMitToken(@PathVariable String tokenLink, @PathVariable Long fachLink, @PathVariable Long matrikelnummerLink, @PathVariable String vornameLink, @PathVariable String nachnameLink, Model model, KeycloakAuthenticationToken keyToken) {
+    Student student = new Student(vornameLink, nachnameLink, null, matrikelnummerLink, fachLink, null, tokenLink);
     model.addAttribute("account", createAccountFromPrincipal(keyToken));
     model.addAttribute("meldung", false);
-    model.addAttribute("token", token);
-    model.addAttribute("matrikelnummer", matrikelnummer);
-    model.addAttribute("fach", fach);
-    model.addAttribute("vorname", vorname);
-    model.addAttribute("nachname", nachname);
+    model.addAttribute("studentObj", student);
     return "student";
   }
 
@@ -61,11 +59,7 @@ public class StudentenController {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
     model.addAttribute("student", false);
-    model.addAttribute("token", "");
-    model.addAttribute("matrikelnummer", "");
-    model.addAttribute("fach", "");
-    model.addAttribute("vorname", "");
-    model.addAttribute("nachname", "");
+    model.addAttribute("studentObj", new Student());
     if (token.getAccount().getPrincipal().toString().equals("studentin")){
       model.addAttribute("student", true);
       System.out.println(token.getAccount().getPrincipal().toString());
@@ -76,14 +70,19 @@ public class StudentenController {
 
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
-  public String empfangeDaten(KeycloakAuthenticationToken keycloakAuthenticationToken, Model model, @Valid String matrikelnummer, @Valid String token, @Valid String fach, @Valid String vorname, @Valid String nachname, String email)
+  public String empfangeDaten(@ModelAttribute("studentObj") @Valid Student studentObj,BindingResult bindingResult, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model)
       throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
           NoPublicKeyInDatabaseException {
 
-    boolean value = tokenverifikation.verifikationToken(matrikelnummer, fach, token) && !studentService.isFristAbgelaufen(Long.parseLong(fach));
+    if(bindingResult.hasErrors()){
+      model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
+      return "student";
+    }
+
+
+    boolean value = tokenverifikation.verifikationToken(studentObj.getMatrikelnummer().toString(), studentObj.getModulId().toString(), studentObj.getToken()) && !studentService.isFristAbgelaufen(Long.parseLong(studentObj.getModulId().toString()));
     if (value) {
-      Student student = new Student(vorname, nachname, email, Long.parseLong(matrikelnummer), Long.parseLong(fach), null, token);
-      studentService.save(student);
+      studentService.save(studentObj);
     }
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);
@@ -93,6 +92,6 @@ public class StudentenController {
     model.addAttribute("student", false);
     if (keycloakAuthenticationToken.getAccount().getPrincipal().toString().equals("studentin"))
       model.addAttribute("student", true);
-    return "student";
+    return "redirect:/zulassung1/student";
   }
 }

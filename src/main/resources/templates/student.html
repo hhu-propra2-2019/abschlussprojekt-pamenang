@@ -42,38 +42,33 @@
             </div>
         </div>
 
-        <form method="post" th:action="@{/zulassung1/student}">
+        <form method="post" th:action="@{/zulassung1/student}" th:object="${studentObj}">
 
             <div class="form-group">
                 <label for="matrikelnummer">Bitte geben Sie ihre Matrikelnummer ein.</label>
-                <input class="form-control" id="matrikelnummer" name="matrikelnummer" th:value="${matrikelnummer}" th:placeholder="Matrikelnummer"
-                       th:errorclass="is-invalid" type="text">
-                <span class="text-danger" th:errors="*{matrikelnummer}"
-                      th:if="${#fields.hasErrors('matrikelnummer')}"></span>
+                <input class="form-control" th:field="*{matrikelnummer}" th:value="*{matrikelnummer}" th:placeholder="Matrikelnummer"
+                       th:errorclass="is-invalid" type="number">
+                <span class="text-danger" th:if="${#fields.hasErrors('matrikelnummer')}">Das Feld darf nicht leer sein.</span>
             </div>
             <div class="form-group">
                 <label for="vorname">Bitte geben Sie ihren Vornamen ein.</label>
-                <input class="form-control" id="vorname" name="vorname" th:value="${vorname}" th:placeholder="Vorname" th:errorclass="is-invalid" type="text">
-                <span class="text-danger" th:errors="*{vorname}"
-                      th:if="${#fields.hasErrors('vorname')}"></span>
+                <input class="form-control" th:field="*{vorname}" th:value="*{vorname}" th:placeholder="Vorname" th:errorclass="is-invalid" type="text">
+                <span class="text-danger" th:if="${#fields.hasErrors('vorname')}">Das Feld darf nicht leer sein.</span>
             </div>
             <div class="form-group">
                 <label for="nachname">Bitte geben Sie ihren Nachname ein.</label>
-                <input class="form-control" id="nachname" name="nachname" th:value="${nachname}" th:placeholder="Nachname" th:errorclass="is-invalid" type="text">
-                <span class="text-danger" th:errors="*{nachname}"
-                      th:if="${#fields.hasErrors('nachname')}"></span>
+                <input class="form-control" th:field="*{nachname}" th:value="*{nachname}" th:placeholder="Nachname" th:errorclass="is-invalid" type="text">
+                <span class="text-danger" th:if="${#fields.hasErrors('nachname')}">Das Feld darf nicht leer sein.</span>
             </div>
             <div class="form-group">
-                <label for="fach">Bitte geben Sie ihre FachId ein.</label>
-                <input class="form-control" id="fach" name="fach" th:value="${fach}" th:placeholder="Fach-Id" th:errorclass="is-invalid" type="text">
-                <span class="text-danger" th:errors="*{fach}"
-                      th:if="${#fields.hasErrors('fach')}"></span>
+                <label for="modulId">Bitte geben Sie ihre FachId ein.</label>
+                <input class="form-control" th:field="*{modulId}" th:value="*{modulId}" th:placeholder="Fach-Id" th:errorclass="is-invalid" type="number">
+                <span class="text-danger" th:if="${#fields.hasErrors('modulId')}">Das Feld darf nicht leer sein.</span>
             </div>
             <div class="form-group">
                 <label for="token">Bitte geben Sie ihren Token ein.</label>
-                <input class="form-control" id="token" name="token" th:value="${token}" th:placeholder="Token" th:errorclass="is-invalid" type="text">
-                <span class="text-danger" th:errors="*{token}"
-                      th:if="${#fields.hasErrors('token')}"></span>
+                <input class="form-control" th:field="*{token}" th:value="*{token}" th:placeholder="Token" th:errorclass="is-invalid" type="text">
+                <span class="text-danger" th:if="${#fields.hasErrors('token')}">Das Feld darf nicht leer sein.</span>
             </div>
 
             <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
