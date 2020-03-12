@@ -2,6 +2,7 @@ package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.Domain.StudentDto;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Repositories.StudentRepository;
 import mops.klausurzulassung.Services.StudentService;
@@ -59,7 +60,7 @@ public class StudentenController {
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("meldung", false);
     model.addAttribute("student", false);
-    model.addAttribute("studentObj", new Student());
+    model.addAttribute("studentDto", new StudentDto());
     if (token.getAccount().getPrincipal().toString().equals("studentin")){
       model.addAttribute("student", true);
       System.out.println(token.getAccount().getPrincipal().toString());
@@ -70,7 +71,7 @@ public class StudentenController {
 
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
-  public String empfangeDaten(@ModelAttribute("studentObj") @Valid Student studentObj,BindingResult bindingResult, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model)
+  public String empfangeDaten(@ModelAttribute("studentDto") @Valid StudentDto studentDto, BindingResult bindingResult, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model)
       throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
           NoPublicKeyInDatabaseException {
 
@@ -80,9 +81,19 @@ public class StudentenController {
     }
 
 
-    boolean value = tokenverifikation.verifikationToken(studentObj.getMatrikelnummer().toString(), studentObj.getModulId().toString(), studentObj.getToken()) && !studentService.isFristAbgelaufen(Long.parseLong(studentObj.getModulId().toString()));
+    boolean value = tokenverifikation.verifikationToken(studentDto.getMatrikelnummer().toString(), studentDto.getModulId().toString(), studentDto.getToken()) && !studentService.isFristAbgelaufen(Long.parseLong(studentDto.getModulId().toString()));
     if (value) {
-      studentService.save(studentObj);
+      Student student = Student.builder()
+              .token(studentDto.getToken())
+              .modulId(studentDto.getModulId())
+              .matrikelnummer(studentDto.getMatrikelnummer())
+              .fachname(studentDto.getFachname())
+              .email(studentDto.getEmail())
+              .nachname(studentDto.getNachname())
+              .vorname(studentDto.getVorname())
+              .build();
+
+      studentService.save(student);
     }
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("success", value);

@@ -1,6 +1,7 @@
 package mops.klausurzulassung.Domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.index.qual.LowerBoundBottom;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,36 +23,29 @@ import javax.validation.constraints.NotNull;
 public class Student {
 
   @Column(name="Vorname")
-  @NotNull
-  @NotEmpty
   private String vorname;
 
-  @NotNull
-  @NotEmpty
+
   @Column(name="Nachname")
   private String nachname;
 
-  @NotNull
-  @NotEmpty
+
   @Column(name="Email")
   private String email;
 
-  @NotNull
+
   @Id
   @Column(name="Matrikelnummer")
   private Long matrikelnummer;
 
-  @NotNull
+
   @Column(name="ModulID")
   private Long modulId;
 
-  @NotEmpty
-  @NotNull
   @Column(name="Fachname")
   private String fachname;
 
-  @NotNull
-  @NotEmpty
+
   @Lob
   @Column(name="Token")
   private String token;
