@@ -79,10 +79,17 @@ public class CsvService {
       CSVWriter writer = new CSVWriter(fileWriter);
       Iterable<Student> altzugelassene = studentService.findByModulId(id);
 
+      boolean bereitsEnthalten  = false;
       if (altzugelassene != null) {
-        for (Student student : altzugelassene) {
-          if (!students.contains(student)){
-            students.add(student);
+        for (Student altStudent : altzugelassene) {
+          bereitsEnthalten = false;
+          for (Student student : students) {
+            if (student.getMatrikelnummer().equals(altStudent.getMatrikelnummer())){
+              bereitsEnthalten = true;
+            }
+          }
+          if (!bereitsEnthalten) {
+            students.add(altStudent);
           }
         }
       }

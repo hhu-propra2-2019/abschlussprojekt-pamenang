@@ -98,7 +98,7 @@ public class ModulService {
 
 
       for (Student student : students) {
-        erstelleTokenUndSendeEmail(student, id);
+        erstelleTokenUndSendeEmail(student, id, false);
       }
       csvService.writeCsvFile(id, students);
       successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
@@ -177,7 +177,7 @@ public class ModulService {
 
       } catch (NoTokenInDatabaseException e) {
         if (papierZulassung) {
-          erstelleTokenUndSendeEmail(student, student.getModulId());
+          erstelleTokenUndSendeEmail(student, student.getModulId(), true);
           successMessage = "Student "+matnr+" wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
         } else {
           errorMessage = "Student " + matnr + " hat keine Zulassung in diesem Modul!";
@@ -193,21 +193,28 @@ public class ModulService {
     return messages;
   }
 
-  private void erstelleTokenUndSendeEmail(Student student, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
+  private void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
 
     try {
+      System.out.println("Try");
       quittungService.findPublicKeyByQuittung(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
       String modulname = findById(id).get().getName();
       student.setFachname(modulname);
-      //emailService.sendMail(student);
+
+      if (isAltzulassung){
+        //emailService.sendMail(student);
+      }
 
     } catch (NoPublicKeyInDatabaseException e){
+      System.out.println("Catch");
       String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
       student.setToken(tokenString);
       String modulname = findById(id).get().getName();
       student.setFachname(modulname);
-      studentService.save(student);
+      if (isAltzulassung){
+        studentService.save(student);
+      }
       //emailService.sendMail(student);
     }
   }
