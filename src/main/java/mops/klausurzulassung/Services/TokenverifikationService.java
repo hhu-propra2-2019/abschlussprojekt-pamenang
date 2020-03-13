@@ -48,17 +48,4 @@ public class TokenverifikationService {
         logger.debug("Token Verifiziert");
         return sign.verify(tokenByte);
     }
-
-     String atToSlash(String token) {
-        String var = "";
-        for (int i = 0; i < token.length(); i++){
-            char c = token.charAt(i);
-            if(c == '@'){
-                var += "/";
-            }else{
-                var += c;
-            }
-        }
-        return var;
-    }
 }
