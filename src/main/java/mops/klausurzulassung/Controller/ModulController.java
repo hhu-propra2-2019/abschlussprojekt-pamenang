@@ -102,18 +102,10 @@ public class ModulController {
     modul.setOwner(principal.getName());
     this.currentModul = modul;
 
-    if (modulService.findById(modul.getId()).isPresent()) {
-      message.setErrorMessage("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!");
-      this.currentModul = new Modul();
-    } else {
-      modulService.save(modul);
-      message.setSuccessMessage("Neues Modul wurde erfolgreich hinzugefügt!");
-      this.currentModul = new Modul();
-    }
-
     Object[] returns = modulService.neuesModul(modul, principal);
     this.currentModul = (Modul) returns[0];
-    setMessages((String) returns[1],(String) returns[2]);
+    message.setErrorMessage((String) returns[1]);
+    message.setSuccessMessage((String) returns[2]);
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
