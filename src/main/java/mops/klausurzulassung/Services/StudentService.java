@@ -37,8 +37,15 @@ public class StudentService {
   public boolean isFristAbgelaufen(Long fachId){
     Optional<Modul> modul = modulRepository.findById(fachId);
     LocalDate date = LocalDate.now();
+    String dateString = modul.get().getFrist();
+    int year = Integer.parseInt(dateString.substring(0,4));
+    int month = Integer.parseInt(dateString.substring(5-7));
+    int day = Integer.parseInt(dateString.substring(8-10));
+
     LocalDate frist = LocalDate.parse(modul.get().getFrist());
-    return frist.isBefore(date);
+
+    LocalDate test = LocalDate.of(year,month,day);
+    return test.isBefore(date);
   }
 
   public Optional<Student> findByToken(String token){

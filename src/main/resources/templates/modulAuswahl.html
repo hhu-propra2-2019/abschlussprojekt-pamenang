@@ -108,13 +108,17 @@
         <h1 class="text-center">
             Modul Auswahl
         </h1>
-        <div id="error-message" th:classappend="${error != null} ? 'alert alert-warning'" th:text="${error}">
-            Modul erfolgreich hinzugefügt!
+
+
+        <div class="alert alert-warning" th:if="${errorMessage!=null}">
+            <span th:text="${errorMessage}" ></span>
         </div>
 
-        <div id="success-message" th:classappend="${success != null} ? 'alert alert-success'" th:text="${success}">
-            Modul konnte nicht hinzugefügt werden!
+        <div class="alert alert-success" th:if="${successMessage!=null}">
+            <span th:text="${successMessage}" ></span>
         </div>
+
+
 
         <div id="new-modul">
             <form action="#" method="post" th:action="'/zulassung1/modulHinzufuegen'" th:object="${modul}">

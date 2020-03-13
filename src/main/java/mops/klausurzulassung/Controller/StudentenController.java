@@ -1,6 +1,7 @@
 package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
+import mops.klausurzulassung.Domain.FrontendMessage;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Domain.StudentDto;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
@@ -36,6 +37,7 @@ public class StudentenController {
   TokenverifikationService tokenverifikation;
   @Autowired StudentRepository studentRepository;
   @Autowired StudentService studentService;
+  private FrontendMessage message = new FrontendMessage();
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
@@ -58,8 +60,11 @@ public class StudentenController {
             .token(student.getToken())
             .vorname(student.getVorname()).build();
     model.addAttribute("account", createAccountFromPrincipal(keyToken));
-    model.addAttribute("meldung", false);
     model.addAttribute("studentDto", studentDto);
+
+    model.addAttribute("errorMessage",message.getErrorMessage());
+    model.addAttribute("successMessage",message.getSuccessMessage());
+    message.resetMessage();
     return "student";
   }
 
@@ -67,13 +72,20 @@ public class StudentenController {
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    model.addAttribute("meldung", false);
     model.addAttribute("student", false);
     model.addAttribute("studentDto", new StudentDto());
+
+
     if (token.getAccount().getPrincipal().toString().equals("studentin")){
       model.addAttribute("student", true);
       System.out.println(token.getAccount().getPrincipal().toString());
     }
+
+    model.addAttribute("errorMessage",message.getErrorMessage());
+    model.addAttribute("successMessage",message.getSuccessMessage());
+    message.resetMessage();
+
+
 
     return "student";
   }
@@ -90,8 +102,14 @@ public class StudentenController {
     }
 
 
-    boolean value = tokenverifikation.verifikationToken(studentDto.getMatrikelnummer().toString(), studentDto.getModulId().toString(), studentDto.getToken()) && !studentService.isFristAbgelaufen(Long.parseLong(studentDto.getModulId().toString()));
-    if (value) {
+    boolean tokenValid = tokenverifikation.verifikationToken(studentDto.getMatrikelnummer().toString(), studentDto.getModulId().toString(), studentDto.getToken());
+    /*
+    if(studentService.isFristAbgelaufen(Long.parseLong(studentDto.getModulId().toString()))){
+
+      message.setErrorMessage("Frist ist abgelaufen");
+    }*/
+     if (tokenValid) {
+
       Student student = Student.builder()
               .token(studentDto.getToken())
               .modulId(studentDto.getModulId())
@@ -103,12 +121,12 @@ public class StudentenController {
               .build();
 
       studentService.save(student);
+      message.setSuccessMessage("Altzulassung erfolgreich!");
+    }else{
+      message.setErrorMessage("Token nicht Valide");
     }
+
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
-    model.addAttribute("success", value);
-    model.addAttribute("fehlerText", "Altzulassung nicht erfolgreich möglicherweise Frist abgelaufen!");
-    model.addAttribute("successText", "Altzulassung erfolgreich!");
-    model.addAttribute("meldung", true);
     model.addAttribute("student", false);
     if (keycloakAuthenticationToken.getAccount().getPrincipal().toString().equals("studentin"))
       model.addAttribute("student", true);

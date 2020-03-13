@@ -34,14 +34,14 @@
         <h5 class="lead text-center"> Hier kannst du mithilfe deines Tokens deine Altklausurzulassung einreichen.</h5>
         <br>
 
-
-        <div th:if="${meldung}">
-            <div th:classappend="${!success} ? 'alert alert-danger'" th:if="${!success}" th:text="${fehlerText}">
-            </div>
-            <div th:classappend="${success} ? 'alert alert-success'" th:if="${success}"
-                 th:text="${successText}">
-            </div>
+        <div class="alert alert-warning" th:if="${errorMessage!=null}">
+            <span th:text="${errorMessage}" ></span>
         </div>
+
+        <div class="alert alert-success" th:if="${successMessage!=null}">
+            <span th:text="${successMessage}" ></span>
+        </div>
+
 
 
         <form method="post" th:action="@{/zulassung1/student}" th:object="${studentDto}">

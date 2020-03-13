@@ -2,6 +2,7 @@ package mops.klausurzulassung.Controller;
 
 import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Domain.AltzulassungStudentDto;
+import mops.klausurzulassung.Domain.FrontendMessage;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
@@ -9,6 +10,7 @@ import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -46,9 +48,10 @@ import java.security.SignatureException;
 public class ModulController {
 
   private final ModulService modulService;
-  private String errorMessage;
-  private String successMessage;
   private Modul currentModul = new Modul();
+
+
+  private FrontendMessage message = new FrontendMessage();
 
   public ModulController(ModulService modulService) {
     this.modulService = modulService;
@@ -70,9 +73,14 @@ public class ModulController {
     Iterable<Modul> moduls = modulService.findByOwner(principal.getName());
     model.addAttribute("moduls", moduls);
     model.addAttribute("modul", currentModul);
-    model.addAttribute("error", errorMessage);
-    model.addAttribute("success", successMessage);
-    resetMessages();
+
+    model.addAttribute("errorMessage",message.getErrorMessage());
+    model.addAttribute("successMessage",message.getSuccessMessage());
+    message.resetMessage();
+
+
+
+
     return "modulAuswahl";
   }
 
@@ -89,10 +97,11 @@ public class ModulController {
     this.currentModul = modul;
 
     if (modulService.findById(modul.getId()).isPresent()) {
-      setMessages("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", null);
+      message.setErrorMessage("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!");
+      this.currentModul = new Modul();
     } else {
       modulService.save(modul);
-      setMessages(null, "Neues Modul wurde erfolgreich hinzugefügt!");
+      message.setSuccessMessage("Neues Modul wurde erfolgreich hinzugefügt!");
       this.currentModul = new Modul();
     }
 
@@ -104,8 +113,9 @@ public class ModulController {
   public String deleteModul(Model model, @PathVariable Long id, KeycloakAuthenticationToken token) {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
+
     String [] messages = modulService.deleteStudentsFromModul(id);
-    setMessages(messages[0],messages[1]);
+    //setMessages(messages[0],messages[1]);
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
@@ -119,9 +129,11 @@ public class ModulController {
     model.addAttribute("id", id);
     model.addAttribute("student", new Student("", "", "", null, id, null, null));
     model.addAttribute("papierZulassung", false);
-    model.addAttribute("error", errorMessage);
-    model.addAttribute("success", successMessage);
-    resetMessages();
+
+    model.addAttribute("errorMessage",message.getErrorMessage());
+    model.addAttribute("successMessage",message.getSuccessMessage());
+    message.resetMessage();
+
     return "modulAnsicht";
   }
 
@@ -130,7 +142,7 @@ public class ModulController {
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String [] messages = modulService.verarbeiteUploadliste(id, file);
-    setMessages(messages[0],messages[1]);
+    //setMessages(messages[0],messages[1]);
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 
@@ -138,8 +150,9 @@ public class ModulController {
   @ResponseBody
   public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String[] messages = modulService.download(id, response);
-    setMessages(messages[0],messages[1]);
+    String[] messageArray = modulService.download(id, response);
+    message.setErrorMessage(messageArray[0]);
+    message.setSuccessMessage(messageArray[1]);
   }
 
   @Secured("ROLE_orga")
@@ -147,23 +160,15 @@ public class ModulController {
   public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException, NoPublicKeyInDatabaseException {
     
     if(bindingResult.hasErrors()){
-      setMessages("Alle Felder muessen befuellt werden",null);
+      message.setErrorMessage("Alle Felder muessen befuellt werden");
       return "redirect:/zulassung1/modul/" + id;
     }
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-    String[] messages = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
-    setMessages(messages[0],messages[1]);
+    String[] messageArray = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
+    message.setErrorMessage(messageArray[0]);
+    message.setSuccessMessage(messageArray[1]);
     return "redirect:/zulassung1/modul/" + id;
-  }
-
-  private void resetMessages() {
-    setMessages(null, null);
-  }
-
-  private void setMessages(String errorMessage, String successMessage) {
-    this.errorMessage = errorMessage;
-    this.successMessage = successMessage;
   }
 
 }

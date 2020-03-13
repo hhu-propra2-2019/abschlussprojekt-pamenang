@@ -28,9 +28,6 @@ public class StudentDto {
     private String nachname;
 
 
-    @NotNull
-    @NotEmpty
-
     private String email;
 
 
@@ -43,8 +40,6 @@ public class StudentDto {
     @NotNull
     private Long modulId;
 
-    @NotNull
-    @NotEmpty
     private String fachname;
 
 
