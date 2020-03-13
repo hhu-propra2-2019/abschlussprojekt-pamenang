@@ -1,7 +1,6 @@
 package mops.klausurzulassung.Services;
 
 
-import jdk.nashorn.internal.parser.Token;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
