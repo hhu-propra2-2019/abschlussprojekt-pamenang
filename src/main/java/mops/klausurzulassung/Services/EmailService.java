@@ -39,7 +39,7 @@ public class EmailService {
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
       helper.setFrom(FROM_EMAIL);
       helper.setTo(student.getEmail().toString());
-      helper.setSubject("Klausurzulassungstoken " + student.getModulId());
+      helper.setSubject("Klausurzulassungstoken " + student.getFachname());
       helper.setText(body, true);
       this.javaMailSender.send(message);
     } catch (MessagingException e1) {
