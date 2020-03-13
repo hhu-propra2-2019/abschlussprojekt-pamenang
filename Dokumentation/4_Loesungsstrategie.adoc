@@ -24,4 +24,4 @@ Dies alles ist dann über den Organisator und Studenten auch an die Benutzerober
 
 === Aufgabe 4.3 Anbindung
 
-Das Klausurzulassungssystem besitzt eine grafische Benutzeroberfläche. Durch mehrere Controller wird die Lokǵik mit der Oberfläche verbunden.
+Das Klausurzulassungssystem besitzt eine grafische Benutzeroberfläche. Durch mehrere Controller wird die Logik mit der Oberfläche verbunden.
