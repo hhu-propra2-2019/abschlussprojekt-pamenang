@@ -6,7 +6,10 @@ import mops.klausurzulassung.Repositories.ModulRepository;
 import mops.klausurzulassung.Repositories.StudentRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
@@ -36,9 +39,14 @@ public class StudentService {
 
   public boolean isFristAbgelaufen(Long fachId){
     Optional<Modul> modul = modulRepository.findById(fachId);
-    LocalDate date = LocalDate.now();
-    LocalDate frist = LocalDate.parse(modul.get().getFrist());
-    return frist.isBefore(date);
+
+    String frist = modul.get().getFrist();
+    Date date = new SimpleDateFormat("dd.mm.yyyy hh:mm").parse(frist);
+    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime localFrist = date.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDateTime();
+    return localFrist.isBefore(actualDate);
   }
 
   public Optional<Student> findByToken(String token){

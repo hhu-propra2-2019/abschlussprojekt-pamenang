@@ -134,7 +134,7 @@
 
                 <div class="form-group">
                     <label for="id">Bitte geben Sie ein Datum als Frist an.</label>
-                    <input class="form-control" id="frist" name="frist" placeholder="Frist"
+                    <input class="form-control" id="frist" name="frist" placeholder="dd.mm.yyyy hh:mm"
                            type="date" th:value="*{#dates.format(frist, 'yyyy-MM-dd hh:mm')}">
                     <span class="text-danger"></span>
                 </div>

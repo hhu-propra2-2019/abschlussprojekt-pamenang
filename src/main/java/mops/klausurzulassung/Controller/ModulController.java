@@ -93,14 +93,14 @@ public class ModulController {
     model.addAttribute("account", createAccountFromPrincipal(token));
     modul.setOwner(principal.getName());
     this.currentModul = modul;
+
     String frist = modul.getFrist();
     Date date = new SimpleDateFormat("dd.mm.yyyy hh:mm").parse(frist);
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
         .toLocalDateTime();
-    System.out.println("Aktuelles Datum: "+actualDate);
-    System.out.println("Frist: "+localFrist);
+
     if (localFrist.isAfter(actualDate)){
       if (modulService.findById(modul.getId()).isPresent()) {
         setMessages("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", null);
