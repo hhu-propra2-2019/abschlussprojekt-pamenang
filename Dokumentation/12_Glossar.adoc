@@ -34,6 +34,11 @@
     Spätestens wenn der Organisator den gleichen Kurs erneut
     in einem anderen Semester einträgt,
     muss das Modul entfernt sein
+    
+==== Papierzulassung:
+    Vor dieser Anwendung wurden die Zulassungen analog 
+    auf Papier erstellt und in Aktenordnern gesichert.
+    Hat ein Student eine solche Zulassung muss dies vermerkt werden.
    
 
 === Aufgabe 12.3 Installation und Anwendung
