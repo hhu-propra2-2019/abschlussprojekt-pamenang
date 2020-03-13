@@ -1,12 +1,14 @@
 package mops.klausurzulassung.Services;
 
 import com.opencsv.CSVWriter;
+import mops.klausurzulassung.Domain.AltzulassungStudentDto;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Repositories.ModulRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -187,25 +189,12 @@ public class ModulServiceTest {
   }
 
   @Test
-  void altzulassungenVerarbeitenErrorMessage() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
-    Student student = new Student();
-    student.setVorname("Joshua");
-    student.setNachname("Müller");
-    student.setEmail("");
-    student.setMatrikelnummer((long) 1231);
-
-    String[] strings = modulService.altzulassungVerarbeiten(student, true, (long) 1);
-    String errorMessage = "Bitte Daten eingeben!";
-    assertEquals(strings[0],errorMessage);
-  }
-
-  @Test
   void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
-    Student student = new Student();
-    student.setVorname("Joshua");
-    student.setNachname("Müller");
-    student.setEmail("joshua@gmail.com");
-    student.setMatrikelnummer((long) 1231);
+    AltzulassungStudentDto student = AltzulassungStudentDto.builder()
+            .vorname("Joshua")
+            .nachname("Müller")
+            .email("joshua@gmail.com")
+            .matrikelnummer((long)1231).build();
     Optional<Modul> modul = Optional.of(new Modul((long)1,"name","owner","2000-01-01"));
 
     when(quittungService.findTokenByQuittung("123","123")).thenReturn("132");
@@ -219,11 +208,11 @@ public class ModulServiceTest {
 
   @Test
   void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
-    Student student = new Student();
-    student.setVorname("Joshua");
-    student.setNachname("Müller");
-    student.setEmail("joshua@gmail.com");
-    student.setMatrikelnummer((long) 1231);
+    AltzulassungStudentDto student = AltzulassungStudentDto.builder()
+            .vorname("Joshua")
+            .nachname("Müller")
+            .email("joshua@gmail.com")
+            .matrikelnummer((long)1231).build();
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
 
     when(quittungService.findTokenByQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
@@ -239,11 +228,11 @@ public class ModulServiceTest {
 
   @Test
   void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
-    Student student = new Student();
-    student.setVorname("Joshua");
-    student.setNachname("Müller");
-    student.setEmail("joshua@gmail.com");
-    student.setMatrikelnummer((long) 1231);
+    AltzulassungStudentDto student = AltzulassungStudentDto.builder()
+            .vorname("Joshua")
+            .nachname("Müller")
+            .email("joshua@gmail.com")
+            .matrikelnummer((long)1231).build();
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
 
     when(quittungService.findTokenByQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
