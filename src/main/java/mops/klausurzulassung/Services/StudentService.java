@@ -22,11 +22,11 @@ public class StudentService {
     this.modulRepository = modulRepository;
   }
 
-  public Iterable<Student> findByModulId(Long id) {
+  Iterable<Student> findByModulId(Long id) {
     return studentRepository.findByModulId(id);
   }
 
-  public void delete(Student student) {
+  void delete(Student student) {
     studentRepository.delete(student);
   }
 

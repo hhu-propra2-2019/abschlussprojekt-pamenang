@@ -1,3 +1,61 @@
 == Abschnitt 10 Qualitätsszenarien
+
 === Aufgabe 10.1 Qualitätsbaum
+
+Das folgende Bild gibt einen Überblick über die relevanten Qualitätsmerkmale und den ihnen jeweils zugeordneten Szenarien.
+
+image::Mind-Map-online.de_.png[Qualitätsbaum]
+
 === Aufgabe 10.2 Bewertungsszenarien
+
+|===
+|Nr. |Szenario
+
+|1
+|Ein Student versucht sich mit einem falschen Token zu verifizieren. Das System wird diesen Token dann nicht
+akzeptieren.
+
+|2
+|Ein Student hat sein Token verloren. Die manuelle Erstellung des Tokens verschickt eine Email mit einem validen
+neuen Token.
+
+|3
+|Die Universität entscheidet sich das Klausuzulassungssystem in MOPS einzubinden. Dies funktioniert in kurzer Zeit
+problemlos.
+
+|4
+|Ein Java-Entwickler möchte einen E-Mail Service in seinem Programm einbinden und könnte dazu den Service dieses
+Programmes verwenden, da die Schnittstelle sehr einfach ist.
+
+|5
+|Ein Student gibt ein falsches Token in das Formular ein und erhält dazu eine Fehlermeldung, die sofort angezeigt wird.
+
+|6
+|Ein Organisator fügt ein Modul und vergisst Eingaben. Dabei erscheint eine Fehlermeldung und die falschen Daten
+werden nicht abgespeichert.
+
+|7
+|Benutzer ist als Student angemeldet und kann auf der Oberfläche nicht auf die für nicht erreichbare Orga-Seite klicken.
+
+|8
+|Ein Student bekommt eine E-Mail mit Token, in der alle Informationen gut sichtbar aufgelistet sind, sowie ein
+klickbarer Autofill Link.
+
+|9
+|Die Universität hat nur begrenzte Rechenkapazitäten, die das System effizient ausnuzt.
+
+|10
+|Ein Interressierter mit Kentnissen in Java möchte einen Einstieg in die Architektur des Systems finden. Dies
+erschließt sich ihm innerhalb kurzer Zeit.
+
+|11
+|Ein erfahrener Java-Entwickler sucht die Implementierung eines im Entwurf beschriebenen Moduls. Er findet sie ohne
+Umwege oder fremde Hilfe im Quelltext.
+
+|12
+|Wenn ein Java-Entwickler eine Funktion des Systems ändert, ist durch die Testabdeckung gesichert, dass die
+Funktionalität des restlichen Systems noch funktioniert.
+
+|13
+|Die Universität möchte auf ein anderes Serversystem umsteigen. Durch den Dockercontainer ist dies problemlos möglich
+|===
