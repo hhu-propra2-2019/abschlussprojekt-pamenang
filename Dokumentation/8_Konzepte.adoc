@@ -6,6 +6,9 @@
     Somit handelt es sich um eine Onion-Architecture.
 
 === Aufgabe 8.2 Domänenmodell
+
+image::ER-Modell.jpg[]
+
 ModulController:
 
 - ModulService
