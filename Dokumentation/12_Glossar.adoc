@@ -15,6 +15,26 @@
     von der Universität gespeichert wird, entschlüsselt werden.
     So kann man bei der Einreichung durch den Studenten sicher testen,
     ob dieser zugelassen ist.
+    
+==== ModulID:
+    Die ModulID ist im Modulhandbuch festgelegt.
+    Diese muss vom Organisator an geforderten Stellen eingetragen werden,
+    um einen reibungslosen und korrekten Ablauf der Anwendung zu garantieren
+    
+==== Klausurliste herunterladen:
+    Durch diese Funtkion erhält der Benutzter eine Liste mit Studenten,
+    die zur aktuellen Klausur zugelassen sind.
+    Diese sollte kurz vor Beginn der Klausur heruntergeladen werden,
+    damit Studenten mit Altzulassung die Möglichkeit haben,
+    sich automatisch auf die Liste zu schreiben.
+    
+==== Modulverwaltung:
+    Nach einer geschriebenen Klausur sollte das Modul
+    über die Oberfläche des Organisators gelöscht werden.
+    Spätestens wenn der Organisator den gleichen Kurs erneut
+    in einem anderen Semester einträgt,
+    muss das Modul entfernt sein
+   
 
 === Aufgabe 12.3 Installation und Anwendung
 
