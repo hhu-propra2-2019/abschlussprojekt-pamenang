@@ -2,6 +2,10 @@
 
 === Aufgabe 10.1 Qualitätsbaum
 
+Das folgende Bild gibt einen Überblick über die relevanten Qualitätsmerkmale und den ihnen jeweils zugeordneten Szenarien.
+
+image::Mind-Map-online.de_.png[Qualitätsbaum]
+
 === Aufgabe 10.2 Bewertungsszenarien
 
 |===
