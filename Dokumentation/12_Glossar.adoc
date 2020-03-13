@@ -15,3 +15,18 @@
     von der Universität gespeichert wird, entschlüsselt werden.
     So kann man bei der Einreichung durch den Studenten sicher testen,
     ob dieser zugelassen ist.
+
+=== Aufgabe 12.3 Installation und Anwendung
+
+- Die Anwenung ist als dockercontainer vorliegend.
+- Dieser kann erstellt werden durch:
+[source, bash]
+----
+docker-compose -f prod-compose.yml build
+----
+- Anschließend kann der Container gestartet werden durch den Befehl:
+[source, bash]
+----
+docker-compose -f prod-compose.yml up
+----
+- Die Webanwendung kann nun über den Port :8080 mit dem Pfad /zulassung1 aufgerufen werden.
