@@ -91,31 +91,14 @@ public class ModulController {
       Principal principal) throws ParseException {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
-    modul.setOwner(principal.getName());
-    this.currentModul = modul;
 
-    String frist = modul.getFrist();
-    Date date = new SimpleDateFormat("dd.mm.yyyy hh:mm").parse(frist);
-    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
-    LocalDateTime localFrist = date.toInstant()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDateTime();
-
-    if (localFrist.isAfter(actualDate)){
-      if (modulService.findById(modul.getId()).isPresent()) {
-        setMessages("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", null);
-      } else {
-        modulService.save(modul);
-        setMessages(null, "Neues Modul wurde erfolgreich hinzugefügt!");
-        this.currentModul = new Modul();
-      }
-    } else {
-      setMessages("Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!",null);
-    }
-
-
+    Object[] returns = modulService.neuesModul(modul, principal);
+    this.currentModul = (Modul) returns[0];
+    setMessages((String) returns[1],(String) returns[2]);
+    System.out.println((String) returns[1]);
     return "redirect:/zulassung1/modulHinzufuegen";
   }
+
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}/delete")

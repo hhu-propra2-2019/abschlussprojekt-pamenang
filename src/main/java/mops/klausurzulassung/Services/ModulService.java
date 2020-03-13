@@ -9,10 +9,12 @@ import mops.klausurzulassung.Repositories.ModulRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,7 +24,13 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.security.SignatureException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,6 +125,35 @@ public class ModulService {
 
     String[] messages = {errorMessage, successMessage};
     return messages;
+  }
+
+
+  public  Object[] neuesModul(Modul modul, Principal principal) throws ParseException {
+    errorMessage = null;
+    successMessage = null;
+
+    modul.setOwner(principal.getName());
+
+    String frist = modul.getFrist();
+    Date date = new SimpleDateFormat("dd.mm.yyyy hh:mm").parse(frist);
+    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime localFrist = date.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDateTime();
+
+    if (localFrist.isAfter(actualDate)){
+      if (findById(modul.getId()).isPresent()) {
+        errorMessage = "Diese Modul-ID existiert schon, bitte eine andere ID eingeben!";
+      } else {
+        save(modul);
+        successMessage = "Neues Modul wurde erfolgreich hinzugefügt!";
+        modul = new Modul();
+      }
+    } else {
+      errorMessage = "Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!";
+    }
+    Object[] returnValues = {modul, errorMessage, successMessage};
+    return returnValues;
   }
 
   public String[] download(@PathVariable Long id, HttpServletResponse response) throws IOException {

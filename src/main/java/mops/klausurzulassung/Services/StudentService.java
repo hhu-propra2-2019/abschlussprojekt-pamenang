@@ -6,6 +6,7 @@ import mops.klausurzulassung.Repositories.ModulRepository;
 import mops.klausurzulassung.Repositories.StudentRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ public class StudentService {
     return studentRepository.findByModulId(id);
   }
 
-  public void delete(Student student) {
+  void delete(Student student) {
     studentRepository.delete(student);
   }
 
@@ -37,7 +38,7 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public boolean isFristAbgelaufen(Long fachId){
+  public boolean isFristAbgelaufen(Long fachId) throws ParseException {
     Optional<Modul> modul = modulRepository.findById(fachId);
 
     String frist = modul.get().getFrist();
