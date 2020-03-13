@@ -42,6 +42,7 @@ import java.security.SignatureException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -93,12 +94,12 @@ public class ModulController {
     modul.setOwner(principal.getName());
     this.currentModul = modul;
     String frist = modul.getFrist();
-    Date date = new SimpleDateFormat("dd.mm.yyyy").parse(frist);
-    LocalDate actualDate = LocalDate.now();
-    LocalDate localFrist = date.toInstant()
+    Date date = new SimpleDateFormat("dd.mm.yyyy hh:mm").parse(frist);
+    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
-        .toLocalDate();
-    System.out.println("Aktuelle Zeit: "+actualDate);
+        .toLocalDateTime();
+    System.out.println("Aktuelles Datum: "+actualDate);
     System.out.println("Frist: "+localFrist);
     if (localFrist.isAfter(actualDate)){
       if (modulService.findById(modul.getId()).isPresent()) {
@@ -109,7 +110,6 @@ public class ModulController {
         this.currentModul = new Modul();
       }
     } else {
-      System.out.println("ELSE");
       setMessages("Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!",null);
     }
 
