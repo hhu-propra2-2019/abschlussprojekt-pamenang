@@ -39,6 +39,11 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Controller
 @SessionScope
@@ -82,19 +87,32 @@ public class ModulController {
       @ModelAttribute @Valid Modul modul,
       Model model,
       KeycloakAuthenticationToken token,
-      Principal principal) {
+      Principal principal) throws ParseException {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
     modul.setOwner(principal.getName());
     this.currentModul = modul;
-
-    if (modulService.findById(modul.getId()).isPresent()) {
-      setMessages("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", null);
+    String frist = modul.getFrist();
+    Date date = new SimpleDateFormat("dd.mm.yyyy").parse(frist);
+    LocalDate actualDate = LocalDate.now();
+    LocalDate localFrist = date.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate();
+    System.out.println("Aktuelle Zeit: "+actualDate);
+    System.out.println("Frist: "+localFrist);
+    if (localFrist.isAfter(actualDate)){
+      if (modulService.findById(modul.getId()).isPresent()) {
+        setMessages("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", null);
+      } else {
+        modulService.save(modul);
+        setMessages(null, "Neues Modul wurde erfolgreich hinzugefügt!");
+        this.currentModul = new Modul();
+      }
     } else {
-      modulService.save(modul);
-      setMessages(null, "Neues Modul wurde erfolgreich hinzugefügt!");
-      this.currentModul = new Modul();
+      System.out.println("ELSE");
+      setMessages("Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!",null);
     }
+
 
     return "redirect:/zulassung1/modulHinzufuegen";
   }

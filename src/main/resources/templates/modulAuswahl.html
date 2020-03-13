@@ -124,6 +124,7 @@
                            th:errorclass="is-invalid" th:value="*{name}" type="text">
                     <span class="text-danger" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></span>
                 </div>
+
                 <div class="form-group">
                     <label for="id">Bitte geben Sie die Modul-ID ein.</label>
                     <input class="form-control" id="id" name="id" placeholder="Modul-ID"
