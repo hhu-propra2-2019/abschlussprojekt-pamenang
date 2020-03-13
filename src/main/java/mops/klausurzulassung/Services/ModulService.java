@@ -135,11 +135,16 @@ public class ModulService {
     modul.setOwner(principal.getName());
 
     String frist = modul.getFrist();
-    Date date = new SimpleDateFormat("dd.mm.yyyy hh:mm").parse(frist);
+    System.out.println("getFrist: "+frist);
+    Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
+    System.out.println("Date "+date.toString());
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
         .toLocalDateTime();
+    System.out.println("Frist: "+localFrist);
+    System.out.println("Actual: "+actualDate);
+    System.out.println(localFrist.isAfter(actualDate));
 
     if (localFrist.isAfter(actualDate)){
       if (findById(modul.getId()).isPresent()) {

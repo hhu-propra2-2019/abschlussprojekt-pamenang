@@ -95,7 +95,6 @@ public class ModulController {
     Object[] returns = modulService.neuesModul(modul, principal);
     this.currentModul = (Modul) returns[0];
     setMessages((String) returns[1],(String) returns[2]);
-    System.out.println((String) returns[1]);
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
