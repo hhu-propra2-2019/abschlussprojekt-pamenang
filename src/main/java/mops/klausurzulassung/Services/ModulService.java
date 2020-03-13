@@ -136,7 +136,7 @@ public class ModulService {
 
     String frist = modul.getFrist();
     System.out.println("getFrist: "+frist);
-    Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
+    Date date = new SimpleDateFormat("yyyy-MM-dd").parse(frist);
     System.out.println("Date "+date.toString());
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()

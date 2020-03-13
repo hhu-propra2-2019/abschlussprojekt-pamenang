@@ -101,13 +101,15 @@
         Modul Ansicht
     </h1>
 
-    <div id="error-message" th:classappend="${error != null} ? 'alert alert-warning'" th:text="${error}">
-        Datei konnte nicht efolgreich hochgeladen werden!
+
+    <div class="alert alert-warning" th:if="${errorMessage!=null}">
+        <span th:text="${errorMessage}" ></span>
     </div>
 
-    <div id="success-message" th:classappend="${success != null} ? 'alert alert-success'" th:text="${success}">
-        Upload der Datei ist erfolgreich!
+    <div class="alert alert-success" th:if="${successMessage!=null}">
+        <span th:text="${successMessage}" ></span>
     </div>
+
 
     <span class="csstab">Name des ausgewählten Moduls:</span><b><span th:text="${modul}">Propra</span></b><br>
     <span class="csstab">ID des ausgewählten Moduls:</span><b><span th:text="${id}">1234</span></b>
