@@ -26,7 +26,7 @@ public class StudentService {
     this.modulRepository = modulRepository;
   }
 
-  public Iterable<Student> findByModulId(Long id) {
+  Iterable<Student> findByModulId(Long id) {
     return studentRepository.findByModulId(id);
   }
 
