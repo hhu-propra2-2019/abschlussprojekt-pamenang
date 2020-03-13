@@ -27,6 +27,7 @@ Features:
 
 - Asymetrische, kryptographische Tokengenerierung
 - Automatische Emailversendung
+- Automatische Formularausfüllung per Link bei der Tokenverifikation
 
 
 == Hinweise zur Dokumentation
