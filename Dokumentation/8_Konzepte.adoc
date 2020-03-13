@@ -1,8 +1,50 @@
 == Abschnitt 8 Konzepte
 === Aufgabe 8.1 Abhängigkeiten
+    Ganz oben stehen die Controller, welche die Benutzerschnittstelle implemenieren.
+    Die Controller greifen auf die Services zu, welche die Logik implemenieren.
+    Darunter kommen dann die Repositories und zum Schluss die Datenbank.
+    Somit handelt es sich um eine Onion-Architecture.
+
 === Aufgabe 8.2 Domänenmodell
+ModulController:
+
+- ModulService
+
+StudentenController:
+
+- StudentService
+- TokenverifikationsService
+
+CsvService:
+
+- StudentService
+
+ModulService:
+
+- CsvService
+- EmailService
+- QuittungsService
+- StudentService
+- TokengenerierungsService
+
+TokengenerierungsService:
+
+- QuittungsService
+
+TokenverifikationsService:
+
+- QuittungsService
+
+
 === Aufgabe 8.3 Benutzeroberfläche
-=== Aufgabe 8.4 Validierung
-=== Aufgabe 8.5 Fehlerbehandlung
-=== Aufgabe 8.6 Protokollierung
-=== Aufgabe 8.7 Testbarkeit
+    Das Klausurzulassungssystem besitzt eine grafische Weboberfläche.
+    Sie benutzt das Mops-Styleguide. Über die Controller wird in Verbindung mit
+    Thymeleaf die Logik abgefragt und angezeigt.
+
+=== Aufgabe 8.4 Fehlerbehandlung
+    Für Fehler gibt es zugehörige Error Seiten, welche dann aufgerufen werden.
+    Es gibt eine 403, 404 und 500 Error Seite.
+
+=== Aufgabe 8.5 Testbarkeit
+    Die Module des Klausurzulassungssystem werden durch umfangreiche Tests getestet.
+    Zum Testing werden JUint Tests mit Spring-Test-Erweiterung genutzt.
