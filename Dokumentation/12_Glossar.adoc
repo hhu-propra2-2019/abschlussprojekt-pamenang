@@ -1,3 +1,17 @@
 == Abschnitt 12 Glossar
 === Aufgabe 12.1 Einstieg
+    Zuerst muss sich der User in der Weboberfläche anmelden.
+    Er kann sich entweder als Student oder Organisator anmelden.
+    Wenn er sich dann angemeldet hat, kann er als Organisator Module
+    hizufügen, Studenten manuell zulassen, Zulassungslisten hochladen
+    und Module löschen.
+    Der Student kann widerum seine Klausurzulassung verifizieren lassen
+    und bekommt eine E-Mail.
+
 === Aufgabe 12.2 Begriffe
+==== Token:
+    Das Token dient zur Verifikation der Zulassung.
+    Es ist verschlüsselt und kann mit einem Key, welcher
+    von der Universität gespeichert wird, entschlüsselt werden.
+    So kann man bei der Einreichung durch den Studenten sicher testen,
+    ob dieser zugelassen ist.
