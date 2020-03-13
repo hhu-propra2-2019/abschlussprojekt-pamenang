@@ -19,7 +19,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -177,7 +179,7 @@ public class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteFalscheUploadliste() throws SignatureException, NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, IOException {
+  void verarbeiteFalscheUploadliste() throws SignatureException, NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, IOException, InvalidKeyException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("".getBytes());

@@ -30,6 +30,6 @@ public class Modul {
   private String owner;
 
   @Column(name="frist")
-  @DateTimeFormat(pattern = "yyyy-MM-dd")
+  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm")
   private String frist;
 }
