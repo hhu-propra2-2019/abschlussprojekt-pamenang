@@ -224,8 +224,7 @@ public class ModulServiceTest {
     String successMessage = "Student " + "1231" + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
     assertEquals(successMessage, strings[1]);
   }
-
-
+  
   @Test
   void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
