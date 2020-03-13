@@ -6,7 +6,11 @@ import mops.klausurzulassung.Repositories.ModulRepository;
 import mops.klausurzulassung.Repositories.StudentRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
@@ -22,11 +26,11 @@ public class StudentService {
     this.modulRepository = modulRepository;
   }
 
-  public Iterable<Student> findByModulId(Long id) {
+  Iterable<Student> findByModulId(Long id) {
     return studentRepository.findByModulId(id);
   }
 
-  public void delete(Student student) {
+  void delete(Student student) {
     studentRepository.delete(student);
   }
 
@@ -34,18 +38,16 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public boolean isFristAbgelaufen(Long fachId){
+  public boolean isFristAbgelaufen(Long fachId) throws ParseException {
     Optional<Modul> modul = modulRepository.findById(fachId);
-    LocalDate date = LocalDate.now();
-    String dateString = modul.get().getFrist();
-    int year = Integer.parseInt(dateString.substring(0,4));
-    int month = Integer.parseInt(dateString.substring(5-7));
-    int day = Integer.parseInt(dateString.substring(8-10));
 
-    LocalDate frist = LocalDate.parse(modul.get().getFrist());
-
-    LocalDate test = LocalDate.of(year,month,day);
-    return test.isBefore(date);
+    String frist = modul.get().getFrist();
+    Date date = new SimpleDateFormat("dd.mm.yyyy hh:mm").parse(frist);
+    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime localFrist = date.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDateTime();
+    return localFrist.isBefore(actualDate);
   }
 
   public Optional<Student> findByToken(String token){

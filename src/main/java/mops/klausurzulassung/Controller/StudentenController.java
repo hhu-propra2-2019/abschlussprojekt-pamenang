@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.text.ParseException;
 import java.util.Optional;
 
 @RequestMapping("/zulassung1")
@@ -94,7 +95,7 @@ public class StudentenController {
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String empfangeDaten(@ModelAttribute("studentDto") @Valid StudentDto studentDto, BindingResult bindingResult, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model)
       throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
-          NoPublicKeyInDatabaseException {
+      NoPublicKeyInDatabaseException, ParseException {
 
     if(bindingResult.hasErrors()){
       model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));

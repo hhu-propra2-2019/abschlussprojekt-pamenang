@@ -1,3 +1,57 @@
 == Abschnitt 12 Glossar
 === Aufgabe 12.1 Einstieg
+    Zuerst muss sich der User in der Weboberfläche anmelden.
+    Er kann sich entweder als Student oder Organisator anmelden.
+    Wenn er sich dann angemeldet hat, kann er als Organisator Module
+    hizufügen, Studenten manuell zulassen, Zulassungslisten hochladen
+    und Module löschen.
+    Der Student kann widerum seine Klausurzulassung verifizieren lassen
+    und bekommt eine E-Mail.
+
 === Aufgabe 12.2 Begriffe
+==== Token:
+    Das Token dient zur Verifikation der Zulassung.
+    Es ist verschlüsselt und kann mit einem Key, welcher
+    von der Universität gespeichert wird, entschlüsselt werden.
+    So kann man bei der Einreichung durch den Studenten sicher testen,
+    ob dieser zugelassen ist.
+    
+==== ModulID:
+    Die ModulID ist im Modulhandbuch festgelegt.
+    Diese muss vom Organisator an geforderten Stellen eingetragen werden,
+    um einen reibungslosen und korrekten Ablauf der Anwendung zu garantieren
+    
+==== Klausurliste herunterladen:
+    Durch diese Funtkion erhält der Benutzter eine Liste mit Studenten,
+    die zur aktuellen Klausur zugelassen sind.
+    Diese sollte kurz vor Beginn der Klausur heruntergeladen werden,
+    damit Studenten mit Altzulassung die Möglichkeit haben,
+    sich automatisch auf die Liste zu schreiben.
+    
+==== Modulverwaltung:
+    Nach einer geschriebenen Klausur sollte das Modul
+    über die Oberfläche des Organisators gelöscht werden.
+    Spätestens wenn der Organisator den gleichen Kurs erneut
+    in einem anderen Semester einträgt,
+    muss das Modul entfernt sein
+    
+==== Papierzulassung:
+    Vor dieser Anwendung wurden die Zulassungen analog 
+    auf Papier erstellt und in Aktenordnern gesichert.
+    Hat ein Student eine solche Zulassung muss dies vermerkt werden.
+   
+
+=== Aufgabe 12.3 Installation und Anwendung
+
+- Die Anwenung ist als dockercontainer vorliegend.
+- Dieser kann erstellt werden durch:
+[source, bash]
+----
+docker-compose -f prod-compose.yml build
+----
+- Anschließend kann der Container gestartet werden durch den Befehl:
+[source, bash]
+----
+docker-compose -f prod-compose.yml up
+----
+- Die Webanwendung kann nun über den Port :8080 mit dem Pfad /zulassung1 aufgerufen werden.

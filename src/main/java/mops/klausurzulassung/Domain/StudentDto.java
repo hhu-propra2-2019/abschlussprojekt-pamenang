@@ -22,30 +22,22 @@ public class StudentDto {
     @Column(name="Vorname")
     private String vorname;
 
-
     @NotNull
     @NotEmpty
     private String nachname;
 
-
     private String email;
-
 
     @Id
     @NotNull
     private Long matrikelnummer;
-
-
 
     @NotNull
     private Long modulId;
 
     private String fachname;
 
-
-
     @NotNull
     @NotEmpty
     private String token;
-
 }

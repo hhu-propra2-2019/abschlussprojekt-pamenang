@@ -41,6 +41,12 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Controller
 @SessionScope
@@ -90,7 +96,7 @@ public class ModulController {
       @ModelAttribute @Valid Modul modul,
       Model model,
       KeycloakAuthenticationToken token,
-      Principal principal) {
+      Principal principal) throws ParseException {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
     modul.setOwner(principal.getName());
@@ -105,8 +111,12 @@ public class ModulController {
       this.currentModul = new Modul();
     }
 
+    Object[] returns = modulService.neuesModul(modul, principal);
+    this.currentModul = (Modul) returns[0];
+    setMessages((String) returns[1],(String) returns[2]);
     return "redirect:/zulassung1/modulHinzufuegen";
   }
+
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}/delete")

@@ -14,7 +14,7 @@ endif::[]
 
 - Altklausurzulassung müssen manuell hinzugefügt werden
 
-== Wesentliche Ziele un Features
+== Wesentliche Ziele und Features
 
 Ziele:
 
@@ -25,9 +25,24 @@ Ziele:
 
 Features:
 
-- Asymetrische, kryptographische Tokengenerierung
+- Asymmetrische, kryptographische Tokengenerierung
 - Automatische Emailversendung
+- Automatische Formularausfüllung per Link bei der Tokenverifikation
 
+== Installation und Anwendung:
+
+- Die Anwenung ist als dockercontainer vorliegend.
+- Dieser kann erstellt werden durch:
+[source, bash]
+----
+docker-compose -f prod-compose.yml build
+----
+- Anschließend kann der Container gestartet werden durch den Befehl:
+[source, bash]
+----
+docker-compose -f prod-compose.yml up
+----
+- Die Webanwendung kann nun über den Port :8080 mit dem Pfad /zulassung1 aufgerufen werden.
 
 == Hinweise zur Dokumentation
 
