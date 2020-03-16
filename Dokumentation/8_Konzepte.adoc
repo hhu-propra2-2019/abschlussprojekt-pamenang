@@ -1,7 +1,7 @@
 == Abschnitt 8 Konzepte
 === Aufgabe 8.1 Abhängigkeiten
-    Ganz oben stehen die Controller, welche die Benutzerschnittstelle implemenieren.
-    Die Controller greifen auf die Services zu, welche die Logik implemenieren.
+    Ganz oben stehen die Controller, welche die Benutzerschnittstelle implementieren.
+    Die Controller greifen auf die Services zu, welche die Logik implementieren.
     Darunter kommen dann die Repositories und zum Schluss die Datenbank.
     Somit handelt es sich um eine Onion-Architecture.
 

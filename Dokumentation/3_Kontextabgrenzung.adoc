@@ -3,8 +3,11 @@
 
 ==== Studenten (Benutzer)
 
-    Der Student bekommt eine Mail mit einer Zulassungsbenachrichtigung und dem zugehörigen Token, nachdem er die Klausurzulassung bestanden hat. Der Student kann den Token
-    auf der Weboberfläche einlösen, wenn er sich zur neuen Klausur zulassen möchte. Er bekommt eine visuelle Bestätigung ob dies erfolgreich war.
+    Der Student bekommt eine Mail mit einer Zulassungsbenachrichtigung und dem zugehörigen Token,
+    nachdem er die Klausurzulassung bestanden hat.
+    Der Student kann den Token auf der Weboberfläche einlösen, wenn er sich zur neuen Klausur zulassen
+    möchte.
+    Er bekommt eine visuelle Bestätigung ob dies erfolgreich war.
 
 ==== Organisator (Benutzer)
 

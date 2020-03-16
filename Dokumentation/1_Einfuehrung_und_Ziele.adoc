@@ -12,6 +12,7 @@ Wesentliche Features:
 
 - Asymetrische, kryptographische Tokengenerierung
 - Automatische Emailversendung
+- Automatische Formularausfüllung per Link bei der Tokenverifikation
 
 === Aufgabe 1.2 Qualitätsziele
 
@@ -19,7 +20,7 @@ Wesentliche Features:
 |===
 |Qualitätsziel | Motivation und Erläuterung
 | Einfache Benutzeroberfläche| Angenehme und selbsterklärende User Experience
-| Automatiserung der Systemabläufe | Menschliche Fehlervermeidung und Vereinfachung für Nutzer
+| Automatisierung der Systemabläufe | Menschliche Fehlervermeidung und Vereinfachung für Nutzer
 | Sichere Tokengenerierung| Eindeutige und sichere Tokenerstellung um Fälschungen zu vermeiden
 |===
 
