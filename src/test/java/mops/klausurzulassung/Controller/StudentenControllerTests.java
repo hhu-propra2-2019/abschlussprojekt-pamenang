@@ -5,6 +5,9 @@ import com.c4_soft.springaddons.test.security.web.servlet.request.ServletUnitTes
 import mops.Application;
 import mops.klausurzulassung.Config.KeycloakConfig;
 import mops.klausurzulassung.Config.SecurityConfig;
+import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.Services.StudentService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.keycloak.adapters.KeycloakConfigResolver;
@@ -22,8 +25,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
@@ -33,16 +41,35 @@ class Studententest{
 
   @Autowired
   private MockMvc mockMvc;
+  @MockBean
+  StudentService studentService;
 
   @Test
-  void fuerAltzulassungAnmelden() throws Exception {
-    mockMvc.perform(get("/student")).andExpect(status().is3xxRedirection()).andDo(print());
-  }
-
-  
-  @Test
-  @WithMockKeycloackAuth(name = "test_dödel", roles = "studentin")
+  @WithMockKeycloackAuth(name = "test", roles = "studentin")
   void anmeldung_als_Student() throws Exception {
     mockMvc.perform(get("/zulassung1/student")).andExpect(status().isOk());
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "test", roles = "orga")
+  void anmeldung_als_Organisator() throws Exception {
+    mockMvc.perform(get("/zulassung1/student")).andExpect(status().isOk());
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "test", roles = "orga")
+  void test_getMappingLink() throws Exception {
+    String tokenLink = "testToken";
+    String fachLink = "12";
+    String matrikelnummerLink = "1234455";
+    String vornameLink = "testVorname";
+    String nachnameLink = "testNachname";
+    when(studentService.findByToken(tokenLink)).thenReturn(java.util.Optional.of(new Student(vornameLink, nachnameLink,"testEmail", Long.parseLong(matrikelnummerLink), Long.parseLong(fachLink), "Propra2", tokenLink)));
+
+
+    mockMvc.perform(get("/zulassung1/student/" + tokenLink + "/" + fachLink + "/" + matrikelnummerLink + "/" + vornameLink + "/" + nachnameLink + "/"))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute("studentDto", not(nullValue())));
+
   }
 }
