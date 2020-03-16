@@ -1,15 +1,17 @@
 == Abschnitt 9 Entscheidungen
 === Aufgabe 9.1 Verifizierung der Zulassungen
 
-Altklausurzulassungen sowie Neuzulassungen müssen sich über die Plattform
+Studenten mit Altklausurzulassungen sowie Neuzulassungen müssen sich über die Plattform
 für die Klausur zulassen und verifizieren. Neuzulassungen werden nicht direkt auf die Zulassungsliste
 geschrieben.
 
 === Aufgabe 9.2 Verschlüsselungsmethode
 
-Wir haben uns für SHA256 mit RSA entschieden, da wir auf eine sichere Methode achten mussten.
-Hash-Methoden zu kleineren Basen wurden schon entschlüsselt, deshalb haben wir uns auf SHA256
-geeinigt.
+Um die Token zu verschlüsseln, mussten wir uns für eine Verschlüsselungsmethode entscheiden.
+Da einige Hash-Methoden zu kleineren Basen schon entschlüsselt worden sind, haben wir uns
+für die SHA256 Methode mit RSA entschieden. Dies ist aber keine endgültige Entscheidung,
+sondern muss mit der Laufzeit der Anwendung eventuell angepasst werden, dies wird aber noch
+weiter in den Risiken erläutert.
 
 === Aufgabe 9.3 Anmeldeliste
 
