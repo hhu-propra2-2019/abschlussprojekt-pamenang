@@ -3,30 +3,37 @@
 
 ==== Studenten (Benutzer)
 
-    Der Student bekommt eine Mail mit einer Zulassungsbenachrichtigung und dem zugehörigen Token,
-    nachdem er die Klausurzulassung bestanden hat.
-    Der Student kann den Token auf der Weboberfläche einlösen, wenn er sich zur neuen Klausur zulassen
-    möchte.
-    Er bekommt eine visuelle Bestätigung ob dies erfolgreich war.
+Der Student bekommt eine Mail mit einer Zulassungsbenachrichtigung und dem zugehörigen Token, nachdem er die Klausurzulassung bestanden hat.
+Der Student kann den Token auf der Weboberfläche einlösen, wenn er sich zur neuen Klausur zulassen möchte.
+Er bekommt eine visuelle Bestätigung ob dies erfolgreich war.
 
 ==== Organisator (Benutzer)
 
-    Der Organisator reicht eine Zulassungsliste ein und kann Studenten manuell zulassen.
+Der Organisator kann eine Liste mit zugelassenen Studenten in das System hochladen.
+Anschließend werden für ihn vollkommen automatisch die Token versendet.
+Ebenso muss sich der Organisator nicht mehr um Altzulassungen kümmern, diese werden selbstständig für ihn verwaltet.
+Vor einer Klausur kann sich der Organisator einfach eine Liste herunterladen, in welcher allen zugelassenen Studenten stehen.
 
 === Aufgabe 3.2 Technischer Kontext
 
 ==== Tokengenerierung
 
-    Token wird generiert und durch asymetrische Kryptographie verschlüsselt.
+Die Token werden durch asymmetrische Kryptographie verschlüsselt.
+Durch diesen hohen Sicherheitsstandard ist es nicht möglich eine Quittung zu fälschen.
 
 ==== Tokenverifikation
 
-    Token wird durch Public Key, gespeiechert in der Datenbank, verifiziert.
+Durch die asymmetrische Verschlüsselung wird nur ein Public Key benötigt, um die Token zu verifizieren, Passwörter müssen nicht gespeichert werden.
 
 ==== Email-Service
 
-    Versendet Emails mit Zulassungsbenachrichtigung an Studenten.
+Es ist ein Email Service implementiert, der automatisch den Studenten die generierten Token versendet.
+Es ist kein Handeln der Organisatoren nötig.
+Dadurch können keine Fehler beim Versenden entstehen und bürokratischer Aufwand gegenüber früher verschwindet.
 
 ==== Key-Cloak (Fremdsystem)
 
-    Kümmert sich um die Anmeldung.
+Key-Cloak sorgt für die Sicherheit des Systems.
+Es implementiert ein Benutzersystem, sodass sich Studenten oder Organisatoren anmelden.
+Diese Nutzer können anschließend nur auf die für Sie vorgesehene Inhalte zugreifen.
+Key-Cloak ist als externes System auf Sicherheit optimiert.
