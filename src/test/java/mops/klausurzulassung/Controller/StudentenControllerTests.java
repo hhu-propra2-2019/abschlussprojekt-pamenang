@@ -39,6 +39,7 @@ class Studententest{
     mockMvc.perform(get("/student")).andExpect(status().is3xxRedirection()).andDo(print());
   }
 
+  
   @Test
   @WithMockKeycloackAuth(name = "test_dödel", roles = "studentin")
   void anmeldung_als_Student() throws Exception {
