@@ -4,24 +4,25 @@
 [cols="1,1" options="header"]
 |===
 |Qualitätsziel | Ansätze in der Architektur
-|Einfache Benutzung | Durch möglichst einfache und minimalistisch gehaltene Benutzeroberfläche
-|Übersichtliche Oberfläche| Geht einher mit der einfachen Benutzung
-|Zuverlässig| Durch Testabdeckung wird die Zuverlässigkeit geprüft
+|Übersichtliche Oberfläche| Minimalistische und einladene Benutzeroberfläche über das Mops Styleguide
+|Zuverlässige Tokengenerierung| Durch Testabdeckung wird die Zuverlässigkeit geprüft
+|Automatisierung der Systemabläufe| Umfangreiche Geschäftslogik
 |===
 
 === Aufgabe 4.2 Aufbau
 
-Das Klausurzulassungssystem lässt sich aus folgenden Bestandteilen grob zusammensetzen:
+Das Klausurzulassungssystem lässt sich aus folgenden Bestandteilen zusammensetzen:
 
 - Anbindung an die Benutzeroberfläche
 - Tokengenerierung/ -verifikation
 - Datenbank
 
 Die Datenbank dient zur Speicherung des Studenten, des Tokens und des Organisatoren.
-Die Tokengenerierung speichert den Key zur Entschlüsselung des Tokens, mit dem Studenten,
-in der Datenbank und die Tokenverifikation greift darauf zu.
-Dies alles ist dann über den Organisator und Studenten auch an die Benutzeroberfläche angeschlossen.
+Die Tokengenerierung erstellt einen verschlüsselten Token und speichert den Public Key und den Token
+in der Datenbank. Die Tokenverifikation greift auf die Datenbank zu, um die benötigten Daten zu erhalten.
+Die beiden Bestandteile sind an die Benutzeroberfläche angeschlossen, welche in zwei unterschiedliche
+Rollen, dem Studenten und dem Organisator, aufgeteilt sind.
 
 === Aufgabe 4.3 Anbindung
 
-Das Klausurzulassungssystem besitzt eine grafische Benutzeroberfläche. Durch mehrere Controller wird die Lokǵik mit der Oberfläche verbunden.
+Das Klausurzulassungssystem besitzt eine grafische Benutzeroberfläche. Durch mehrere Controller wird die Logik mit der Oberfläche verbunden.

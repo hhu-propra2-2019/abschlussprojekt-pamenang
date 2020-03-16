@@ -1,43 +1,13 @@
 == Abschnitt 8 Konzepte
 === Aufgabe 8.1 Abhängigkeiten
-    Ganz oben stehen die Controller, welche die Benutzerschnittstelle implemenieren.
-    Die Controller greifen auf die Services zu, welche die Logik implemenieren.
-    Darunter kommen dann die Repositories und zum Schluss die Datenbank.
-    Somit handelt es sich um eine Onion-Architecture.
+    Die Datenbank stellt den Repositories Daten zur Verfügung,
+    welche von den Services aufgerufen werden. Diese widerum werden
+    von den Controllern aufgerufen, welche die Benutzerschnittstelle
+    implementieren.
 
 === Aufgabe 8.2 Domänenmodell
 
 image::ER-Modell.jpg[]
-
-ModulController:
-
-- ModulService
-
-StudentenController:
-
-- StudentService
-- TokenverifikationsService
-
-CsvService:
-
-- StudentService
-
-ModulService:
-
-- CsvService
-- EmailService
-- QuittungsService
-- StudentService
-- TokengenerierungsService
-
-TokengenerierungsService:
-
-- QuittungsService
-
-TokenverifikationsService:
-
-- QuittungsService
-
 
 === Aufgabe 8.3 Benutzeroberfläche
     Das Klausurzulassungssystem besitzt eine grafische Weboberfläche.

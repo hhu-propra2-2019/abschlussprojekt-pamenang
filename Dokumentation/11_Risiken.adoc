@@ -1,16 +1,17 @@
 == Abschnitt 11 Risiken
 === Aufgabe 11.1 Tokenverschlüsselung
 
-Token wird über SHA256 mit RSA verschlüsselt. Falls SHA256 dekodiert werden kann, ist
-es nicht mehr sicher.
+Die Token werden über SHA256 mit RSA verschlüsselt. In der Zukunft können sich
+die technischen Möglichkeiten ändern Hash-Verschlüsselungen zu kleineren Basen
+zu entschlüsseln. Die Architektur ist so gestaltet, dass einfache Veränderungen
+an der Verschlüsselungsmethode vorgenommen werden können.
 
 === Aufgabe 11.2 Kontrolle über Organisator
 
-Organisator ist in der Verantwortung und Kontrolle über alle Funktionen der Anwendung.
-Das impliziert das der Organisator sicherstellen muss, das die Rechte nicht an Außenstehende
+Der Organisator ist in der Verantwortung und Kontrolle über alle Funktionen der Anwendung.
+Das impliziert das der Organisator sicherstellen muss, dass die Rechte nicht an Außenstehende
 fallen und die Plattform für fremde Zwecke genutzt wird. Da die Kontrolle dem Organisator obliegt
-und nicht der Anwendung, kann die Plattform keine Verantwortung dafür übernehmen, dennoch ist dies ein
-Risiko für die Anwendung.
+und nicht der Anwendung, kann die Plattform keine Verantwortung dafür übernehmen.
 
 === Aufgabe 11.3 Email
 

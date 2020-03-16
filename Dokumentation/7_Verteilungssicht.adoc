@@ -1,8 +1,9 @@
 == Abschnitt 7 Verteilungssicht
 
  Für das Starten der Anwendung Klausurzulassung wird
- ein JRE 11 benötigt und zum Öffnen oder Verwenden der App ein Browser.
- Außerdem wird eine MYSQL-Datenbank verwendet und für das Versenden der Emails muss ein Email-Server in
+ ein JRE 11 benutzt und zum Öffnen oder Verwenden der App ein Browser.
+ Außerdem wird eine MYSQL-Datenbank verwendet und
+ für das Versenden der Emails muss ein Email-Server in
  der Anwendung konfiguriert werden.
 
  Grundsätzlich kann das mitgelieferte Dockerfile
