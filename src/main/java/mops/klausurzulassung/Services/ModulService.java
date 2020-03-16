@@ -9,12 +9,10 @@ import mops.klausurzulassung.Repositories.ModulRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -94,8 +92,10 @@ public class ModulService {
     } else {
       List<Student> students = csvService.getStudentListFromInputFile(records, id);
 
+      String modulname = findById(id).get().getName();
 
       for (Student student : students) {
+        student.setFachname(modulname);
         erstelleTokenUndSendeEmail(student, id, false);
       }
       csvService.writeCsvFile(id, students);
