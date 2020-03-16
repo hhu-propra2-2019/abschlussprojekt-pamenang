@@ -42,7 +42,7 @@ public class StudentService {
     Optional<Modul> modul = modulRepository.findById(fachId);
 
     String frist = modul.get().getFrist();
-    Date date = new SimpleDateFormat("dd.mm.yyyy hh:mm").parse(frist);
+    Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())

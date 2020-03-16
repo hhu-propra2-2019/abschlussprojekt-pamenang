@@ -9,12 +9,10 @@ import mops.klausurzulassung.Repositories.ModulRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -94,8 +92,10 @@ public class ModulService {
     } else {
       List<Student> students = csvService.getStudentListFromInputFile(records, id);
 
+      String modulname = findById(id).get().getName();
 
       for (Student student : students) {
+        student.setFachname(modulname);
         erstelleTokenUndSendeEmail(student, id, false);
       }
       csvService.writeCsvFile(id, students);
@@ -135,16 +135,12 @@ public class ModulService {
     modul.setOwner(principal.getName());
 
     String frist = modul.getFrist();
-    System.out.println("getFrist: "+frist);
-    Date date = new SimpleDateFormat("yyyy-MM-dd").parse(frist);
-    System.out.println("Date "+date.toString());
+    Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
         .toLocalDateTime();
-    System.out.println("Frist: "+localFrist);
-    System.out.println("Actual: "+actualDate);
-    System.out.println(localFrist.isAfter(actualDate));
+
 
     if (localFrist.isAfter(actualDate)){
       if (findById(modul.getId()).isPresent()) {
@@ -166,7 +162,7 @@ public class ModulService {
     successMessage = null;
 
     try {
-      File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
+      File klausurliste = new File("klausurliste_" + id + ".csv");
       Path path = klausurliste.toPath();
       byte[] bytes = Files.readAllBytes(path);
 
@@ -247,9 +243,6 @@ public class ModulService {
   }
 
   boolean studentIsEmpty(Student student) {
-    if(student.getVorname().isEmpty() || student.getNachname().isEmpty() || student.getEmail().isEmpty() ||student.getMatrikelnummer() == null){
-      return true;
-    }
-    return false;
+    return student.getVorname().isEmpty() || student.getNachname().isEmpty() || student.getEmail().isEmpty() || student.getMatrikelnummer() == null;
   }
 }
