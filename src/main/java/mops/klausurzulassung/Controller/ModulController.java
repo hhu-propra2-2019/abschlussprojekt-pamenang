@@ -137,8 +137,9 @@ public class ModulController {
   @PostMapping("/modul/{id}")
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String [] messages = modulService.verarbeiteUploadliste(id, file);
-    //setMessages(messages[0],messages[1]);
+    String[] messageArray = modulService.verarbeiteUploadliste(id, file);
+    message.setErrorMessage(messageArray[0]);
+    message.setSuccessMessage(messageArray[1]);
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 

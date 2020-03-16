@@ -136,7 +136,7 @@ public class ModulService {
 
     String frist = modul.getFrist();
     System.out.println("getFrist: "+frist);
-    Date date = new SimpleDateFormat("yyyy-MM-dd").parse(frist);
+    Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
     System.out.println("Date "+date.toString());
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()
@@ -166,7 +166,7 @@ public class ModulService {
     successMessage = null;
 
     try {
-      File klausurliste = new File("klausurliste_"+Long.toString(id)+".csv");
+      File klausurliste = new File("klausurliste_" + id + ".csv");
       Path path = klausurliste.toPath();
       byte[] bytes = Files.readAllBytes(path);
 
@@ -247,9 +247,6 @@ public class ModulService {
   }
 
   boolean studentIsEmpty(Student student) {
-    if(student.getVorname().isEmpty() || student.getNachname().isEmpty() || student.getEmail().isEmpty() ||student.getMatrikelnummer() == null){
-      return true;
-    }
-    return false;
+    return student.getVorname().isEmpty() || student.getNachname().isEmpty() || student.getEmail().isEmpty() || student.getMatrikelnummer() == null;
   }
 }
