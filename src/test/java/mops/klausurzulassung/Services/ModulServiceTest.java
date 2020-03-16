@@ -8,7 +8,6 @@ import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Repositories.ModulRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,13 +20,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.security.SignatureException;
+import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ModulServiceTest {
+class ModulServiceTest {
 
   private ModulRepository modulRepository;
   private CsvService csvService;
@@ -48,9 +51,10 @@ public class ModulServiceTest {
   private QuittungService quittungService;
   private ModulService modulService;
   private HttpServletResponse response;
+  private Principal principal;
 
   @BeforeEach
-  public void initilize() {
+  void initilize() {
 
     modulRepository = mock(ModulRepository.class);
     csvService = mock(CsvService.class);
@@ -59,6 +63,7 @@ public class ModulServiceTest {
     emailService = mock(EmailService.class);
     quittungService = mock(QuittungService.class);
     response = mock(HttpServletResponse.class);
+    principal = mock(Principal.class);
     modulService =
         new ModulService(
             modulRepository,
@@ -179,7 +184,7 @@ public class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteFalscheUploadliste() throws SignatureException, NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, IOException, InvalidKeyException {
+  void verarbeiteFalscheUploadliste() throws SignatureException, NoSuchAlgorithmException, NoPublicKeyInDatabaseException, IOException, InvalidKeyException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("".getBytes());
@@ -340,7 +345,7 @@ public class ModulServiceTest {
 
     assertEquals(expectedMessages[0],messages[0]);
     assertEquals(expectedMessages[1],messages[1]);
-    assertEquals(false,outputFile.exists());
+    assertFalse(outputFile.exists());
   }
 
   @Test
@@ -351,5 +356,71 @@ public class ModulServiceTest {
     String[] expectedMessages = {"Bitte erst eine Zulassungsliste hochladen!",null};
     assertEquals(expectedMessages[0],messages[0]);
     assertEquals(expectedMessages[1],messages[1]);
+  }
+
+  @Test
+  void neuesModulErstellenFristInDerZukunftIdIsPresent() throws ParseException {
+    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime future = now.plusYears(1);
+    int year = future.getYear();
+    int month = future.getMonthValue();
+    int day = future.getDayOfMonth();
+    int hour = future.getHour();
+    int minutes = future.getMinute();
+    String frist = day + "." + month + "." + year + " " + hour + ":" + minutes;
+
+    Modul propra = new Modul(1L, "ProPra2", "orga", frist);
+    Optional<Modul> modul = Optional.of(propra);
+
+    when(principal.getName()).thenReturn("orga");
+    when(modulService.findById(1L)).thenReturn(modul);
+
+    Object[] returnValues = modulService.neuesModul(propra, principal);
+
+    assertEquals(propra, returnValues[0]);
+    assertNull(returnValues[2]);
+    assertEquals("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", returnValues[1]);
+
+  }
+
+  @Test
+  void neuesModulErstellenFristInDerZukunftIdIsNotPresent() throws ParseException {
+    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime future = now.plusYears(1);
+    int year = future.getYear();
+    int month = future.getMonthValue();
+    int day = future.getDayOfMonth();
+    int hour = future.getHour();
+    int minutes = future.getMinute();
+    String frist = day + "." + month + "." + year + " " + hour + ":" + minutes;
+
+    Modul propra = new Modul(1L, "ProPra2", "orga", frist);
+    Optional<Modul> modul = Optional.empty();
+
+    when(principal.getName()).thenReturn("orga");
+    when(modulService.findById(1L)).thenReturn(modul);
+
+    Object[] returnValues = modulService.neuesModul(propra, principal);
+
+    assertNotEquals(propra, returnValues[0]);
+    assertNull(returnValues[1]);
+    assertEquals("Neues Modul wurde erfolgreich hinzugefügt!", returnValues[2]);
+
+  }
+
+  @Test
+  void neuesModulErstellenFristAbgelaufen() throws ParseException {
+    Modul propra = new Modul(1L, "ProPra2", "orga", "20.12.2000 20:00");
+    Optional<Modul> modul = Optional.of(propra);
+
+    when(principal.getName()).thenReturn("orga");
+    when(modulService.findById(1L)).thenReturn(modul);
+
+    Object[] returnValues = modulService.neuesModul(propra, principal);
+
+    assertEquals(propra, returnValues[0]);
+    assertEquals("Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!", returnValues[1]);
+    assertNull(returnValues[2]);
+
   }
 }

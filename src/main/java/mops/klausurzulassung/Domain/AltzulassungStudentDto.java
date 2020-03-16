@@ -28,7 +28,5 @@ public class AltzulassungStudentDto {
     @NotNull
     private Long matrikelnummer;
 
-
     private Long modulId;
-
 }
