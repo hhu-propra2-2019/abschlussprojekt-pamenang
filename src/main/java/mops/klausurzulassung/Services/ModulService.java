@@ -66,11 +66,11 @@ public class ModulService {
     modulRepository.delete(modul);
   }
 
-  public void save(Modul modul) {
+  private void save(Modul modul) {
     modulRepository.save(modul);
   }
 
-  public String[] verarbeiteUploadliste(Long id, MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
+  public String[] verarbeiteUploadliste(Long id, MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     successMessage = null;
     errorMessage = null;
     Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
@@ -101,8 +101,7 @@ public class ModulService {
       csvService.writeCsvFile(id, students);
       successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
     }
-    String[] messages = {errorMessage, successMessage};
-    return messages;
+    return new String[]{errorMessage, successMessage};
   }
 
   public String[] deleteStudentsFromModul(Long id) {
@@ -123,8 +122,7 @@ public class ModulService {
       errorMessage = "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.";
     }
 
-    String[] messages = {errorMessage, successMessage};
-    return messages;
+    return new String[]{errorMessage, successMessage};
   }
 
 
@@ -153,8 +151,7 @@ public class ModulService {
     } else {
       errorMessage = "Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!";
     }
-    Object[] returnValues = {modul, errorMessage, successMessage};
-    return returnValues;
+    return new Object[]{modul, errorMessage, successMessage};
   }
 
   public String[] download(@PathVariable Long id, HttpServletResponse response) throws IOException {
@@ -182,8 +179,7 @@ public class ModulService {
       errorMessage = "Bitte erst eine Zulassungsliste hochladen!";
       response.sendRedirect("/zulassung1/modul" + "/" + id);
     }
-    String[] messages = {errorMessage, successMessage};
-    return messages;
+    return new String[]{errorMessage, successMessage};
   }
 
   public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
@@ -217,11 +213,10 @@ public class ModulService {
       }
 
 
-    String[] messages = {errorMessage, successMessage};
-    return messages;
+    return new String[]{errorMessage, successMessage};
   }
 
-  void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
+  void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
     try {
 
