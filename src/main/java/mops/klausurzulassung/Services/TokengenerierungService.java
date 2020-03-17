@@ -55,11 +55,11 @@ public class TokengenerierungService {
 
         base64Token = base64Token.replaceAll("/", "@");
 
-        QuittungDto quittungDto = new QuittungDto(matr, fachID, publicKey, base64Token);
+        QuittungDto quittungDto = new QuittungDto(publicKey, base64Token);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
-        logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
+        logger.debug("Speichere Quittung von  Student: "+quittungDao.getQuittung()+ " in Datenbank");
 
         return base64Token;
     }
@@ -73,10 +73,8 @@ public class TokengenerierungService {
 
     private QuittungDao erstelleQuittungDao(QuittungDto quittungDto){
         QuittungDao quittungDao = new QuittungDao();
-        quittungDao.setModulId(quittungDto.getModulId());
-        quittungDao.setMatrikelnummer(quittungDto.getMatrikelnummer());
         quittungDao.setPublicKey(quittungDto.getPublicKey());
-        quittungDao.setToken(quittungDto.getToken());
+        quittungDao.setQuittung(quittungDto.getQuittung());
         return quittungDao;
 
     }
