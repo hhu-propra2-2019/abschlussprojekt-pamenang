@@ -1,5 +1,6 @@
 package mops.klausurzulassung.Services;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Domain.QuittungDto;
 import org.slf4j.Logger;
@@ -49,20 +50,22 @@ public class TokengenerierungService {
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
-        String quittung = Arrays.toString(token) + "#" + matr + "#" + fachID;
+        String base64Token= Base64.getEncoder().encodeToString(token);
+        String base64Matr= Base64.getEncoder().encodeToString(matr.getBytes());
+        String base64FachID= Base64.getEncoder().encodeToString(fachID.getBytes());
 
-        String base64Quittung = Base64.getEncoder().encodeToString(quittung.getBytes());
+        String quittung = base64Token+"#"+base64Matr+"#"+base64FachID;
 
-        base64Quittung = base64Quittung.replaceAll("/", "@");
+        quittung = quittung.replaceAll("/", "@");
 
 
-        QuittungDto quittungDto = new QuittungDto(matr, fachID,publicKey, base64Quittung);
+        QuittungDto quittungDto = new QuittungDto(matr, fachID,publicKey, quittung);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
         logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
 
-        return base64Quittung;
+        return quittung;
     }
 
     private KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
