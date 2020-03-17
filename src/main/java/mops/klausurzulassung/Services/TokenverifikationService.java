@@ -26,7 +26,7 @@ public class TokenverifikationService {
         this.quittungService = quittungService;
     }
 
-    public boolean verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
+    public long[] verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
 
         quittung =  quittung.replaceAll("@", "/");
 
@@ -41,7 +41,7 @@ public class TokenverifikationService {
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
         if(publicKey == null){
             logger.error("Public Key ist null");
-            return false;
+          return new long[]{-1, -1};
         }
 
         Signature sign = Signature.getInstance("SHA256withRSA");
@@ -50,6 +50,12 @@ public class TokenverifikationService {
         sign.update(hashValueBytes);
         byte[] tokenByte = Base64.getDecoder().decode(String.valueOf(token));
         logger.debug("Token Verifiziert");
-        return sign.verify(tokenByte);
+        long[] longArray = new long[2];
+        longArray[0] = Long.parseLong(matr);
+        longArray[1] = Long.parseLong(fachID);
+        if(sign.verify(tokenByte)){
+          return longArray;
+        }
+        return new long[]{-1, -1};
     }
 }
