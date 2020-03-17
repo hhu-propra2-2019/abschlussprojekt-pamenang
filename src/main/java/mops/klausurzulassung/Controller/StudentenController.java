@@ -95,7 +95,7 @@ public class StudentenController {
     }
     logger.debug("Token: " + token.getToken());
 
-    Long[] verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
+    long[] verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
     if (verifizierungsErgebnis[0] > 0 &&
         verifizierungsErgebnis[1] > 0) {
 
