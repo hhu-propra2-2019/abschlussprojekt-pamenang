@@ -30,42 +30,15 @@ public class TokenverifikationService {
 
         quittung =  quittung.replaceAll("@", "/");
 
-        StringBuilder fachID = new StringBuilder();
-        StringBuilder matr = new StringBuilder();
-        StringBuilder token = new StringBuilder();
+        String[] splitArray = quittung.split("#", 3);
+        String token = splitArray[0];
+        String matr = splitArray[1];
+        String fachID = splitArray[2];
 
-        char[] charArray = quittung.toCharArray();
-        int hashtagCount = 0;
-        for(int i = 0; i < charArray.length; i++){
-          if(charArray[i] == '#'){
-            hashtagCount++;
-          }else if(hashtagCount == 0){
-            token.append(charArray[i]);
-          }else if(hashtagCount == 1){
-            matr.append(charArray[i]);
-          }else{
-            fachID.append(charArray[i]);
-          }
-        }
-        /*
-
-        StringBuilder fachID = new StringBuilder();
-        char[] charArray = quittung.toCharArray();
-        char[] token = Arrays.copyOfRange(charArray, 0, 88);
-        char[] matrChar = Arrays.copyOfRange(charArray, 88, 95);
-        for(int i=95;i<charArray.length;i++){
-            fachID.append(charArray[i]);
-
-        }
-
-        StringBuilder matr = new StringBuilder();
-        for(int i = 0; i < matrChar.length; i++){
-          matr.append(matrChar[i]);
-        }*/
         logger.debug("Matrikelnummer: " + matr + " FachID: "+fachID);
 
-        String HashValue = matr.toString()+fachID.toString();
-        PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr.toString(), fachID.toString());
+        String HashValue = matr+fachID;
+        PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
         if(publicKey == null){
             logger.error("Public Key ist null");
             return false;
