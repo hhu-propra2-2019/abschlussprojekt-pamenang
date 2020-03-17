@@ -49,11 +49,12 @@ public class TokengenerierungService {
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
-        String quittung = Arrays.toString(token)+ hashValue;
 
-        String base64Token = Base64.getEncoder().encodeToString(quittung.getBytes());
+        String base64Token = Base64.getEncoder().encodeToString(token);
 
         base64Token = base64Token.replaceAll("/", "@");
+
+        base64Token = base64Token + hashValue;
 
         QuittungDto quittungDto = new QuittungDto(matr, fachID,publicKey, base64Token);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);

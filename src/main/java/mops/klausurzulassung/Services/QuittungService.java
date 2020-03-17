@@ -35,7 +35,7 @@ public class QuittungService {
         quittungDto.setModulId(quittungDao.getModulId());
         quittungDto.setMatrikelnummer(quittungDao.getMatrikelnummer());
         quittungDto.setPublicKey(quittungDao.getPublicKey());
-        quittungDto.setToken(quittungDao.getToken());
+        quittungDto.setQuittung(quittungDao.getQuittung());
         return quittungDto;
     }
 
@@ -43,7 +43,7 @@ public class QuittungService {
 
         QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndModulId(matr,fachID);
         if(quittungDao==null) throw new NoTokenInDatabaseException("Token wurde in der Datenbank nicht gefunden!");
-        else return loadQuittungDto(quittungDao).getToken();
+        else return loadQuittungDto(quittungDao).getQuittung();
 
     }
 
