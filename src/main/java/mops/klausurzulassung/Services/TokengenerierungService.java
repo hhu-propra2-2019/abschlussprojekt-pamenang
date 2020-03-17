@@ -52,7 +52,7 @@ public class TokengenerierungService {
         String base64Matr= Base64.getEncoder().encodeToString(matr.getBytes());
         String base64FachID= Base64.getEncoder().encodeToString(fachID.getBytes());
 
-        String quittung = base64Token+"#"+base64Matr+"#"+base64FachID;
+        String quittung = base64Token+"§"+base64Matr+"§"+base64FachID;
 
         quittung = quittung.replaceAll("/", "@");
 

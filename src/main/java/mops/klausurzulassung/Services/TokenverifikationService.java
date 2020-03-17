@@ -30,15 +30,15 @@ public class TokenverifikationService {
 
         quittung =  quittung.replaceAll("@", "/");
 
-        String[] splitArray = quittung.split("#", 3);
+        String[] splitArray = quittung.split("§", 3);
         String token = splitArray[0];
         String base64Matr = splitArray[1];
         String base64FachID = splitArray[2];
 
         byte[] matrByte = Base64.getDecoder().decode(base64Matr);
-        String matr = Arrays.toString(matrByte);
+        String matr = new String(matrByte);
         byte[] fachIDByte = Base64.getDecoder().decode(base64FachID);
-        String fachID = Arrays.toString(fachIDByte);
+        String fachID = new String(fachIDByte);
 
         logger.debug("Matrikelnummer: " + matr + " FachID: "+fachID);
 
