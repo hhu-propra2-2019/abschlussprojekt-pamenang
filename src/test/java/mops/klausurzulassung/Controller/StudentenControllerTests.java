@@ -6,6 +6,7 @@ import mops.Application;
 import mops.klausurzulassung.Config.KeycloakConfig;
 import mops.klausurzulassung.Config.SecurityConfig;
 import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.Domain.StudentDto;
 import mops.klausurzulassung.Services.StudentService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,7 +59,7 @@ class Studententest{
   }
 
   @Test
-  @WithMockKeycloackAuth(name = "test", roles = "orga")
+  @WithMockKeycloackAuth(name = "test", roles = "studentin")
   void test_getMappingLink() throws Exception {
     String tokenLink = "testToken";
     String fachLink = "12";
@@ -71,5 +73,26 @@ class Studententest{
             .andExpect(status().isOk())
             .andExpect(model().attribute("studentDto", not(nullValue())));
 
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "test", roles = "studentin")
+  public void test_postMapping_empfangeDaten_checkForBindingResult() throws Exception {
+    mockMvc.perform(post("/zulassung1/student")).andExpect(status().isOk());
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "test", roles = "studentin")
+  public void test_postMapping_empfangeDaten_checkForRedirect() throws Exception {
+    mockMvc.perform(post("/zulassung1/student")
+            .param("vorname", "testVorname")
+            .param("nachname", "testNachname")
+            .param("email", "testEmail")
+            .param("matrikelnummer", "29898149")
+            .param("modulId", "12")
+            .param("fachname", "testFachname")
+            .param("token", "testToken")
+            .contentType("application/x-www-form-urlencoded"))
+            .andExpect(status().is3xxRedirection());
   }
 }
