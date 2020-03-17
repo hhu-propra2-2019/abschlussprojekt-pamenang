@@ -32,8 +32,13 @@ public class TokenverifikationService {
 
         String[] splitArray = quittung.split("#", 3);
         String token = splitArray[0];
-        String matr = splitArray[1];
-        String fachID = splitArray[2];
+        String base64Matr = splitArray[1];
+        String base64FachID = splitArray[2];
+
+        byte[] matrByte = Base64.getDecoder().decode(base64Matr);
+        String matr = Arrays.toString(matrByte);
+        byte[] fachIDByte = Base64.getDecoder().decode(base64FachID);
+        String fachID = Arrays.toString(fachIDByte);
 
         logger.debug("Matrikelnummer: " + matr + " FachID: "+fachID);
 
@@ -50,11 +55,12 @@ public class TokenverifikationService {
         sign.update(hashValueBytes);
         byte[] tokenByte = Base64.getDecoder().decode(String.valueOf(token));
         logger.debug("Token Verifiziert");
-        long[] longArray = new long[2];
-        longArray[0] = Long.parseLong(matr);
-        longArray[1] = Long.parseLong(fachID);
+
         if(sign.verify(tokenByte)){
-          return longArray;
+            long[] longArray = new long[2];
+            longArray[0] = Long.parseLong(matr);
+            longArray[1] = Long.parseLong(fachID);
+            return longArray;
         }
         return new long[]{-1, -1};
     }
