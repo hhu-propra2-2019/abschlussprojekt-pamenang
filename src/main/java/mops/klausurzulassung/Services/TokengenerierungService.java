@@ -55,7 +55,7 @@ public class TokengenerierungService {
         base64Token = base64Token.replaceAll("/", "@");
 
         base64Token = base64Token + hashValue;
-
+        logger.debug(base64Token);
         QuittungDto quittungDto = new QuittungDto(matr, fachID,publicKey, base64Token);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
