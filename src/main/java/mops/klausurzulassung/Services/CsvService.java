@@ -2,18 +2,14 @@ package mops.klausurzulassung.Services;
 
 import com.opencsv.CSVWriter;
 import mops.klausurzulassung.Domain.Student;
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +31,8 @@ public class CsvService {
 
   // Reihenfolge im output.csv:
   // Matrikelnummer, Nachname, Vorname
-  
-  public List<Student> getStudentListFromInputFile(Iterable<CSVRecord> records, Long id) throws IOException {
+
+  public List<Student> getStudentListFromInputFile(Iterable<CSVRecord> records, Long id) {
     List<Student> studentList = new ArrayList<>();
 
     for (CSVRecord record : records) {
@@ -72,14 +68,14 @@ public class CsvService {
 
   public void writeCsvFile(Long id, List<Student> students)  {
     File outputFile = new File("klausurliste_"+id+".csv");
-    FileWriter fileWriter = null;
+    FileWriter fileWriter;
 
     try {
       fileWriter = new FileWriter(outputFile);
       CSVWriter writer = new CSVWriter(fileWriter);
       Iterable<Student> altzugelassene = studentService.findByModulId(id);
 
-      boolean bereitsEnthalten  = false;
+      boolean bereitsEnthalten;
       if (altzugelassene != null) {
         for (Student altStudent : altzugelassene) {
           bereitsEnthalten = false;

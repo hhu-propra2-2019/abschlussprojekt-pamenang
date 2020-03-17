@@ -5,12 +5,9 @@ import mops.klausurzulassung.Domain.AltzulassungStudentDto;
 import mops.klausurzulassung.Domain.FrontendMessage;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
-import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
-import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -34,11 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 @Controller
 @SessionScope
@@ -76,9 +68,6 @@ public class ModulController {
     model.addAttribute("successMessage",message.getSuccessMessage());
     message.resetMessage();
 
-
-
-
     return "modulAuswahl";
   }
 
@@ -99,6 +88,7 @@ public class ModulController {
     message.setErrorMessage((String) returns[1]);
     message.setSuccessMessage((String) returns[2]);
     return "redirect:/zulassung1/modulHinzufuegen";
+
   }
 
 
@@ -108,8 +98,9 @@ public class ModulController {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-    String [] messages = modulService.deleteStudentsFromModul(id);
-    //setMessages(messages[0],messages[1]);
+    String[] messageArray = modulService.deleteStudentsFromModul(id);
+    message.setErrorMessage(messageArray[0]);
+    message.setSuccessMessage(messageArray[1]);
     return "redirect:/zulassung1/modulHinzufuegen";
   }
 
@@ -135,7 +126,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}")
-  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoPublicKeyInDatabaseException {
+  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String[] messageArray = modulService.verarbeiteUploadliste(id, file);
     message.setErrorMessage(messageArray[0]);
@@ -147,17 +138,17 @@ public class ModulController {
   @ResponseBody
   public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String[] messageArray = modulService.download(id, response);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
+    modulService.download(id, response);
+
   }
+
 
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
-  public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException, NoPublicKeyInDatabaseException {
+  public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     
     if(bindingResult.hasErrors()){
-      message.setErrorMessage("Alle Felder muessen befuellt werden");
+      message.setErrorMessage("Alle Felder im Formular müssen befüllt werden!");
       return "redirect:/zulassung1/modul/" + id;
     }
     model.addAttribute("account", createAccountFromPrincipal(token));

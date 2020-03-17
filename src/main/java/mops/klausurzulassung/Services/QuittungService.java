@@ -5,8 +5,6 @@ import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Domain.QuittungDto;
 import mops.klausurzulassung.Repositories.QuittungRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +45,7 @@ public class QuittungService {
 
     }
 
-    public void save(QuittungDao quittungDao) {
+    void save(QuittungDao quittungDao) {
         quittungRepository.save(quittungDao);
     }
 }

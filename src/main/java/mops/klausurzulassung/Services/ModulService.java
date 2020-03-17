@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -80,6 +81,7 @@ public class ModulService {
     for (CSVRecord record : records) {
       if (record.size() != 4) {
         countColumns = false;
+        break;
       }
     }
 
@@ -125,64 +127,75 @@ public class ModulService {
     return new String[]{errorMessage, successMessage};
   }
 
-
   public  Object[] neuesModul(Modul modul, Principal principal) throws ParseException {
     errorMessage = null;
     successMessage = null;
-
     modul.setOwner(principal.getName());
 
-    String frist = modul.getFrist();
-    Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
-    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
-    LocalDateTime localFrist = date.toInstant()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDateTime();
+    if (!missingAttributeInModul(modul)) {
+      String frist = modul.getFrist();
+      Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
+      LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
+      LocalDateTime localFrist = date.toInstant()
+          .atZone(ZoneId.systemDefault())
+          .toLocalDateTime();
 
 
-    if (localFrist.isAfter(actualDate)){
-      if (findById(modul.getId()).isPresent()) {
-        errorMessage = "Diese Modul-ID existiert schon, bitte eine andere ID eingeben!";
+      if (localFrist.isAfter(actualDate)) {
+        if (findById(modul.getId()).isPresent()) {
+          errorMessage = "Diese Modul-ID existiert schon, bitte eine andere ID eingeben!";
+        } else {
+          save(modul);
+          successMessage = "Neues Modul wurde erfolgreich hinzugefügt!";
+          modul = new Modul();
+        }
       } else {
-        save(modul);
-        successMessage = "Neues Modul wurde erfolgreich hinzugefügt!";
-        modul = new Modul();
+        errorMessage = "Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!";
       }
     } else {
-      errorMessage = "Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!";
+      errorMessage = "Alle Felder im Formular müssen ausgefüllt sein!";
     }
     return new Object[]{modul, errorMessage, successMessage};
   }
 
-  public String[] download(@PathVariable Long id, HttpServletResponse response) throws IOException {
-    errorMessage = null;
-    successMessage = null;
+  public void download(@PathVariable Long id, HttpServletResponse response) throws IOException {
+
+    byte[] bytes;
+    File klausurliste;
 
     try {
-      File klausurliste = new File("klausurliste_" + id + ".csv");
+      klausurliste = new File("klausurliste_" + id + ".csv");
       Path path = klausurliste.toPath();
-      byte[] bytes = Files.readAllBytes(path);
+      bytes = Files.readAllBytes(path);
 
-      String fachname = findById(id).get().getName();
-      response.setContentType("text/csv");
-      String newFilename = "\"klausurliste_"+fachname+".csv\"";
-      response.setHeader("Content-Disposition", "attachment; filename="+newFilename);
-      OutputStream outputStream = response.getOutputStream();
-      String header = "Matrikelnummer,Nachname,Vorname\n";
-      outputStream.write(header.getBytes());
-      outputStream.write(bytes);
-      outputStream.flush();
-      outputStream.close();
-      klausurliste.delete();
-
-    } catch (NoSuchFileException e){
-      errorMessage = "Bitte erst eine Zulassungsliste hochladen!";
-      response.sendRedirect("/zulassung1/modul" + "/" + id);
+    } catch (NoSuchFileException e) {
+      List<Student> empty = new ArrayList<>();
+      csvService.writeCsvFile(id, empty);
+      klausurliste = new File("klausurliste_" + id + ".csv");
+      Path path = klausurliste.toPath();
+      bytes = Files.readAllBytes(path);
     }
-    return new String[]{errorMessage, successMessage};
+
+    OutputStream outputStream = writeHeader(id, response);
+    outputStream.write(bytes);
+    outputStream.flush();
+    outputStream.close();
+    klausurliste.delete();
+
   }
 
-  public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
+  private OutputStream writeHeader(Long id, HttpServletResponse response) throws IOException {
+    String fachname = findById(id).get().getName();
+    response.setContentType("text/csv");
+    String newFilename = "\"klausurliste_" + fachname + ".csv\"";
+    response.setHeader("Content-Disposition", "attachment; filename=" + newFilename);
+    OutputStream outputStream = response.getOutputStream();
+    String header = "Matrikelnummer,Nachname,Vorname\n";
+    outputStream.write(header.getBytes());
+    return outputStream;
+  }
+
+  public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     successMessage = null;
     errorMessage = null;
 
@@ -212,7 +225,6 @@ public class ModulService {
         }
       }
 
-
     return new String[]{errorMessage, successMessage};
   }
 
@@ -239,5 +251,9 @@ public class ModulService {
 
   boolean studentIsEmpty(Student student) {
     return student.getVorname().isEmpty() || student.getNachname().isEmpty() || student.getEmail().isEmpty() || student.getMatrikelnummer() == null;
+  }
+
+  private boolean missingAttributeInModul(Modul modul) {
+    return modul.getName().isEmpty() || modul.getId() == null || modul.getOwner().isEmpty() || modul.getFrist().isEmpty();
   }
 }

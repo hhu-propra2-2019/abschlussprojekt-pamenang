@@ -3,7 +3,6 @@ package mops.klausurzulassung.Domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Data
 @NoArgsConstructor
