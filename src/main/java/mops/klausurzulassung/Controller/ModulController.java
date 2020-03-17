@@ -144,6 +144,7 @@ public class ModulController {
     message.setSuccessMessage(messageArray[1]);
   }
 
+
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
   public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
