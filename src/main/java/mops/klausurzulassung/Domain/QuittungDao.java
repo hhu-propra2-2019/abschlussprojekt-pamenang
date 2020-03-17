@@ -19,6 +19,12 @@ import java.security.PublicKey;
 @Table(name = "quittungen")
 public class QuittungDao {
 
+  @Column(name = "Matrikelnummer")
+  private String matrikelnummer;
+
+  @Column(name = "ModuId")
+  private String modulId;
+
   @Column(name = "PublicKey")
   @Lob
   private PublicKey publicKey;
