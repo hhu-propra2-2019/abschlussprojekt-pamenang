@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -160,22 +161,27 @@ public class ModulService {
     errorMessage = null;
     successMessage = null;
 
-    try {
-      File klausurliste = new File("klausurliste_" + id + ".csv");
-      Path path = klausurliste.toPath();
-      byte[] bytes = Files.readAllBytes(path);
+    byte[] bytes;
+    File klausurliste;
 
-      OutputStream outputStream = writeHeader(id, response);
-      outputStream.write(bytes);
-      outputStream.flush();
-      outputStream.close();
-      klausurliste.delete();
+    try {
+      klausurliste = new File("klausurliste_" + id + ".csv");
+      Path path = klausurliste.toPath();
+      bytes = Files.readAllBytes(path);
 
     } catch (NoSuchFileException e) {
-      OutputStream outputStream = writeHeader(id, response);
-      outputStream.flush();
-      outputStream.close();
+      List<Student> empty = new ArrayList<Student>();
+      csvService.writeCsvFile(id, empty);
+      klausurliste = new File("klausurliste_" + id + ".csv");
+      Path path = klausurliste.toPath();
+      bytes = Files.readAllBytes(path);
     }
+
+    OutputStream outputStream = writeHeader(id, response);
+    outputStream.write(bytes);
+    outputStream.flush();
+    outputStream.close();
+    klausurliste.delete();
     return new String[]{errorMessage, successMessage};
   }
 
