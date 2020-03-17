@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.PublicKey;
 import java.security.Signature;
-import java.util.Arrays;
 import java.util.Base64;
 
 @Service
