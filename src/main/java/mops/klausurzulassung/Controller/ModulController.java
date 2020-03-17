@@ -30,7 +30,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
-import java.text.ParseException;
 
 @Controller
 @SessionScope
@@ -57,10 +56,10 @@ public class ModulController {
   }
 
   @Secured("ROLE_orga")
-  @GetMapping("/modulHinzufuegen")
+  @GetMapping("/modulAuswahl")
   public String index(Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    Iterable<Modul> moduls = modulService.findByOwner(principal.getName());
+    Iterable<Modul> moduls = modulService.findByOwnerAndActive(principal.getName(), true);
     model.addAttribute("moduls", moduls);
     model.addAttribute("modul", currentModul);
 
@@ -72,22 +71,32 @@ public class ModulController {
   }
 
   @Secured("ROLE_orga")
-  @PostMapping("/modulHinzufuegen")
-  public String newModul(
-      @ModelAttribute @Valid Modul modul,
-      Model model,
-      KeycloakAuthenticationToken token,
-      Principal principal) throws ParseException {
-
+  @PostMapping("/modulAuswahl")
+  public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    modul.setOwner(principal.getName());
-    this.currentModul = modul;
+    String orga = principal.getName();
+    modul.setOwner(orga);
+    modul.setActive(true);
+    modulService.save(modul);
 
-    Object[] returns = modulService.neuesModul(modul, principal);
-    this.currentModul = (Modul) returns[0];
-    message.setErrorMessage((String) returns[1]);
-    message.setSuccessMessage((String) returns[2]);
-    return "redirect:/zulassung1/modulHinzufuegen";
+    Iterable<Modul> moduls = modulService.findByOwnerAndActive(orga, true);
+    model.addAttribute("moduls", moduls);
+    return "modulAuswahl";
+  }
+
+  @Secured("ROLE_orga")
+  @GetMapping("/modulHinzufuegen")
+  public String newModul(
+      Model model,
+      KeycloakAuthenticationToken token) {
+    model.addAttribute("account", createAccountFromPrincipal(token));
+
+    Iterable<Modul> moduls = modulService.findByActive(false);
+    model.addAttribute("moduls", moduls);
+    model.addAttribute("modul", currentModul);
+    model.addAttribute("errorMessage", message.getErrorMessage());
+    model.addAttribute("successMessage", message.getSuccessMessage());
+    return "modulHinzufuegen";
 
   }
 
@@ -101,7 +110,7 @@ public class ModulController {
     String[] messageArray = modulService.deleteStudentsFromModul(id);
     message.setErrorMessage(messageArray[0]);
     message.setSuccessMessage(messageArray[1]);
-    return "redirect:/zulassung1/modulHinzufuegen";
+    return "redirect:/zulassung1/modulAuswahl";
   }
 
   @Secured("ROLE_orga")
@@ -139,7 +148,6 @@ public class ModulController {
   public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
     model.addAttribute("account", createAccountFromPrincipal(token));
     modulService.download(id, response);
-
   }
 
 

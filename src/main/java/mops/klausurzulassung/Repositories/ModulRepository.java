@@ -8,6 +8,8 @@ import java.util.Optional;
 
 @Repository
 public interface ModulRepository extends CrudRepository<Modul, Long> {
-  Iterable<Modul> findByOwner(String name);
+  Iterable<Modul> findByOwnerAndActive(String name, boolean active);
   Optional<Modul> findById(Long fachId);
+
+  Iterable<Modul> findByActive(boolean active);
 }

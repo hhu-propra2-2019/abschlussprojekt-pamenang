@@ -7,10 +7,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @Entity
@@ -20,6 +19,7 @@ import java.util.Date;
 public class Modul {
 
   @Id
+  @GeneratedValue
   @Column(name = "id")
   private Long id;
 
@@ -32,4 +32,7 @@ public class Modul {
   @Column(name="frist")
   @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm")
   private String frist;
+
+  @Column(name = "active")
+  private boolean active;
 }

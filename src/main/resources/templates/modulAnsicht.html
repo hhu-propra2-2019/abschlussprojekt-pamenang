@@ -91,7 +91,7 @@
                 <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
             </li>
             <li>
-                <a href="/zulassung1/modulHinzufuegen" th:href="@{/zulassung1/modulHinzufuegen}">Orga</a>
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
             </li>
         </ul>
     </nav>
@@ -121,13 +121,13 @@
         Altzulassung hat oder die Quittung verschwunden ist.
         <div>
             <button class="btn btn-outline-dark"
-                    onclick="document.getElementById('id02').style.display='block'">Altzulassung manuell hinzufügen
+                    onclick="document.getElementById('id03').style.display='block'">Altzulassung manuell hinzufügen
             </button>
         </div>
     </label>
 
-    <div class="modal" id="id02">
-                                <span class="close" onclick="document.getElementById('id02').style.display='none'"
+    <div class="modal" id="id03">
+                                <span class="close" onclick="document.getElementById('id03').style.display='none'"
                                       title="Close Modal">&times;</span>
         <div class="modal-content">
             <div class="containerModal">
@@ -136,10 +136,10 @@
                 <form action="#" method="post" th:action="'/zulassung1'+'/' + ${id} + '/altzulassungHinzufuegen'"
                       th:object="${student}">
                     <div class="form-group">
-                        <label for="matrikelnummer">Bitte geben Sie die Matrikelnummer des Students ein.</label>
+                        <label>Bitte geben Sie die Matrikelnummer des Students ein.</label>
                         <input class="form-control" th:field="*{matrikelnummer}"
                                placeholder="Matrikelnummer" type="number"
-                               th:errorclass="is-invalid" th:value="*{matrikelnummer}" >
+                               th:errorclass="is-invalid" th:value="*{matrikelnummer}">
                         <span class="text-danger"
                               th:if="${#fields.hasErrors('matrikelnummer')}"></span>
                     </div>
@@ -155,7 +155,7 @@
                               th:if="${#fields.hasErrors('nachname')}"></span>
                     </div>
                     <div class="form-group">
-                        <label for="email">Bitte geben Sie die E-Mail-Adresse des Students ein.</label>
+                        <label>Bitte geben Sie die E-Mail-Adresse des Students ein.</label>
                         <input class="form-control" th:field="*{email}" placeholder="E-Mail-Adresse"
                                th:errorclass="is-invalid" th:value="*{email}" type="email">
                         <span class="text-danger"
@@ -185,9 +185,8 @@
                 </div>
 
             </div>
-        </div>
-    </div>
-
+                    </div>
+                </div>
 
     <hr>
 

@@ -98,7 +98,7 @@
                 <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
             </li>
             <li class="active">
-                <a href="/zulassung1/modulHinzufuegen" th:href="@{/zulassung1/modulHinzufuegen}">Orga</a>
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
             </li>
         </ul>
     </nav>
@@ -121,29 +121,7 @@
 
 
         <div id="new-modul">
-            <form action="#" method="post" th:action="'/zulassung1/modulHinzufuegen'" th:object="${modul}">
-                <div class="form-group">
-                    <label for="name">Bitte geben Sie den Modulnamen ein.</label>
-                    <input class="form-control" id="name" name="name" placeholder="Modulname"
-                           th:errorclass="is-invalid" th:value="*{name}" type="text">
-                    <span class="text-danger" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="id">Bitte geben Sie die Modul-ID ein.</label>
-                    <input class="form-control" id="id" name="id" placeholder="Modul-ID"
-                           th:errorclass="is-invalid" th:value="*{id}" type="number">
-                    <span class="text-danger" th:errors="*{id}" th:if="${#fields.hasErrors('id')}"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="id">Bitte geben Sie ein Datum und eine Uhrzeit als Frist an.</label>
-                    <input class="form-control" id="frist" name="frist" placeholder="dd.mm.yyyy hh:mm"
-                           type="datetime" th:value="*{frist}">
-                    <span class="text-danger"></span>
-                </div>
-
-
+            <form action="#" method="GET" th:action="'/zulassung1/modulHinzufuegen'">
                 <input class="btn btn-primary" type="submit" value="Modul hinzufügen">
             </form>
         </div>
@@ -191,7 +169,7 @@
                                         <div class="clearfix">
                                             <div class="linkerButton">
                                                 <form action="#" method="GET"
-                                                      th:action="'/zulassung1/modulHinzufuegen'">
+                                                      th:action="'/zulassung1/modulAuswahl'">
                                                     <input class="btn btn-outline-dark btn-sm" data-target="#myModal"
                                                            data-toggle="modal"
                                                            type="submit" value="Abbrechen">
@@ -222,7 +200,7 @@
 
                 // When the user clicks anywhere outside of the modal, close it
                 window.onclick = function (event) {
-                    if (event.target == modal) {
+                    if (event.target === modal) {
                         modal.style.display = "none";
                     }
                 }

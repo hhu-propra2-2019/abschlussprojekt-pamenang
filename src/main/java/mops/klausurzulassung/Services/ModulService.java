@@ -55,19 +55,23 @@ public class ModulService {
     this.successMessage = null;
   }
 
-  public Iterable<Modul> findByOwner(String name) {
-    return modulRepository.findByOwner(name);
+  public Iterable<Modul> findByOwnerAndActive(String name, boolean active) {
+    return modulRepository.findByOwnerAndActive(name, active);
   }
 
   public Optional<Modul> findById(Long id) {
     return modulRepository.findById(id);
   }
 
+  public Iterable<Modul> findByActive(boolean active) {
+    return modulRepository.findByActive(active);
+  }
+
   private void delete(Modul modul) {
     modulRepository.delete(modul);
   }
 
-  private void save(Modul modul) {
+  public void save(Modul modul) {
     modulRepository.save(modul);
   }
 
