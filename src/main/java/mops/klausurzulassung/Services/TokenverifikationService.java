@@ -34,14 +34,14 @@ public class TokenverifikationService {
         String fachID = "";
         char[] charArray = quittung.toCharArray();
         char[] token = Arrays.copyOfRange(charArray, 0, 88);
-        char[] matrChar = Arrays.copyOfRange(charArray, 89, 97);
-        for(int i=98;i<charArray.length;i++){
+        char[] matrChar = Arrays.copyOfRange(charArray, 88, 95);
+        for(int i=95;i<charArray.length;i++){
             fachID = String.valueOf(+charArray[i]);
 
         }
 
         String matr = Arrays.toString(matrChar);
-
+        logger.debug("Matrikelnummer: " + matr + " FachID: "+fachID);
 
         String HashValue = matr+fachID;
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
