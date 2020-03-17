@@ -26,7 +26,13 @@ public class MainController {
   @GetMapping("")
   public String mainpage(KeycloakAuthenticationToken token, Model model) {
     if (token != null) {
-      model.addAttribute("account", createAccountFromPrincipal(token));
+      Account account = createAccountFromPrincipal(token);
+      model.addAttribute("account", account);
+      if(account.getRoles().contains("orga")){
+        return "redirect:/zulassung1/modulHinzufuegen";
+      }else if(account.getRoles().contains("studentin")){
+        return "redirect:/zulassung1/student";
+      }
     }
 
     return "mainpage";
