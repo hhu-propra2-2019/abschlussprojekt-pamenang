@@ -35,21 +35,22 @@ public class TokengenerierungService {
 
     public String erstellenToken(String matr, String fachID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
-        String HashValue = erstellenHashValue(matr, fachID);
+        String hashValue = erstellenHashValue(matr, fachID);
         KeyPair pair = KeyPaarGenerierung();
         PrivateKey privateKey = pair.getPrivate();
         Signature sign = Signature.getInstance("SHA256withRSA");
         logger.debug("Sign SHA256 with RSA");
 
         sign.initSign(privateKey);
-        byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
+        byte[] hashValueBytes = hashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
 
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
+        String quittung = hashValue+token.toString();
 
-        String base64Token = Base64.getEncoder().encodeToString(token);
+        String base64Token = Base64.getEncoder().encodeToString(quittung.getBytes());
 
         base64Token = base64Token.replaceAll("/", "@");
 
