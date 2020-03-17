@@ -5,7 +5,6 @@ import mops.klausurzulassung.Domain.AltzulassungStudentDto;
 import mops.klausurzulassung.Domain.FrontendMessage;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
-import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
@@ -139,9 +138,8 @@ public class ModulController {
   @ResponseBody
   public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String[] messageArray = modulService.download(id, response);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
+    modulService.download(id, response);
+
   }
 
 

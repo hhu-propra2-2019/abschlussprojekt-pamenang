@@ -81,6 +81,7 @@ public class ModulService {
     for (CSVRecord record : records) {
       if (record.size() != 4) {
         countColumns = false;
+        break;
       }
     }
 
@@ -157,9 +158,7 @@ public class ModulService {
     return new Object[]{modul, errorMessage, successMessage};
   }
 
-  public String[] download(@PathVariable Long id, HttpServletResponse response) throws IOException {
-    errorMessage = null;
-    successMessage = null;
+  public void download(@PathVariable Long id, HttpServletResponse response) throws IOException {
 
     byte[] bytes;
     File klausurliste;
@@ -170,7 +169,7 @@ public class ModulService {
       bytes = Files.readAllBytes(path);
 
     } catch (NoSuchFileException e) {
-      List<Student> empty = new ArrayList<Student>();
+      List<Student> empty = new ArrayList<>();
       csvService.writeCsvFile(id, empty);
       klausurliste = new File("klausurliste_" + id + ".csv");
       Path path = klausurliste.toPath();
@@ -182,7 +181,7 @@ public class ModulService {
     outputStream.flush();
     outputStream.close();
     klausurliste.delete();
-    return new String[]{errorMessage, successMessage};
+
   }
 
   private OutputStream writeHeader(Long id, HttpServletResponse response) throws IOException {

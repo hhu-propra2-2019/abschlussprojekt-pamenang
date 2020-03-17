@@ -139,7 +139,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteRichtigeUploadliste() throws SignatureException, NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, IOException {
+  void verarbeiteRichtigeUploadliste() throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447".getBytes());
@@ -160,7 +160,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteZuLangeUploadliste() throws SignatureException, NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, IOException {
+  void verarbeiteZuLangeUploadliste() throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,zu viel".getBytes());
@@ -172,7 +172,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteZuKurzeUploadliste() throws SignatureException, NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, IOException {
+  void verarbeiteZuKurzeUploadliste() throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de".getBytes());
@@ -184,7 +184,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteFalscheUploadliste() throws SignatureException, NoSuchAlgorithmException, NoPublicKeyInDatabaseException, IOException, InvalidKeyException {
+  void verarbeiteFalscheUploadliste() throws SignatureException, NoSuchAlgorithmException, IOException, InvalidKeyException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("".getBytes());
@@ -196,7 +196,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -214,7 +214,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -234,7 +234,7 @@ class ModulServiceTest {
 
   
   @Test
-  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -339,24 +339,11 @@ class ModulServiceTest {
 
     when(response.getOutputStream()).thenReturn(outputStream);
 
-    String[] messages = modulService.download(1L, response);
+    modulService.download(1L, response);
 
-    String[] expectedMessages = {null,null};
-
-    assertEquals(expectedMessages[0],messages[0]);
-    assertEquals(expectedMessages[1],messages[1]);
     assertFalse(outputFile.exists());
   }
 
-  @Test
-  void downloadOhneListe() throws IOException {
-
-    String[] messages = modulService.download(1L, response);
-
-    String[] expectedMessages = {"Bitte erst eine Zulassungsliste hochladen!",null};
-    assertEquals(expectedMessages[0],messages[0]);
-    assertEquals(expectedMessages[1],messages[1]);
-  }
 
   @Test
   void neuesModulErstellenFristInDerZukunftIdIsPresent() throws ParseException {
