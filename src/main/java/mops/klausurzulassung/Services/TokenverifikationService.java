@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.util.Arrays;
 import java.util.Base64;
 
 @Service
@@ -25,13 +26,24 @@ public class TokenverifikationService {
         this.quittungService = quittungService;
     }
 
-    public boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
+    public boolean verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
 
-        if(token.length() != 88){
-            return false;
+        quittung =  quittung.replaceAll("@", "/");
+
+
+        String hashValue = null;
+        char[] charArray = quittung.toCharArray();
+        char[] token = Arrays.copyOfRange(charArray, 0, 88);
+        for(int i=88;i<quittung.length();i++){
+             hashValue = String.valueOf(+charArray[i]);
         }
 
-        token =  token.replaceAll("@", "/");
+        Base64.getDecoder().decode(hashValue);
+
+
+
+
+
 
         String HashValue = matr+fachID;
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);

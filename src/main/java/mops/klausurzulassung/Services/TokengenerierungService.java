@@ -16,6 +16,7 @@ import java.security.KeyPairGenerator;
 import java.security.Signature;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.Arrays;
 import java.util.Base64;
 
 @Service
@@ -48,7 +49,7 @@ public class TokengenerierungService {
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
-        String quittung = hashValue+token.toString();
+        String quittung = Arrays.toString(token)+ hashValue;
 
         String base64Token = Base64.getEncoder().encodeToString(quittung.getBytes());
 
