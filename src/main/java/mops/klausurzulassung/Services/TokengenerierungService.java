@@ -16,6 +16,7 @@ import java.security.KeyPairGenerator;
 import java.security.Signature;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.Arrays;
 import java.util.Base64;
 
 @Service
@@ -48,20 +49,20 @@ public class TokengenerierungService {
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
+        String quittung = Arrays.toString(token) + "#" + matr + "#" + fachID;
 
-        String base64Token = Base64.getEncoder().encodeToString(token);
+        String base64Quittung = Base64.getEncoder().encodeToString(quittung.getBytes());
 
-        base64Token = base64Token.replaceAll("/", "@");
+        base64Quittung = base64Quittung.replaceAll("/", "@");
 
-        base64Token = base64Token + hashValue;
-        logger.debug(base64Token);
-        QuittungDto quittungDto = new QuittungDto(matr, fachID,publicKey, base64Token);
+
+        QuittungDto quittungDto = new QuittungDto(matr, fachID,publicKey, base64Quittung);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
         logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
 
-        return base64Token;
+        return base64Quittung;
     }
 
     private KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
