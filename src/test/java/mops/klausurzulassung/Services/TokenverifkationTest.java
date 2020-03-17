@@ -33,53 +33,67 @@ class TokenverifkationTest {
   @Test
   void test_tokenVerifikation_shouldReturnTrue() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
     String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrNUbrWeAP+EmUPMR7Qz3OQXrtAjFAfeQTkKNmjztuNKmqiO9dCEY1ZFWshbu6RbrCRZsx4SZetQteMYzDIGTkCAwEAAQ==";
-    String token = "IMeApu@TCn1Tnl+eob1jCG@lG4LmeVdzVTZF1mJ6KgtB@65JY1r9mHUthrNRgBW43YOr+iUXhAPyJ7bv4i2siw==";
+    String quittung = "IMeApu@TCn1Tnl+eob1jCG@lG4LmeVdzVTZF1mJ6KgtB@65JY1r9mHUthrNRgBW43YOr+iUXhAPyJ7bv4i2siw==";
     String matrikelnummer = "123455237487";
     String fachId = "12";
+    boolean valid = false;
     when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
 
-    boolean validToken = tokenverifikationService.verifikationToken(matrikelnummer,fachId,token);
+    long[] validToken = tokenverifikationService.verifikationToken(quittung);
+    if(validToken[0]>0){
+      valid = true;
+    }
 
-    assertTrue(validToken);
+    assertTrue(valid);
   }
 
   @Test
   void test_tokenVerifikation_publicKeyIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
     String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrNUbrWeAP+EmUPMR7Qz3OQXrtAjFBfeQTkKNmjztuNKmqiO9dCEY1ZFWshbu6RbrCRZsx4SZetQteMYzDIGTkCAwEAAQ==";
-    String token = "IMeApu@TCn1Tnl+eob1jCG@lG4LmeVdzVTZF1mJ6KgtB@65JY1r9mHUthrNRgBW43YOr+iUXhAPyJ7bv4i2siw==";
+    String quittung = "IMeApu@TCn1Tnl+eob1jCG@lG4LmeVdzVTZF1mJ6KgtB@65JY1r9mHUthrNRgBW43YOr+iUXhAPyJ7bv4i2siw==";
     String matrikelnummer = "123455237487";
     String fachId = "12";
+    boolean valid = false;
     when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
 
-    boolean validToken = tokenverifikationService.verifikationToken(matrikelnummer,fachId,token);
+    long[] validToken = tokenverifikationService.verifikationToken(quittung);
+    if(validToken[0]>0){
+      valid = true;
+    }
 
-    assertFalse(validToken);
+    assertFalse(valid);
   }
 
   @Test
   void test_tokenVerifikation_tokenIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
     String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrNUbrWeAP+EmUPMR7Qz3OQXrtAjFAfeQTkKNmjztuNKmqiO9dCEY1ZFWshbu6RbrCRZsx4SZetQteMYzDIGTkCAwEAAQ==";
-    String token = "IMeApu@TCn1Tnl+eob1jCG@lG4LmeVdzVTZF1mJ6KgtB@65JZ1r9mHUthrNRgBW43YOr+iUXhAPyJ7bv4i2siw==";
+    String quittung = "IMeApu@TCn1Tnl+eob1jCG@lG4LmeVdzVTZF1mJ6KgtB@65JZ1r9mHUthrNRgBW43YOr+iUXhAPyJ7bv4i2siw==";
     String matrikelnummer = "123455237487";
     String fachId = "12";
+    boolean valid = false;
     when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
 
-    boolean validToken = tokenverifikationService.verifikationToken(matrikelnummer,fachId,token);
-
-    assertFalse(validToken);
+    long[] validToken = tokenverifikationService.verifikationToken(quittung);
+    if(validToken[0]>0){
+      valid = true;
+    }
+    assertFalse(valid);
   }
 
   @Test
   void test_tokenVerifikation_matrikelnummerUndfachIdIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
     String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrNUbrWeAP+EmUPMR7Qz3OQXrtAjFAfeQTkKNmjztuNKmqiO9dCEY1ZFWshbu6RbrCRZsx4SZetQteMYzDIGTkCAwEAAQ==";
-    String token = "IMeApu@TCn1Tnl+eob1jCG@lG4LmeVdzVTZF1mJ6KgtB@65JY1r9mHUthrNRgBW43YOr+iUXhAPyJ7bv4i2siw==";
+    String quittung = "IMeApu@TCn1Tnl+eob1jCG@lG4LmeVdzVTZF1mJ6KgtB@65JY1r9mHUthrNRgBW43YOr+iUXhAPyJ7bv4i2siw==";
     String matrikelnummer = "12345523747";
     String fachId = "13";
+    boolean valid = false;
     when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
 
-    boolean validToken = tokenverifikationService.verifikationToken(matrikelnummer,fachId,token);
-
-    assertFalse(validToken);
+    long[] validToken = tokenverifikationService.verifikationToken(quittung);
+    if(validToken[0]>0){
+      valid = true;
+    }
+    assertFalse(valid);
   }
 
     @Test
