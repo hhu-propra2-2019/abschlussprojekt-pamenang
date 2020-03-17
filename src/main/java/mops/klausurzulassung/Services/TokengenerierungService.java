@@ -1,6 +1,5 @@
 package mops.klausurzulassung.Services;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Domain.QuittungDto;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import java.security.KeyPairGenerator;
 import java.security.Signature;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.util.Arrays;
 import java.util.Base64;
 
 @Service
