@@ -31,18 +31,21 @@ public class TokenverifikationService {
         quittung =  quittung.replaceAll("@", "/");
 
 
-        String hashValue = null;
+        String hashValue = "";
         char[] charArray = quittung.toCharArray();
         char[] token = Arrays.copyOfRange(charArray, 0, 88);
-        for(int i=88;i<quittung.length();i++){
+        for(int i=89;i<quittung.length();i++){
              hashValue = String.valueOf(+charArray[i]);
         }
 
-        Base64.getDecoder().decode(hashValue);
+        String fachID="";
+        byte[] hashValueByte = Base64.getDecoder().decode(hashValue);
+        byte[] matrByte = Arrays.copyOfRange(hashValueByte, 0, 7);
+        for(int i=8;i<hashValueByte.length;i++){
+            fachID = String.valueOf(+hashValueByte[i]);
+        }
 
-
-
-
+        String matr = Arrays.toString(matrByte);
 
 
         String HashValue = matr+fachID;
