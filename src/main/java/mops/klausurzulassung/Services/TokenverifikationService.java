@@ -59,7 +59,7 @@ public class TokenverifikationService {
         sign.initVerify(publicKey);
         byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
-        byte[] tokenByte = Base64.getDecoder().decode(token);
+        byte[] tokenByte = Base64.getDecoder().decode(String.valueOf(token));
         logger.debug("Token Verifiziert");
         return sign.verify(tokenByte);
     }
