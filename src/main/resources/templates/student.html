@@ -13,9 +13,6 @@
 <header>
     <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
         <ul>
-            <li>
-                <a href="/zulassung1/" th:href="@{/zulassung1}">Home</a>
-            </li>
             <li class="active">
                 <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
             </li>
@@ -35,47 +32,24 @@
         <br>
 
         <div class="alert alert-warning" th:if="${errorMessage!=null}">
-            <span th:text="${errorMessage}" ></span>
+            <span th:text="${errorMessage}"></span>
         </div>
 
         <div class="alert alert-success" th:if="${successMessage!=null}">
-            <span th:text="${successMessage}" ></span>
+            <span th:text="${successMessage}"></span>
         </div>
 
 
-
-        <form method="post" th:action="@{/zulassung1/student}" th:object="${studentDto}">
-
-            <div class="form-group">
-                <label for="matrikelnummer">Bitte geben Sie ihre Matrikelnummer ein.</label>
-                <input class="form-control" th:field="*{matrikelnummer}" th:value="*{matrikelnummer}" th:placeholder="Matrikelnummer"
-                       th:errorclass="is-invalid" type="number">
-                <span class="text-danger" th:if="${#fields.hasErrors('matrikelnummer')}">Das Feld darf nicht leer sein.</span>
-            </div>
-            <div class="form-group">
-                <label for="vorname">Bitte geben Sie ihren Vornamen ein.</label>
-                <input class="form-control" th:field="*{vorname}" th:value="*{vorname}" th:placeholder="Vorname" th:errorclass="is-invalid" type="text">
-                <span class="text-danger" th:if="${#fields.hasErrors('vorname')}">Das Feld darf nicht leer sein.</span>
-            </div>
-            <div class="form-group">
-                <label for="nachname">Bitte geben Sie ihren Nachname ein.</label>
-                <input class="form-control" th:field="*{nachname}" th:value="*{nachname}" th:placeholder="Nachname" th:errorclass="is-invalid" type="text">
-                <span class="text-danger" th:if="${#fields.hasErrors('nachname')}">Das Feld darf nicht leer sein.</span>
-            </div>
-            <div class="form-group">
-                <label for="modulId">Bitte geben Sie ihre FachId ein.</label>
-                <input class="form-control" th:field="*{modulId}" th:value="*{modulId}" th:placeholder="Fach-Id" th:errorclass="is-invalid" type="number">
-                <span class="text-danger" th:if="${#fields.hasErrors('modulId')}">Das Feld darf nicht leer sein.</span>
-            </div>
+        <form method="post" th:action="@{/zulassung1/student}" th:object="${token}">
             <div class="form-group">
                 <label for="token">Bitte geben Sie ihren Token ein.</label>
-                <input class="form-control" th:field="*{token}" th:value="*{token}" th:placeholder="Token" th:errorclass="is-invalid" type="text">
+                <input class="form-control" th:errorclass="is-invalid" th:field="*{token}" th:placeholder="Token"
+                       th:value="*{token}"
+                       type="text">
                 <span class="text-danger" th:if="${#fields.hasErrors('token')}">Das Feld darf nicht leer sein.</span>
             </div>
-
             <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
-
-    </form>
+        </form>
     </div>
 
 </main>
