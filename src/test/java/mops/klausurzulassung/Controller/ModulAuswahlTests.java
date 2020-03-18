@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,7 +43,7 @@ class ModulAuswahlTests {
         .andDo(print());
   }
 
-  // Get Mapping - Falscher Benuztzer Tests 
+  // Get Mapping - Falscher Benuztzer Tests
 
   @Test
   @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
@@ -82,6 +86,54 @@ class ModulAuswahlTests {
   void test_fuerModulFalscherBenutzer_KlausurListeDownload() throws Exception {
     mockMvc
             .perform(get("/zulassung1/modul/" + 5 + "/klausurliste"))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+  }
+
+  // Post Mapping - Falscher Benutzer Tests
+
+  @Test
+  @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
+  void test_fuerModulFalscherBenutzer_neuesModulHinzufuegen() throws Exception {
+    mockMvc
+            .perform(post("/zulassung1/neuesModulHinzufuegen"))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
+  void test_fuerModulFalscherBenutzer_post_modulBearbeiten() throws Exception {
+    mockMvc
+            .perform(post("/zulassung1/modulBearbeiten/" + 5))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
+  void test_fuerModulFalscherBenutzer_post_deleteModul() throws Exception {
+    mockMvc
+            .perform(post("/zulassung1/modul/" + 5 + "/delete"))
+            .andExpect(status().isForbidden())
+            .andDo(print());
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
+  void test_fuerModulFalscherBenutzer_post_modulListeUpload() throws Exception {
+    mockMvc
+            .perform(post("/zulassung1/modul" + 5)
+                    .requestAttr("file", mock(MultipartFile.class)))
+            .andExpect(status().isNotFound())
+            .andDo(print());
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
+  void test_fuerModulFalscherBenutzer_post_altZulassungHinzufuegen() throws Exception {
+    mockMvc
+            .perform(post("/zulassung1/5/altzulassungHinzufuegen"))
             .andExpect(status().isForbidden())
             .andDo(print());
   }
