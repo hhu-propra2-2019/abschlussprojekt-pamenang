@@ -29,17 +29,16 @@ public class TokengenerierungService {
         this.quittungService = quittungService;
     }
 
-    public String erstellenHashValue(String matr, String fach){
-        return matr+fach;
+    public String erstellenHashValue(String matr, String modulID){
+        return matr+modulID;
     }
 
-    public String erstellenToken(String matr, String fachID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public String erstellenToken(String matr, String modulID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
-        String hashValue = erstellenHashValue(matr, fachID);
+        String hashValue = erstellenHashValue(matr, modulID);
         KeyPair pair = KeyPaarGenerierung();
         PrivateKey privateKey = pair.getPrivate();
         Signature sign = Signature.getInstance("SHA256withRSA");
-        logger.debug("Sign SHA256 with RSA");
 
         sign.initSign(privateKey);
         byte[] hashValueBytes = hashValue.getBytes(StandardCharsets.UTF_8);
@@ -50,14 +49,17 @@ public class TokengenerierungService {
 
         String base64Token= Base64.getEncoder().encodeToString(token);
         String base64Matr= Base64.getEncoder().encodeToString(matr.getBytes());
-        String base64FachID= Base64.getEncoder().encodeToString(fachID.getBytes());
+        String base64ModulID= Base64.getEncoder().encodeToString(modulID.getBytes());
 
-        String quittung = base64Token+"§"+base64Matr+"§"+base64FachID;
+        String quittung = base64Token+"§"+base64Matr+"§"+base64ModulID;
 
+        // Slash wird ersetzt, da sonst Fehler bei Linkgenierierung auftreten
         quittung = quittung.replaceAll("/", "@");
 
+        logger.debug("Quittung wurde erstellt und ist encoded:"+ quittung);
 
-        QuittungDto quittungDto = new QuittungDto(matr, fachID,publicKey, quittung);
+
+        QuittungDto quittungDto = new QuittungDto(matr, modulID,publicKey, quittung);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
