@@ -55,7 +55,6 @@ public class StudentenController {
   @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{tokenLink}/")
   public String studentansichtMitToken(@PathVariable String tokenLink, Model model, KeycloakAuthenticationToken keyToken) {
-    Student student = studentService.findByToken(tokenLink).get();
     model.addAttribute("account", createAccountFromPrincipal(keyToken));
     model.addAttribute("token", new Token(tokenLink));
     model.addAttribute("errorMessage", message.getErrorMessage());
@@ -93,7 +92,8 @@ public class StudentenController {
     logger.debug("Token: " + token.getToken());
 
     long[] verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
-
+    logger.debug("ModulID: " + verifizierungsErgebnis[0]);
+    logger.debug("Matrikelnummer : " + verifizierungsErgebnis[1]);
     if (verifizierungsErgebnis[0] > 0 &&
         verifizierungsErgebnis[1] > 0) {
 
@@ -103,8 +103,10 @@ public class StudentenController {
 
       studentService.save(student);
       message.setSuccessMessage("Altzulassung erfolgreich!");
+      logger.debug("Altzulassung erfolgreich!");
     } else {
       message.setErrorMessage("Token nicht Valide");
+      logger.debug("Token nicht Valide");
     }
 
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
