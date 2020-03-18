@@ -210,7 +210,7 @@ public class ModulService {
               .build();
       try {
 
-        String token = quittungService.findTokenByQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
+        String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
         student.setToken(token);
         studentService.save(student);
         successMessage = "Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.";
@@ -232,7 +232,7 @@ public class ModulService {
 
     try {
 
-      quittungService.findPublicKeyByQuittung(student.getMatrikelnummer().toString(), student.getModulId().toString());
+      quittungService.findPublicKey(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
       if (isAltzulassung){
         emailService.sendMail(student);
