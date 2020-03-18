@@ -34,7 +34,7 @@ class StudentenServiceTests {
   @Test
   void testFristAbgelaufen() throws ParseException {
 
-    Modul propra1 = new Modul(1L, "ProPra1","orga","21.12.2012 20:00",true);
+    Modul propra1 = new Modul(1L, "ProPra1", "orga", "21.12.2012 20:00", true);
     Optional<Modul> modul = Optional.of(propra1);
     when(modulRepository.findById(1L)).thenReturn(modul);
 

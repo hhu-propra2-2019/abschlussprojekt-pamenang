@@ -5,7 +5,6 @@ import mops.klausurzulassung.Domain.AltzulassungStudentDto;
 import mops.klausurzulassung.Domain.FrontendMessage;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
-import mops.klausurzulassung.Services.EmailService;
 import mops.klausurzulassung.Services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
@@ -88,18 +87,18 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @GetMapping("/modulBearbeiten/{id}")
-  public String modulBearbeiten(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal){
+  public String modulBearbeiten(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Modul modul = modulService.findById(id).get();
-    logger.debug("Modul: "+model);
-    model.addAttribute("id",id);
-    model.addAttribute("modul",modul);
+    logger.debug("Modul: " + model);
+    model.addAttribute("id", id);
+    model.addAttribute("modul", modul);
     return "modulBearbeiten";
   }
 
   @Secured("ROLE_orga")
   @PostMapping("/modulBearbeiten/{id}")
-  public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal){
+  public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Modul vorhandenesModul = modulService.findById(id).get();
     vorhandenesModul.setName(modul.getName());
