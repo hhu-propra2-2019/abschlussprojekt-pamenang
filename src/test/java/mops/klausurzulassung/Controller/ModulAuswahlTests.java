@@ -39,7 +39,7 @@ class ModulAuswahlTests {
         .andDo(print());
   }
 
-  //Falscher Benuztzer Tests
+  // Get Mapping - Falscher Benuztzer Tests 
 
   @Test
   @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
