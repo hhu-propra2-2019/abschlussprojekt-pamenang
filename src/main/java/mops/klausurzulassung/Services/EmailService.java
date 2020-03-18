@@ -43,11 +43,12 @@ public class EmailService {
       MimeMessage message = this.javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
       helper.setFrom(FROM_EMAIL);
-      helper.setTo(student.getEmail().toString());
+      helper.setTo(student.getEmail());
       helper.setSubject("Klausurzulassungstoken " + student.getFachname());
       helper.setText(body, true);
       this.javaMailSender.send(message);
     } catch (MessagingException e1) {
+      logger.error("Die mail konnte nicht versendet werden");
       e1.printStackTrace();
     }
     logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
@@ -55,20 +56,12 @@ public class EmailService {
 
   /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
   public String generateValidTokenLink(Student student) {
+    logger.debug("Link wird erstellt");
     String studentAddUri = "/zulassung1/student/";
-    String token = student.getToken() + "/";
-    String fachID = student.getModulId() + "/";
-    String matrikelnr = Long.toString(student.getMatrikelnummer()) + "/";
-    String studvorname = student.getVorname() + "/";
-    String studnachname = student.getNachname() + "/";
-    String email = student.getEmail();
+    String quittung = student.getToken() + "/";
     return ServletUriComponentsBuilder.fromCurrentContextPath()
         .path(studentAddUri)
-        .path(token)
-        .path(fachID)
-        .path(matrikelnr)
-        .path(studvorname)
-        .path(studnachname)
+        .path(quittung)
         .toUriString();
   }
 }
