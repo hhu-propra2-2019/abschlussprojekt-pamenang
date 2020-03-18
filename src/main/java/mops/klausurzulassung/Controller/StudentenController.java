@@ -54,7 +54,6 @@ public class StudentenController {
   @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{tokenLink}/")
   public String studentansichtMitToken(@PathVariable String tokenLink, Model model, KeycloakAuthenticationToken keyToken) {
-    Student student = studentService.findByToken(tokenLink).get();
     model.addAttribute("account", createAccountFromPrincipal(keyToken));
     model.addAttribute("token", new Token(tokenLink));
     model.addAttribute("errorMessage", message.getErrorMessage());

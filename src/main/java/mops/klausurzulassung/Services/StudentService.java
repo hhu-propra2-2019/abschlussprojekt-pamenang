@@ -47,8 +47,4 @@ public class StudentService {
         .toLocalDateTime();
     return localFrist.isBefore(actualDate);
   }
-
-  public Optional<Student> findByToken(String token){
-    return studentRepository.findByToken(token);
-  }
 }
