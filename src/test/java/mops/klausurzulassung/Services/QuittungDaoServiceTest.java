@@ -21,7 +21,7 @@ public class QuittungDaoServiceTest {
         QuittungRepository quittungRepository = mock(QuittungRepository.class);
         QuittungService quittungService = new QuittungService(quittungRepository);
         String matr = "1234567";
-        String fachID = "1111";
+        String modulID = "1111";
 
         //Erstellung des KeyPairs
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -29,15 +29,11 @@ public class QuittungDaoServiceTest {
 
         //Einsetzen des PublicKeys in die Quittung
         PublicKey pK = keyPairGenerator.generateKeyPair().getPublic();
-        QuittungDao quittungDao = new QuittungDao(matr, fachID, pK, "1324235",1);
+        QuittungDao quittungDao = new QuittungDao(matr, modulID, pK, "1324235",1);
 
         //Suchen des PublicKeys in QuittungRepository
-
-
-
-
-        when(quittungRepository.findByMatrikelnummerAndModulId(matr,fachID)).thenReturn(quittungDao);
-        PublicKey publicKey = quittungService.findPublicKey(matr, fachID);
+        when(quittungRepository.findByMatrikelnummerAndModulId(matr,modulID)).thenReturn(quittungDao);
+        PublicKey publicKey = quittungService.findPublicKey(matr, modulID);
 
         assertEquals(pK, publicKey);
 
@@ -49,19 +45,19 @@ public class QuittungDaoServiceTest {
         QuittungRepository quittungRepository = mock(QuittungRepository.class);
         QuittungService quittungService = new QuittungService(quittungRepository);
         String matr = "1234567";
-        String fachID = "1111";
+        String modulID = "1111";
 
 
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
 
         PublicKey pK = keyPairGenerator.generateKeyPair().getPublic();
-        QuittungDao quittungDao = new QuittungDao(matr, fachID, pK, "1324235",1);
+        QuittungDao quittungDao = new QuittungDao(matr, modulID, pK, "1324235",1);
 
-        when(quittungRepository.findByMatrikelnummerAndModulId(matr,fachID)).thenReturn(quittungDao);
-        String token = quittungService.findQuittung(matr, fachID);
+        when(quittungRepository.findByMatrikelnummerAndModulId(matr,modulID)).thenReturn(quittungDao);
+        String quittung = quittungService.findQuittung(matr, modulID);
 
-        assertEquals("1324235", token);
+        assertEquals("1324235", quittung);
 
 
     }
