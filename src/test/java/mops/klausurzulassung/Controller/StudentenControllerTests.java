@@ -69,28 +69,16 @@ class Studententest{
     when(studentService.findByToken(tokenLink)).thenReturn(java.util.Optional.of(new Student(vornameLink, nachnameLink,"testEmail", Long.parseLong(matrikelnummerLink), Long.parseLong(fachLink), "Propra2", tokenLink)));
 
 
-    mockMvc.perform(get("/zulassung1/student/" + tokenLink + "/" + fachLink + "/" + matrikelnummerLink + "/" + vornameLink + "/" + nachnameLink + "/"))
+    mockMvc.perform(get("/zulassung1/student/" + tokenLink + "/"))
             .andExpect(status().isOk())
-            .andExpect(model().attribute("studentDto", not(nullValue())));
+            .andExpect(model().attribute("token", not(nullValue())));
 
-  }
-
-  @Test
-  @WithMockKeycloackAuth(name = "test", roles = "studentin")
-  public void test_postMapping_empfangeDaten_checkForBindingResult() throws Exception {
-    mockMvc.perform(post("/zulassung1/student")).andExpect(status().isOk());
   }
 
   @Test
   @WithMockKeycloackAuth(name = "test", roles = "studentin")
   public void test_postMapping_empfangeDaten_checkForRedirect() throws Exception {
     mockMvc.perform(post("/zulassung1/student")
-            .param("vorname", "testVorname")
-            .param("nachname", "testNachname")
-            .param("email", "testEmail")
-            .param("matrikelnummer", "29898149")
-            .param("modulId", "12")
-            .param("fachname", "testFachname")
             .param("token", "testToken")
             .contentType("application/x-www-form-urlencoded"))
             .andExpect(status().is3xxRedirection());
