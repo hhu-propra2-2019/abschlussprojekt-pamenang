@@ -4,6 +4,8 @@ import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Repositories.ModulRepository;
 import mops.klausurzulassung.Repositories.StudentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class StudentService {
   private final StudentRepository studentRepository;
   private final ModulRepository modulRepository;
+  private Logger logger = LoggerFactory.getLogger(EmailService.class);
 
   public StudentService(StudentRepository studentRepository,ModulRepository modulRepository) {
     this.studentRepository = studentRepository;
@@ -45,6 +48,8 @@ public class StudentService {
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
         .toLocalDateTime();
-    return localFrist.isBefore(actualDate);
+    boolean result = localFrist.isBefore(actualDate);
+    logger.debug("Frist ist agelaufen: " + result);
+    return result;
   }
 }
