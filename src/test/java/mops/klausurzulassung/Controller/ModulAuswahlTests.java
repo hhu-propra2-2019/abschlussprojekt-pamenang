@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class ModulAuswahlTests {
+class ModulAuswahlTests {
 
   @Autowired
   private MockMvc mockMvc;
@@ -33,7 +33,7 @@ public class ModulAuswahlTests {
   private ModulService modulservice;
 
   @Test
-  public void fuerModulAuswahlAnmelden() throws Exception {
+  void fuerModulAuswahlAnmelden() throws Exception {
     mockMvc
         .perform(get("/zulassung1/modulHinzufuegen"))
         .andExpect(status().is3xxRedirection())
@@ -42,7 +42,7 @@ public class ModulAuswahlTests {
 
   @Test
   @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
-  public void fuerModulFalscherBenutzer() throws Exception {
+  void fuerModulFalscherBenutzer() throws Exception {
     mockMvc
         .perform(get("/zulassung1/modulHinzufuegen"))
         .andExpect(status().isForbidden())
@@ -51,14 +51,14 @@ public class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void fuerModulAuswahlIstAnmelden() throws Exception {
+  void fuerModulAuswahlIstAnmelden() throws Exception {
 
     Principal principal = mock(Principal.class);
 
     List<Modul> module = new ArrayList<>();
     when(principal.getName()).thenReturn("orga");
 
-    when(modulservice.findByOwner(any())).thenReturn(module);
+    when(modulservice.findByOwnerAndActive(any(), true)).thenReturn(module);
     mockMvc
         .perform(get("/zulassung1/modulHinzufuegen"))
         .andExpect(status().isOk());

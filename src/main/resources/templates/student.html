@@ -17,7 +17,7 @@
                 <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
             </li>
             <li th:if="${!#lists.contains(account.roles, 'studentin')}">
-                <a href="/zulassung1/modulHinzufuegen" th:href="@{/zulassung1/modulHinzufuegen}">Orga</a>
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
             </li>
         </ul>
     </nav>

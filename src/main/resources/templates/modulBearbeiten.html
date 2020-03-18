@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mopslayout :: html(name='Klausurzulassung', title='Optional: Tabtitel', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
+<head>
+    <meta charset="utf-8">
+    <title>Modul anpassen</title>
+    <th:block th:fragment="headcontent">
+        <!-- Links, Skripts, Styles hier einfügen! -->
+    </th:block>
+</head>
+<body>
+<header>
+    <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
+        <ul>
+            <li>
+                <a href="/zulassung1/" th:href="@{/zulassung1}">Home</a>
+            </li>
+            <li>
+                <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
+            </li>
+            <li>
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main th:fragment="bodycontent">
+    <h1>Reaktivieren eines Moduls</h1>
+    <form action="#" method="post" th:action="'/zulassung1/modulBearbeiten/'+${id}"
+          th:object="${modul}">
+        <span class="csstab">ID des ausgewählten Moduls:</span><b><span th:text="${id}">1234</span></b><br>
+        <div class="form-group">
+            <label>Namen des Moduls:</label>
+            <input class="form-control" th:field="*{name}"
+                   placeholder="Modulname" type="text"
+                   th:errorclass="is-invalid" th:value="*{name}">
+            <span class="text-danger"
+                  th:if="${#fields.hasErrors('name')}"></span>
+        </div>
+        <div class="form-group">
+            <label>Bitte geben Sie eine Frist für das Modul ein.</label>
+            <input class="form-control" th:field="*{frist}" placeholder="dd.mm.yyyy hh:mm"
+                   th:errorclass="is-invalid" th:value="*{frist}" type="text">
+            <span class="text-danger" th:if="${#fields.hasErrors('frist')}"></span>
+        </div>
+        <div class="buttonModal">
+            <input align="center" class="btn btn-primary" type="submit" value="Auswählen">
+        </div>
+    </form>
+</main>
+</body>
+</html>

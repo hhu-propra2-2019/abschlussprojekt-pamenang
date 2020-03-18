@@ -78,7 +78,7 @@ class ModulServiceTest {
   @Test
   void deleteExistingModulWithStudents() {
     long modulID = 1L;
-    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12"));
+    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12", true));
     when(modulRepository.findById(modulID)).thenReturn(modul);
     ArrayList<Student> students = new ArrayList<>();
     students.add(new Student());
@@ -93,7 +93,7 @@ class ModulServiceTest {
   @Test
   void deleteExistingModulWithoutStudents() {
     long modulID = 1L;
-    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12"));
+    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12", true));
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
     String[] result = modulService.deleteStudentsFromModul(modulID);
@@ -148,7 +148,7 @@ class ModulServiceTest {
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, null, null));
     students.add(new Student("Rebecca", "Fröhlich", "refro100@hhu.de", 2658447L, 1L, null, null));
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
     when(multipartFile.getInputStream()).thenReturn(input);
     when(csvService.getStudentListFromInputFile(any(), any())).thenReturn(students);
@@ -202,7 +202,7 @@ class ModulServiceTest {
             .nachname("Müller")
             .email("joshua@gmail.com")
             .matrikelnummer((long)1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long)1,"name","owner","2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
     when(quittungService.findQuittung("123","123")).thenReturn("132");
     when(modulRepository.findById((long) 1)).thenReturn(modul);
@@ -220,7 +220,7 @@ class ModulServiceTest {
             .nachname("Müller")
             .email("joshua@gmail.com")
             .matrikelnummer((long)1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
     when(quittungService.findQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
             "ERROR"));
@@ -240,7 +240,7 @@ class ModulServiceTest {
             .nachname("Müller")
             .email("joshua@gmail.com")
             .matrikelnummer((long)1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
     when(quittungService.findQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
             "ERROR"));
@@ -261,7 +261,7 @@ class ModulServiceTest {
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
 
     when(quittungService.findPublicKey(anyString(),anyString())).thenReturn(any());
@@ -283,7 +283,7 @@ class ModulServiceTest {
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
     when(quittungService.findPublicKey(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
@@ -305,7 +305,7 @@ class ModulServiceTest {
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01"));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
     when(quittungService.findPublicKey(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
@@ -332,7 +332,7 @@ class ModulServiceTest {
     writer.flush();
     writer.close();
 
-    Modul propra2 = new Modul(1L, "ProPra2","orga","2000-12-12");
+    Modul propra2 = new Modul(1L, "ProPra2", "orga", "2000-12-12", true);
     Optional<Modul> modul = Optional.of(propra2);
 
     when(modulService.findById(1L)).thenReturn(modul);
@@ -344,6 +344,21 @@ class ModulServiceTest {
     assertFalse(outputFile.exists());
   }
 
+  /*@Test
+  void downloadOhneVorhandeneListe() throws IOException {
+    ServletOutputStream outputStream = mock(ServletOutputStream.class);
+
+    Modul propra2 = new Modul(1L, "ProPra2", "orga", "2000-12-12", true);
+    Optional<Modul> modul = Optional.of(propra2);
+
+    when(modulService.findById(1L)).thenReturn(modul);
+
+    when(response.getOutputStream()).thenReturn(outputStream);
+    modulService.download(1L, response);
+
+    File outputFile = new File("klausurliste_1.csv");
+    assertFalse(outputFile.exists());
+  }*/
 
   @Test
   void neuesModulErstellenFristInDerZukunftIdIsPresent() throws ParseException {
@@ -356,7 +371,7 @@ class ModulServiceTest {
     int minutes = future.getMinute();
     String frist = day + "." + month + "." + year + " " + hour + ":" + minutes;
 
-    Modul propra = new Modul(1L, "ProPra2", "orga", frist);
+    Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
     Optional<Modul> modul = Optional.of(propra);
 
     when(principal.getName()).thenReturn("orga");
@@ -381,7 +396,7 @@ class ModulServiceTest {
     int minutes = future.getMinute();
     String frist = day + "." + month + "." + year + " " + hour + ":" + minutes;
 
-    Modul propra = new Modul(1L, "ProPra2", "orga", frist);
+    Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
     Optional<Modul> modul = Optional.empty();
 
     when(principal.getName()).thenReturn("orga");
@@ -397,7 +412,7 @@ class ModulServiceTest {
 
   @Test
   void neuesModulErstellenFristAbgelaufen() throws ParseException {
-    Modul propra = new Modul(1L, "ProPra2", "orga", "20.12.2000 20:00");
+    Modul propra = new Modul(1L, "ProPra2", "orga", "20.12.2000 20:00", true);
     Optional<Modul> modul = Optional.of(propra);
 
     when(principal.getName()).thenReturn("orga");
@@ -409,5 +424,17 @@ class ModulServiceTest {
     assertEquals("Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!", returnValues[1]);
     assertNull(returnValues[2]);
 
+  }
+
+  @Test
+  void neuesModulFristLeer() throws ParseException {
+    Modul propra = new Modul(1L, "ProPra1", "orga", "", true);
+    Optional<Modul> modul = Optional.of(propra);
+
+    Object[] returnValues = modulService.neuesModul(propra, principal);
+
+    assertEquals(propra, returnValues[0]);
+    assertEquals("Alle Felder im Formular müssen ausgefüllt sein!", returnValues[1]);
+    assertNull(returnValues[2]);
   }
 }
