@@ -4,6 +4,8 @@ import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Repositories.ModulRepository;
 import mops.klausurzulassung.Repositories.StudentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class StudentService {
   private final StudentRepository studentRepository;
   private final ModulRepository modulRepository;
+  private Logger logger = LoggerFactory.getLogger(EmailService.class);
 
   public StudentService(StudentRepository studentRepository,ModulRepository modulRepository) {
     this.studentRepository = studentRepository;
@@ -36,8 +39,8 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public boolean isFristAbgelaufen(Long fachId) throws ParseException {
-    Optional<Modul> modul = modulRepository.findById(fachId);
+  public boolean isFristAbgelaufen(Long ModulID) throws ParseException {
+    Optional<Modul> modul = modulRepository.findById(ModulID);
 
     String frist = modul.get().getFrist();
     Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
@@ -45,10 +48,8 @@ public class StudentService {
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
         .toLocalDateTime();
-    return localFrist.isBefore(actualDate);
-  }
-
-  public Optional<Student> findByToken(String token){
-    return studentRepository.findByToken(token);
+    boolean result = localFrist.isBefore(actualDate);
+    logger.debug("Frist ist agelaufen: " + result);
+    return result;
   }
 }

@@ -216,7 +216,7 @@ public class ModulService {
               .build();
       try {
 
-        String token = quittungService.findToken(studentDto.getMatrikelnummer().toString(), id.toString());
+        String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
         student.setToken(token);
         studentService.save(student);
         successMessage = "Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.";

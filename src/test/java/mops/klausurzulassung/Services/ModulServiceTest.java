@@ -204,7 +204,7 @@ class ModulServiceTest {
             .matrikelnummer((long)1231).build();
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
-    when(quittungService.findTokenByQuittung("123","123")).thenReturn("132");
+    when(quittungService.findQuittung("123","123")).thenReturn("132");
     when(modulRepository.findById((long) 1)).thenReturn(modul);
     modulService.altzulassungVerarbeiten(student, true, (long) 1);
 
@@ -222,7 +222,7 @@ class ModulServiceTest {
             .matrikelnummer((long)1231).build();
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
-    when(quittungService.findTokenByQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
+    when(quittungService.findQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
             "ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
@@ -242,7 +242,7 @@ class ModulServiceTest {
             .matrikelnummer((long)1231).build();
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
-    when(quittungService.findTokenByQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
+    when(quittungService.findQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
             "ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
@@ -264,7 +264,7 @@ class ModulServiceTest {
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
 
-    when(quittungService.findPublicKeyByQuittung(anyString(),anyString())).thenReturn(any());
+    when(quittungService.findPublicKey(anyString(),anyString())).thenReturn(any());
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
     modulService.erstelleTokenUndSendeEmail(student, (long) 1,true);
@@ -285,7 +285,7 @@ class ModulServiceTest {
 
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
-    when(quittungService.findPublicKeyByQuittung(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
+    when(quittungService.findPublicKey(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
     modulService.erstelleTokenUndSendeEmail(student, (long) 1,false);
@@ -307,7 +307,7 @@ class ModulServiceTest {
 
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
 
-    when(quittungService.findPublicKeyByQuittung(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
+    when(quittungService.findPublicKey(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
     modulService.erstelleTokenUndSendeEmail(student, (long) 1,true);

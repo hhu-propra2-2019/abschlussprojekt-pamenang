@@ -13,6 +13,6 @@ public class QuittungDto {
     private String matrikelnummer;
     private String modulId;
     private PublicKey publicKey;
-    private String token;
+    private String quittung;
 
 }

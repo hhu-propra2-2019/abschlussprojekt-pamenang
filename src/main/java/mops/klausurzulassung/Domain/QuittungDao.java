@@ -29,9 +29,9 @@ public class QuittungDao {
   @Lob
   private PublicKey publicKey;
 
-  @Column(name = "Token")
+  @Column(name = "Quittung")
   @Lob
-  private String token;
+  private String quittung;
 
   @Id @GeneratedValue private int id;
 }

@@ -47,6 +47,6 @@ public class EmailServiceTests {
     Student student = new Student("t1", "t2", "t3", (long) 1234, (long) 1, "t4", "token");
     String link = emailService.generateValidTokenLink(student);
     System.out.println(link);
-    Assertions.assertThat(link).contains("token/1/1234/t1/t2");
+    Assertions.assertThat(link).contains("token/");
   }
 }
