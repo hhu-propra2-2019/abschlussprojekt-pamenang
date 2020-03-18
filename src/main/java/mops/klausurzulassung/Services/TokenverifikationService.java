@@ -17,54 +17,49 @@ import java.util.Base64;
 @Service
 public class TokenverifikationService {
 
-    private final QuittungService quittungService;
-    private Logger logger = LoggerFactory.getLogger(TokenverifikationService.class);
+  private final QuittungService quittungService;
+  private Logger logger = LoggerFactory.getLogger(TokenverifikationService.class);
 
-    @Autowired
-    public TokenverifikationService(QuittungService quittungService) {
-        this.quittungService = quittungService;
+  @Autowired
+  public TokenverifikationService(QuittungService quittungService) {
+    this.quittungService = quittungService;
+  }
+
+  public long[] verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
+
+    quittung =  quittung.replaceAll("@", "/");
+
+    String[] splitArray = quittung.split("§", 3);
+    if(splitArray.length < 3){
+      logger.error("Token fehlerhaft");
+      return new long[]{-1, -1};
+    }
+    String token = splitArray[0];
+    String base64Matr = splitArray[1];
+    String base64ModulID = splitArray[2];
+
+    byte[] matrByte = Base64.getDecoder().decode(base64Matr);
+    String matr = new String(matrByte);
+    byte[] modulIDByte = Base64.getDecoder().decode(base64ModulID);
+    String modulID = new String(modulIDByte);
+
+    String hashValue = matr+modulID;
+    PublicKey publicKey = quittungService.findPublicKey(matr, modulID);
+    if(publicKey == null){
+      logger.error("Public Key ist null");
+      return new long[]{-1, -1};
     }
 
-    public long[] verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
+    Signature sign = Signature.getInstance("SHA256withRSA");
+    sign.initVerify(publicKey);
+    byte[] hashValueBytes = hashValue.getBytes(StandardCharsets.UTF_8);
+    sign.update(hashValueBytes);
+    byte[] tokenByte = Base64.getDecoder().decode(String.valueOf(token));
 
-        quittung =  quittung.replaceAll("@", "/");
-
-        String[] splitArray = quittung.split("§", 3);
-        if(splitArray.length < 3){
-          logger.error("Token fehlerhaft");
-          return new long[]{-1, -1};
-        }
-        String token = splitArray[0];
-        String base64Matr = splitArray[1];
-        String base64FachID = splitArray[2];
-
-        byte[] matrByte = Base64.getDecoder().decode(base64Matr);
-        String matr = new String(matrByte);
-        byte[] fachIDByte = Base64.getDecoder().decode(base64FachID);
-        String fachID = new String(fachIDByte);
-
-        logger.debug("Matrikelnummer: " + matr + " FachID: "+fachID);
-
-        String HashValue = matr+fachID;
-        PublicKey publicKey = quittungService.findPublicKey(matr, fachID);
-        if(publicKey == null){
-            logger.error("Public Key ist null");
-          return new long[]{-1, -1};
-        }
-
-        Signature sign = Signature.getInstance("SHA256withRSA");
-        sign.initVerify(publicKey);
-        byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
-        sign.update(hashValueBytes);
-        byte[] tokenByte = Base64.getDecoder().decode(String.valueOf(token));
-        logger.debug("Token Verifiziert");
-
-        if(sign.verify(tokenByte)){
-            long[] longArray = new long[2];
-            longArray[0] = Long.parseLong(matr);
-            longArray[1] = Long.parseLong(fachID);
-            return longArray;
-        }
-        return new long[]{-1, -1};
+    if(sign.verify(tokenByte)){
+      logger.debug("Token Verifiziert");
+      return new long[]{Long.parseLong(matr), Long.parseLong(modulID)};
     }
+    return new long[]{-1, -1};
+  }
 }
