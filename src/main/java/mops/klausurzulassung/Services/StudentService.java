@@ -39,8 +39,8 @@ public class StudentService {
     studentRepository.save(student);
   }
 
-  public boolean isFristAbgelaufen(Long fachId) throws ParseException {
-    Optional<Modul> modul = modulRepository.findById(fachId);
+  public boolean isFristAbgelaufen(Long ModulID) throws ParseException {
+    Optional<Modul> modul = modulRepository.findById(ModulID);
 
     String frist = modul.get().getFrist();
     Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
