@@ -32,8 +32,8 @@ class TokenverifkationTest {
 
   @Test
   void test_tokenVerifikation_shouldReturnTrue() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-    String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrNUbrWeAP+EmUPMR7Qz3OQXrtAjFBfeQTkKNmjztuNKmqiO9dCEY1ZFWshbu6RbrCRZsx4SZetQteMYzDIGTkCAwEAAQ==";
-    String quittung = "RtX+rSqx@+ULwT41dcaKxyr2qPv4Vnd7anOAI93yvC77T3Zuv69tlk46PoHroM8GeswewIKN3urp2NtnF8DX3Q==§MTIzNDU1MjM3NDg3§MTI=";
+    String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMmHAssfzLds1MyR0LXFyetlKFPShZXBbsNFSJVmFe21YIMKmSZkmiaWgMudOFo0lCxiSF/w9SrymA9T6tFQ6KkCAwEAAQ==";
+    String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "123455237487";
     String fachId = "12";
     boolean valid = false;
@@ -49,8 +49,8 @@ class TokenverifkationTest {
 
   @Test
   void test_tokenVerifikation_publicKeyIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-    String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrNUbrWeAP+EmUPMR7Qz3OQXrtAjFBfeQTkKNmjztuNKmqiO9dCEY1ZFWshbu6RbrCRZsx4SZetQteMYzDIGTkCAwEAAQ==";
-    String quittung = "RtX+rSqx@+ULwT41dcaKxyr2qPv4Vnd7anOAI93yvC77T3Zuv69tlk46PoHroM8GeswewIKN3urp2NtnF8DX3Q==§MTIzNDU1MjM3NDg3§MTI=";
+    String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSTJBAMmHAssfzLds1MyR0LXFyetlKFPShZXBbsNFSJVmFe21YIMKmSZkmiaWgMudOFo0lCxiSF/w9SrymA9T6tFQ6KkCAwEAAQ==";
+    String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "123455237487";
     String fachId = "12";
     boolean valid = false;
@@ -66,26 +66,10 @@ class TokenverifkationTest {
 
   @Test
   void test_tokenVerifikation_tokenIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-    String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALCDUJwgadGQ1/CEZIqhUALKsXX6dBlPXFyWVna8kox1qZZZL5VxLLhz2r7WDlLXDXN7+FVrrmITNmdpZMfvFisCAwEAAQ==";
-    String quittung = "RtX+rSqx@+ULwT41dcaKxyr2qPv4Vnd7anOAI93yvC77T3Zuv69tlk46PoHroM8GeswewIKN3urp2NtnF8DX3Q==§MTIzNDU1MjM3NDg3§MTI=";
+    String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMmHAssfzLds1MyR0LXFyetlKFPShZXBbsNFSJVmFe21YIMKmSZkmiaWgMudOFo0lCxiSF/w9SrymA9T6tFQ6KkCAwEAAQ==";
+    String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CALLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "123455237487";
     String fachId = "12";
-    boolean valid = false;
-    when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
-
-    long[] validToken = tokenverifikationService.verifikationToken(quittung);
-    if(validToken[0]>0){
-      valid = true;
-    }
-    assertFalse(valid);
-  }
-
-  @Test
-  void test_tokenVerifikation_matrikelnummerUndfachIdIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-    String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIrNUbrWeAP+EmUPMR7Qz3OQXrtAjFAfeQTkKNmjztuNKmqiO9dCEY1ZFWshbu6RbrCRZsx4SZetQteMYzDIGTkCAwEAAQ==";
-    String quittung = "RtX+rSqx@+ULwT41dcaKxyr2qPv4Vnd7anOAI93yvC77T3Zuv69tlk46PoHroM8GeswewIKN3urp2NtnF8DX3Q==§MTIzNDU1MjM3NDg3§MTI=";
-    String matrikelnummer = "12345523747";
-    String fachId = "13";
     boolean valid = false;
     when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
 
@@ -109,14 +93,17 @@ class TokenverifkationTest {
 
   @Test
   void test_tokenVerifikation_publicKeyIsNUll() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
-    String token = "RtX+rSqx@+ULwT41dcaKxyr2qPv4Vnd7anOAI93yvC77T3Zuv69tlk46PoHroM8GeswewIKN3urp2NtnF8DX3Q==§MTIzNDU1MjM3NDg3§MTI=";
+    String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "12345523747";
     String fachId = "13";
+    boolean valid = false;
     when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(null);
 
-  //  boolean validToken = tokenverifikationService.verifikationToken(matrikelnummer,fachId,token);
-
-  //  assertFalse(validToken);
+    long[] validToken = tokenverifikationService.verifikationToken(quittung);
+    if(validToken[0]>0){
+      valid = true;
+    }
+    assertFalse(valid);
   }
 
 
