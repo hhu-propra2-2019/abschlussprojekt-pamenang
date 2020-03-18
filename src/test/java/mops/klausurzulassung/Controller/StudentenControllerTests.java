@@ -62,12 +62,6 @@ class Studententest{
   @WithMockKeycloackAuth(name = "test", roles = "studentin")
   void test_getMappingLink() throws Exception {
     String tokenLink = "testToken";
-    String fachLink = "12";
-    String matrikelnummerLink = "1234455";
-    String vornameLink = "testVorname";
-    String nachnameLink = "testNachname";
-    when(studentService.findByToken(tokenLink)).thenReturn(java.util.Optional.of(new Student(vornameLink, nachnameLink,"testEmail", Long.parseLong(matrikelnummerLink), Long.parseLong(fachLink), "Propra2", tokenLink)));
-
 
     mockMvc.perform(get("/zulassung1/student/" + tokenLink + "/"))
             .andExpect(status().isOk())
