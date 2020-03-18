@@ -8,6 +8,8 @@ import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Repositories.ModulRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -43,6 +44,8 @@ public class ModulService {
   private final TokengenerierungService tokengenerierungService;
   private String errorMessage;
   private String successMessage;
+  private Logger logger = LoggerFactory.getLogger(ModulService.class);
+
 
   public ModulService(ModulRepository modulRepository, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService, QuittungService quittungService) {
     this.csvService = csvService;
@@ -65,10 +68,6 @@ public class ModulService {
 
   public Iterable<Modul> findByActive(boolean active) {
     return modulRepository.findByActive(active);
-  }
-
-  private void delete(Modul modul) {
-    modulRepository.delete(modul);
   }
 
   public void save(Modul modul) {
@@ -169,13 +168,13 @@ public class ModulService {
 
     byte[] bytes;
     File klausurliste;
+    klausurliste = new File("klausurliste_" + id + ".csv");
 
-    try {
-      klausurliste = new File("klausurliste_" + id + ".csv");
+    if (klausurliste.exists()) {
       Path path = klausurliste.toPath();
       bytes = Files.readAllBytes(path);
-
-    } catch (NoSuchFileException e) {
+      //logger.debug("Bytes: "+bytes);
+    } else {
       List<Student> empty = new ArrayList<>();
       csvService.writeCsvFile(id, empty);
       klausurliste = new File("klausurliste_" + id + ".csv");
@@ -217,7 +216,7 @@ public class ModulService {
               .build();
       try {
 
-        String token = quittungService.findTokenByQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
+        String token = quittungService.findToken(studentDto.getMatrikelnummer().toString(), id.toString());
         student.setToken(token);
         studentService.save(student);
         successMessage = "Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.";
@@ -239,7 +238,7 @@ public class ModulService {
 
     try {
 
-      quittungService.findPublicKeyByQuittung(student.getMatrikelnummer().toString(), student.getModulId().toString());
+      quittungService.findPublicKey(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
       if (isAltzulassung){
         emailService.sendMail(student);
@@ -261,6 +260,6 @@ public class ModulService {
   }
 
   private boolean missingAttributeInModul(Modul modul) {
-    return modul.getName().isEmpty() || modul.getId() == null || modul.getOwner().isEmpty() || modul.getFrist().isEmpty();
+    return modul.getName().isEmpty() || modul.getFrist().isEmpty();
   }
 }
