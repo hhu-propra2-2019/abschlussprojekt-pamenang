@@ -35,31 +35,35 @@ public class TokengenerierungService {
 
     public String erstellenToken(String matr, String fachID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
-        String HashValue = erstellenHashValue(matr, fachID);
+        String hashValue = erstellenHashValue(matr, fachID);
         KeyPair pair = KeyPaarGenerierung();
         PrivateKey privateKey = pair.getPrivate();
         Signature sign = Signature.getInstance("SHA256withRSA");
         logger.debug("Sign SHA256 with RSA");
 
         sign.initSign(privateKey);
-        byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
+        byte[] hashValueBytes = hashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
 
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
+        String base64Token= Base64.getEncoder().encodeToString(token);
+        String base64Matr= Base64.getEncoder().encodeToString(matr.getBytes());
+        String base64FachID= Base64.getEncoder().encodeToString(fachID.getBytes());
 
-        String base64Token = Base64.getEncoder().encodeToString(token);
+        String quittung = base64Token+"§"+base64Matr+"§"+base64FachID;
 
-        base64Token = base64Token.replaceAll("/", "@");
+        quittung = quittung.replaceAll("/", "@");
 
-        QuittungDto quittungDto = new QuittungDto(matr, fachID, publicKey, base64Token);
+
+        QuittungDto quittungDto = new QuittungDto(matr, fachID,publicKey, quittung);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
         logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
 
-        return base64Token;
+        return quittung;
     }
 
     private KeyPair KeyPaarGenerierung() throws NoSuchAlgorithmException {
@@ -74,7 +78,7 @@ public class TokengenerierungService {
         quittungDao.setModulId(quittungDto.getModulId());
         quittungDao.setMatrikelnummer(quittungDto.getMatrikelnummer());
         quittungDao.setPublicKey(quittungDto.getPublicKey());
-        quittungDao.setToken(quittungDto.getToken());
+        quittungDao.setQuittung(quittungDto.getQuittung());
         return quittungDao;
 
     }

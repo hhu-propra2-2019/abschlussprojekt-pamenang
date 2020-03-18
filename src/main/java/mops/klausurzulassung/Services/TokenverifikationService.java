@@ -25,27 +25,46 @@ public class TokenverifikationService {
         this.quittungService = quittungService;
     }
 
-    public boolean verifikationToken(String matr, String fachID, String token) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
+    public long[] verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
 
-        if(token.length() != 88){
-            return false;
+        quittung =  quittung.replaceAll("@", "/");
+
+        String[] splitArray = quittung.split("§", 3);
+        if(splitArray.length < 3){
+          logger.error("Token fehlerhaft");
+          return new long[]{-1, -1};
         }
+        String token = splitArray[0];
+        String base64Matr = splitArray[1];
+        String base64FachID = splitArray[2];
 
-        token =  token.replaceAll("@", "/");
+        byte[] matrByte = Base64.getDecoder().decode(base64Matr);
+        String matr = new String(matrByte);
+        byte[] fachIDByte = Base64.getDecoder().decode(base64FachID);
+        String fachID = new String(fachIDByte);
+
+        logger.debug("Matrikelnummer: " + matr + " FachID: "+fachID);
 
         String HashValue = matr+fachID;
         PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
         if(publicKey == null){
             logger.error("Public Key ist null");
-            return false;
+          return new long[]{-1, -1};
         }
 
         Signature sign = Signature.getInstance("SHA256withRSA");
         sign.initVerify(publicKey);
         byte[] hashValueBytes = HashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
-        byte[] tokenByte = Base64.getDecoder().decode(token);
+        byte[] tokenByte = Base64.getDecoder().decode(String.valueOf(token));
         logger.debug("Token Verifiziert");
-        return sign.verify(tokenByte);
+
+        if(sign.verify(tokenByte)){
+            long[] longArray = new long[2];
+            longArray[0] = Long.parseLong(matr);
+            longArray[1] = Long.parseLong(fachID);
+            return longArray;
+        }
+        return new long[]{-1, -1};
     }
 }
