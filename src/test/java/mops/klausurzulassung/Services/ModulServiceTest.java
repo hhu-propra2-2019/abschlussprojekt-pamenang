@@ -79,6 +79,73 @@ class ModulServiceTest {
   }
 
   @Test
+  void saveNewModulwithoutMissingAttribute() throws ParseException {
+    String frist = fristInZukunft();
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+    String owner = "orga";
+
+    String[] messages = modulService.saveNewModul(propra, owner);
+
+    assertNull(messages[0]);
+    assertNull(messages[1]);
+    assertEquals("orga", propra.getOwner());
+    assertEquals(true, propra.getActive());
+    assertEquals(frist, propra.getFrist());
+    assertEquals("ProPra1", propra.getName());
+  }
+
+  @Test
+  void saveNewModulwithMissingAttribute() throws ParseException {
+    String frist = fristInZukunft();
+    Modul propra = new Modul(null, "", null, frist, null);
+    String owner = "orga";
+
+    String[] messages = modulService.saveNewModul(propra, owner);
+
+    assertEquals("Bitte beide Felder ausfüllen!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertNull(propra.getActive());
+    assertEquals(frist, propra.getFrist());
+    assertEquals("ProPra1", propra.getName());
+  }
+
+  @Test
+  void saveNewModulwithFristIsFalse() throws ParseException {
+    String frist = "20.12.2000 20:00";
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+    String owner = "orga";
+
+    String[] messages = modulService.saveNewModul(propra, owner);
+
+    assertEquals("Die Frist muss in der Zukunft liegen!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertNull(propra.getActive());
+    assertEquals(frist, propra.getFrist());
+    assertEquals("ProPra1", propra.getName());
+  }
+
+  @Test
+  void modulBearbeitenWithoutMissingAttribute() throws ParseException {
+    Modul propra = new Modul(null, "ProPra1", null, "20.12.2220 20:00", null);
+    Modul vorhandenesModul = new Modul(1L, "ProPra", null, "", false);
+    Optional modul = Optional.of(vorhandenesModul);
+    when(principal.getName()).thenReturn("orga");
+    when(modulService.findById(1L)).thenReturn(modul);
+
+    String[] messages = modulService.modulBearbeiten(propra, 1L, principal);
+    assertNull(messages[0]);
+    assertNull(messages[1]);
+    assertEquals("ProPra1", vorhandenesModul.getName());
+    assertEquals("orga", vorhandenesModul.getOwner());
+    assertEquals("20.12.2220 20:00", vorhandenesModul.getFrist());
+    assertEquals(1L, vorhandenesModul.getId());
+    assertTrue(vorhandenesModul.getActive());
+
+  }
+
+  @Test
   void deleteExistingModulWithStudents() {
     long modulID = 1L;
     Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12", true));
@@ -364,14 +431,7 @@ class ModulServiceTest {
 
   @Test
   void neuesModulErstellenFristInDerZukunftIdIsPresent() throws ParseException {
-    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
-    LocalDateTime future = now.plusYears(1);
-    int year = future.getYear();
-    int month = future.getMonthValue();
-    int day = future.getDayOfMonth();
-    int hour = future.getHour();
-    int minutes = future.getMinute();
-    String frist = day + "." + month + "." + year + " " + hour + ":" + minutes;
+    String frist = fristInZukunft();
 
     Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
     Optional<Modul> modul = Optional.of(propra);
@@ -387,8 +447,7 @@ class ModulServiceTest {
 
   }
 
-  @Test
-  void neuesModulErstellenFristInDerZukunftIdIsNotPresent() throws ParseException {
+  private String fristInZukunft() {
     LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime future = now.plusYears(1);
     int year = future.getYear();
@@ -396,7 +455,12 @@ class ModulServiceTest {
     int day = future.getDayOfMonth();
     int hour = future.getHour();
     int minutes = future.getMinute();
-    String frist = day + "." + month + "." + year + " " + hour + ":" + minutes;
+    return day + "." + month + "." + year + " " + hour + ":" + minutes;
+  }
+
+  @Test
+  void neuesModulErstellenFristInDerZukunftIdIsNotPresent() throws ParseException {
+    String frist = fristInZukunft();
 
     Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
     Optional<Modul> modul = Optional.empty();

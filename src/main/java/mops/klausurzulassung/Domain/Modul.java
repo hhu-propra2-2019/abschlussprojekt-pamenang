@@ -34,5 +34,5 @@ public class Modul {
   private String frist;
 
   @Column(name = "active")
-  private boolean active;
+  private Boolean active;
 }

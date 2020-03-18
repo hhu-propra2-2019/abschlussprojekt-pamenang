@@ -32,6 +32,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
+import java.text.ParseException;
 
 @Controller
 @SessionScope
@@ -73,7 +74,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/neuesModulHinzufuegen")
-  public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
+  public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) throws ParseException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String orga = principal.getName();
     String[] messageArray = modulService.saveNewModul(modul, orga);
@@ -100,7 +101,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modulBearbeiten/{id}")
-  public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
+  public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) throws ParseException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String[] messageArray = modulService.modulBearbeiten(modul, id, principal);
     message.setErrorMessage(messageArray[0]);
