@@ -55,6 +55,7 @@ public class EmailService {
 
   /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
   public String generateValidTokenLink(Student student) {
+    logger.debug("Link wird erstellt");
     String studentAddUri = "/zulassung1/student/";
     String quittung = student.getToken() + "/";
     return ServletUriComponentsBuilder.fromCurrentContextPath()
