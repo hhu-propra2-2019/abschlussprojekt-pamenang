@@ -46,7 +46,7 @@ public class TokenverifikationService {
         logger.debug("Matrikelnummer: " + matr + " FachID: "+fachID);
 
         String HashValue = matr+fachID;
-        PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
+        PublicKey publicKey = quittungService.findPublicKey(matr, fachID);
         if(publicKey == null){
             logger.error("Public Key ist null");
           return new long[]{-1, -1};

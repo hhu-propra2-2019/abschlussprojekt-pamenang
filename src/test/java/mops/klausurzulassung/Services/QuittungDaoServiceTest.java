@@ -4,7 +4,6 @@ import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Domain.QuittungDao;
 import mops.klausurzulassung.Exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.Repositories.QuittungRepository;
-import mops.klausurzulassung.Services.QuittungService;
 import org.junit.jupiter.api.Test;
 
 import java.security.KeyPairGenerator;
@@ -38,7 +37,7 @@ public class QuittungDaoServiceTest {
 
 
         when(quittungRepository.findByMatrikelnummerAndModulId(matr,fachID)).thenReturn(quittungDao);
-        PublicKey publicKey = quittungService.findPublicKeyByQuittung(matr, fachID);
+        PublicKey publicKey = quittungService.findPublicKey(matr, fachID);
 
         assertEquals(pK, publicKey);
 
@@ -60,7 +59,7 @@ public class QuittungDaoServiceTest {
         QuittungDao quittungDao = new QuittungDao(matr, fachID, pK, "1324235",1);
 
         when(quittungRepository.findByMatrikelnummerAndModulId(matr,fachID)).thenReturn(quittungDao);
-        String token = quittungService.findTokenByQuittung(matr, fachID);
+        String token = quittungService.findQuittung(matr, fachID);
 
         assertEquals("1324235", token);
 

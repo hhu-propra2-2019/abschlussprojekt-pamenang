@@ -37,7 +37,7 @@ class TokenverifkationTest {
     String matrikelnummer = "123455237487";
     String fachId = "12";
     boolean valid = false;
-    when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
+    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
     long[] validToken = tokenverifikationService.verifikationToken(quittung);
     if(validToken[0]>0){
@@ -54,7 +54,7 @@ class TokenverifkationTest {
     String matrikelnummer = "123455237487";
     String fachId = "12";
     boolean valid = false;
-    when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
+    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
     long[] validToken = tokenverifikationService.verifikationToken(quittung);
     if(validToken[0] > 0){
@@ -71,7 +71,7 @@ class TokenverifkationTest {
     String matrikelnummer = "123455237487";
     String fachId = "12";
     boolean valid = false;
-    when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(getKey(publicKey));
+    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
     long[] validToken = tokenverifikationService.verifikationToken(quittung);
     if(validToken[0]>0){
@@ -97,7 +97,7 @@ class TokenverifkationTest {
     String matrikelnummer = "12345523747";
     String fachId = "13";
     boolean valid = false;
-    when(quittungService.findPublicKeyByQuittung(any(),any())).thenReturn(null);
+    when(quittungService.findPublicKey(any(),any())).thenReturn(null);
 
     long[] validToken = tokenverifikationService.verifikationToken(quittung);
     if(validToken[0]>0){
