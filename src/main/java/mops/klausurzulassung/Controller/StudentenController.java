@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.annotation.SessionScope;
 
+import javax.validation.Valid;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -85,14 +86,10 @@ public class StudentenController {
 
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
-  public String empfangeDaten(@ModelAttribute("token") Token token, BindingResult bindingResult, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model)
+  public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model)
       throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
       NoPublicKeyInDatabaseException {
 
-    if (bindingResult.hasErrors()) {
-      model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
-      return "student";
-    }
     logger.debug("Token: " + token.getToken());
 
     long[] verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());

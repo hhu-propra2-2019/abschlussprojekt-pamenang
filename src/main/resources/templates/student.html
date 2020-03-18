@@ -43,10 +43,9 @@
         <form method="post" th:action="@{/zulassung1/student}" th:object="${token}">
             <div class="form-group">
                 <label for="token">Bitte geben Sie ihren Token ein.</label>
-                <input class="form-control" th:errorclass="is-invalid" th:field="*{token}" th:placeholder="Token"
+                <input class="form-control" th:field="*{token}" th:placeholder="Token"
                        th:value="*{token}"
                        type="text">
-                <span class="text-danger" th:if="${#fields.hasErrors('token')}">Das Feld darf nicht leer sein.</span>
             </div>
             <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
         </form>
