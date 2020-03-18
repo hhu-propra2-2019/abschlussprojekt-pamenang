@@ -116,7 +116,10 @@ public class ModulService {
     Optional<Modul> modul = findById(id);
     if (modul.isPresent()) {
       String modulName = modul.get().getName();
-      delete(modul.get());
+      modul.get().setOwner(null);
+      modul.get().setFrist(null);
+      modul.get().setActive(false);
+      save(modul.get());
 
       Iterable<Student> students = studentService.findByModulId(id);
       for (Student student : students) {

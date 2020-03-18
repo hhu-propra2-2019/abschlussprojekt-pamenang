@@ -58,7 +58,7 @@ public class ModulAuswahlTests {
     List<Modul> module = new ArrayList<>();
     when(principal.getName()).thenReturn("orga");
 
-    when(modulservice.findByOwner(any())).thenReturn(module);
+    when(modulservice.findByOwnerAndActive(any(),true)).thenReturn(module);
     mockMvc
         .perform(get("/zulassung1/modulHinzufuegen"))
         .andExpect(status().isOk());

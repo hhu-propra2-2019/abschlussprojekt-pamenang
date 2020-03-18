@@ -27,7 +27,7 @@
 <main th:fragment="bodycontent">
     <div class="container pt-3">
         <h1 class="text-center">
-            Modul Auswahl
+            Hinzufügen eines Moduls
         </h1>
 
 
@@ -56,7 +56,7 @@
                 <div class="containerModal">
                     <h1>Neues Modul Hinzufügen</h1>
 
-                    <form action="#" method="post" th:action="'/zulassung1/modulAuswahl'"
+                    <form action="#" method="post" th:action="'/zulassung1/neuesModulHinzufuegen'"
                           th:object="${modul}">
                         <div class="form-group">
                             <label for="name">Bitte geben Sie den offiziellen Namen des Moduls ein.</label>
@@ -113,20 +113,26 @@
                         <span th:text="${m.name}">ProPra2</span>
                     </td>
                     <td>
+                        <div>
+                            <form  action="#" method="GET" th:action="'/zulassung1/modulBearbeiten/' + ${m.id}">
+                                    <input class="btn btn-outline-dark btn-sm" type="submit" value="Modul hinzufügen">
+                            </form>
 
+                        </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
         <!-- JavaScript für DeleteModal -->
         <script>
             // Get the modal
-            var modal = document.getElementById('id01');
+            var modal = document.getElementById('id03');
 
             // When the user clicks anywhere outside of the modal, close it
             window.onclick = function (event) {
-                if (event.target == modal) {
+                if (event.target === modal) {
                     modal.style.display = "none";
                 }
             }
