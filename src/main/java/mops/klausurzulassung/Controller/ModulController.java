@@ -174,6 +174,7 @@ public class ModulController {
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 
+  @Secured("ROLE_orga")
   @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   @ResponseBody
   public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
