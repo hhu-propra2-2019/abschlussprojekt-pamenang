@@ -43,7 +43,7 @@ public class EmailService {
       MimeMessage message = this.javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
       helper.setFrom(FROM_EMAIL);
-      helper.setTo(student.getEmail().toString());
+      helper.setTo(student.getEmail());
       helper.setSubject("Klausurzulassungstoken " + student.getFachname());
       helper.setText(body, true);
       this.javaMailSender.send(message);
@@ -57,7 +57,6 @@ public class EmailService {
   public String generateValidTokenLink(Student student) {
     String studentAddUri = "/zulassung1/student/";
     String quittung = student.getToken() + "/";
-    String email = student.getEmail();
     return ServletUriComponentsBuilder.fromCurrentContextPath()
         .path(studentAddUri)
         .path(quittung)
