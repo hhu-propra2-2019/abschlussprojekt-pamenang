@@ -21,13 +21,13 @@ class TokengenerierungTest {
   @Test
   void testErstellenHashValue() {
     String matr = "3333333";
-    String fach = "propra1";
+    String modulID = "1";
     QuittungService quittungService = mock(QuittungService.class);
 
     TokengenerierungService tg = new TokengenerierungService(quittungService);
-    String ergebnis = tg.erstellenHashValue(matr, fach);
+    String ergebnis = tg.erstellenHashValue(matr, modulID);
 
-    assertEquals(ergebnis, "3333333propra1");
+    assertEquals(ergebnis, "33333331");
   }
 
   @Test
@@ -35,10 +35,10 @@ class TokengenerierungTest {
     QuittungRepository repository = mock(QuittungRepository.class);
     QuittungService quittungService = new QuittungService(repository);
     String matr = "1234567";
-    String fachID = "123";
+    String modulID = "123";
     TokengenerierungService tg = new TokengenerierungService(quittungService);
 
-    String token = tg.erstellenToken(matr, fachID);
+    String token = tg.erstellenToken(matr, modulID);
 
     assertThat(token).isNotNull();
     verify(repository,times(1)).save(any());
