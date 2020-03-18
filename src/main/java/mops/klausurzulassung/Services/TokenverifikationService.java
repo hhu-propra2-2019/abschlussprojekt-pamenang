@@ -30,6 +30,10 @@ public class TokenverifikationService {
         quittung =  quittung.replaceAll("@", "/");
 
         String[] splitArray = quittung.split("§", 3);
+        if(splitArray.length < 3){
+          logger.error("Token fehlerhaft");
+          return new long[]{-1, -1};
+        }
         String token = splitArray[0];
         String base64Matr = splitArray[1];
         String base64FachID = splitArray[2];
