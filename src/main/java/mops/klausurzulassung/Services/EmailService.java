@@ -48,6 +48,7 @@ public class EmailService {
       helper.setText(body, true);
       this.javaMailSender.send(message);
     } catch (MessagingException e1) {
+      logger.debug("Die mail konnte nicht versendet werden");
       e1.printStackTrace();
     }
     logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
