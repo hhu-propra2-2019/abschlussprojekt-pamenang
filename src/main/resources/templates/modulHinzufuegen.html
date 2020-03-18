@@ -68,8 +68,9 @@
                         </div>
                         <div class="form-group">
                             <label>Bitte geben Sie eine Frist für das Modul ein.</label>
-                            <input class="form-control" th:field="*{frist}" placeholder="dd.mm.yyyy hh:mm"
-                                   th:errorclass="is-invalid" th:value="*{frist}" type="text">
+                            <input class="form-control" th:field="*{frist}" placeholder="datetime"
+                                   th:errorclass="is-invalid" th:value="*{frist}" type="datetime-local">
+
                             <span class="text-danger" th:if="${#fields.hasErrors('frist')}"></span>
                         </div>
                         <div class="buttonModal">
