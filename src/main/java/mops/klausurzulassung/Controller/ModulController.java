@@ -76,13 +76,12 @@ public class ModulController {
   public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String orga = principal.getName();
-    modul.setOwner(orga);
-    modul.setActive(true);
-    modulService.save(modul);
-
+    String[] messageArray = modulService.saveNewModul(modul, orga);
     Iterable<Modul> moduls = modulService.findByOwnerAndActive(orga, true);
     model.addAttribute("moduls", moduls);
-    return "modulAuswahl";
+    message.setErrorMessage(messageArray[0]);
+    message.setSuccessMessage(messageArray[1]);
+    return messageArray[2];
   }
 
   @Secured("ROLE_orga")
@@ -90,9 +89,12 @@ public class ModulController {
   public String modulBearbeiten(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Modul modul = modulService.findById(id).get();
-    logger.debug("Modul: " + model);
     model.addAttribute("id", id);
     model.addAttribute("modul", modul);
+    model.addAttribute("errorMessage", message.getErrorMessage());
+    model.addAttribute("successMessage", message.getSuccessMessage());
+    message.resetMessage();
+
     return "modulBearbeiten";
   }
 
@@ -100,14 +102,10 @@ public class ModulController {
   @PostMapping("/modulBearbeiten/{id}")
   public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    Modul vorhandenesModul = modulService.findById(id).get();
-    vorhandenesModul.setName(modul.getName());
-    vorhandenesModul.setFrist(modul.getFrist());
-    vorhandenesModul.setOwner(principal.getName());
-    vorhandenesModul.setActive(true);
-    modulService.save(vorhandenesModul);
-
-    return "redirect:/zulassung1/modulAuswahl";
+    String[] messageArray = modulService.modulBearbeiten(modul, id, principal);
+    message.setErrorMessage(messageArray[0]);
+    message.setSuccessMessage(messageArray[1]);
+    return messageArray[2];
   }
 
   @Secured("ROLE_orga")

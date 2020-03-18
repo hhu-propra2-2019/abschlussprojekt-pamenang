@@ -52,6 +52,8 @@ class ModulServiceTest {
   private ModulService modulService;
   private HttpServletResponse response;
   private Principal principal;
+  private ServletOutputStream outputStream;
+
 
   @BeforeEach
   void initilize() {
@@ -64,6 +66,7 @@ class ModulServiceTest {
     quittungService = mock(QuittungService.class);
     response = mock(HttpServletResponse.class);
     principal = mock(Principal.class);
+    outputStream = mock(ServletOutputStream.class);
     modulService =
         new ModulService(
             modulRepository,
@@ -319,8 +322,6 @@ class ModulServiceTest {
   
   @Test
   void downloadMitVorhandenerListe() throws IOException {
-    ServletOutputStream outputStream = mock(ServletOutputStream.class);
-
     File outputFile = new File("klausurliste_1.csv");
     FileWriter fileWriter = new FileWriter(outputFile);
     CSVWriter writer = new CSVWriter(fileWriter);
@@ -344,21 +345,22 @@ class ModulServiceTest {
     assertFalse(outputFile.exists());
   }
 
-  /*@Test
+  @Test
   void downloadOhneVorhandeneListe() throws IOException {
-    ServletOutputStream outputStream = mock(ServletOutputStream.class);
+    csvService = new CsvService(studentService);
+    modulService = new ModulService(modulRepository, csvService, studentService, tokengenerierungService, emailService, quittungService);
 
-    Modul propra2 = new Modul(1L, "ProPra2", "orga", "2000-12-12", true);
+    Modul propra2 = new Modul(2L, "ProPra2", "orga", "2000-12-12", true);
     Optional<Modul> modul = Optional.of(propra2);
 
-    when(modulService.findById(1L)).thenReturn(modul);
+    when(modulService.findById(2L)).thenReturn(modul);
 
     when(response.getOutputStream()).thenReturn(outputStream);
-    modulService.download(1L, response);
+    modulService.download(2L, response);
 
-    File outputFile = new File("klausurliste_1.csv");
+    File outputFile = new File("klausurliste_2.csv");
     assertFalse(outputFile.exists());
-  }*/
+  }
 
   @Test
   void neuesModulErstellenFristInDerZukunftIdIsPresent() throws ParseException {

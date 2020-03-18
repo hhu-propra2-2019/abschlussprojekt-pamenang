@@ -13,9 +13,6 @@
     <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
         <ul>
             <li>
-                <a href="/zulassung1/" th:href="@{/zulassung1}">Home</a>
-            </li>
-            <li>
                 <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
             </li>
             <li>
@@ -26,11 +23,20 @@
 </header>
 <main th:fragment="bodycontent">
     <h1>Reaktivieren eines Moduls</h1>
+
+    <div class="alert alert-warning" th:if="${errorMessage!=null}">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage!=null}">
+        <span th:text="${successMessage}"></span>
+    </div>
+
     <form action="#" method="post" th:action="'/zulassung1/modulBearbeiten/'+${id}"
           th:object="${modul}">
-        <span class="csstab">ID des ausgewählten Moduls:</span><b><span th:text="${id}">1234</span></b><br>
+        <span class="csstab">ID des ausgewählten Moduls: </span><b><span th:text="${id}">1234</span></b><br>
         <div class="form-group">
-            <label>Namen des Moduls:</label>
+            <label>Namen des Moduls (nur ändern falls sich der Name des Moduls geändert hat):</label>
             <input class="form-control" th:field="*{name}"
                    placeholder="Modulname" type="text"
                    th:errorclass="is-invalid" th:value="*{name}">

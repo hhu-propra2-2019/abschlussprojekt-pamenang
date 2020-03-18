@@ -71,7 +71,6 @@ public class CsvService {
     FileWriter fileWriter;
 
     try {
-      System.out.println("Try");
       fileWriter = new FileWriter(outputFile);
       CSVWriter writer = new CSVWriter(fileWriter);
       Iterable<Student> altzugelassene = studentService.findByModulId(id);
@@ -97,7 +96,6 @@ public class CsvService {
       }
       writer.close();
     } catch (IOException e) {
-      System.out.println("Catch");
       logger.error(e.getMessage());
     }
 

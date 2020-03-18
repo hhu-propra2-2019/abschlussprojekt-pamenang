@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -70,7 +71,7 @@ public class ModulService {
     return modulRepository.findByActive(active);
   }
 
-  public void save(Modul modul) {
+  private void save(Modul modul) {
     modulRepository.save(modul);
   }
 
@@ -168,13 +169,12 @@ public class ModulService {
 
     byte[] bytes;
     File klausurliste;
-    klausurliste = new File("klausurliste_" + id + ".csv");
 
-    if (klausurliste.exists()) {
+    try {
+      klausurliste = new File("klausurliste_" + id + ".csv");
       Path path = klausurliste.toPath();
       bytes = Files.readAllBytes(path);
-      //logger.debug("Bytes: "+bytes);
-    } else {
+    } catch (NoSuchFileException e) {
       List<Student> empty = new ArrayList<>();
       csvService.writeCsvFile(id, empty);
       klausurliste = new File("klausurliste_" + id + ".csv");
@@ -188,6 +188,42 @@ public class ModulService {
     outputStream.close();
     klausurliste.delete();
 
+  }
+
+  public String[] saveNewModul(Modul modul, String owner) {
+    successMessage = null;
+    errorMessage = null;
+    String page;
+
+    if (!missingAttributeInModul(modul)) {
+      modul.setOwner(owner);
+      modul.setActive(true);
+      save(modul);
+      page = "modulAuswahl";
+    } else {
+      errorMessage = "Bitte beide Felder ausfüllen!";
+      page = "redirect:/zulassung1/modulHinzufuegen";
+    }
+    return new String[]{errorMessage, successMessage, page};
+  }
+
+  public String[] modulBearbeiten(Modul modul, Long id, Principal principal) {
+    successMessage = null;
+    errorMessage = null;
+    String page;
+    if (!missingAttributeInModul(modul)) {
+      Modul vorhandenesModul = findById(id).get();
+      vorhandenesModul.setName(modul.getName());
+      vorhandenesModul.setFrist(modul.getFrist());
+      vorhandenesModul.setOwner(principal.getName());
+      vorhandenesModul.setActive(true);
+      save(vorhandenesModul);
+      page = "redirect:/zulassung1/modulAuswahl";
+    } else {
+      errorMessage = "Beide Felder müssen ausgefüllt sein!";
+      page = "redirect:/zulassung1/modulBearbeiten/" + id;
+    }
+    return new String[]{errorMessage, successMessage, page};
   }
 
   private OutputStream writeHeader(Long id, HttpServletResponse response) throws IOException {
