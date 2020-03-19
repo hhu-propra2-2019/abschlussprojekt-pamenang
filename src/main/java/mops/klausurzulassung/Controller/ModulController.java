@@ -8,8 +8,6 @@ import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -27,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -40,7 +37,6 @@ public class ModulController {
 
   private final ModulService modulService;
   private Modul currentModul = new Modul();
-  private Logger logger = LoggerFactory.getLogger(ModulController.class);
 
   private FrontendMessage message = new FrontendMessage();
 
@@ -76,23 +72,25 @@ public class ModulController {
   public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String orga = principal.getName();
-    modul.setOwner(orga);
-    modul.setActive(true);
-    modulService.save(modul);
-
+    String[] messageArray = modulService.saveNewModul(modul, orga);
     Iterable<Modul> moduls = modulService.findByOwnerAndActive(orga, true);
     model.addAttribute("moduls", moduls);
-    return "modulAuswahl";
+    message.setErrorMessage(messageArray[0]);
+    message.setSuccessMessage(messageArray[1]);
+    return messageArray[2];
   }
 
   @Secured("ROLE_orga")
   @GetMapping("/modulBearbeiten/{id}")
-  public String modulBearbeiten(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
+  public String modulBearbeiten(@PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Modul modul = modulService.findById(id).get();
-    logger.debug("Modul: " + model);
     model.addAttribute("id", id);
     model.addAttribute("modul", modul);
+    model.addAttribute("errorMessage", message.getErrorMessage());
+    model.addAttribute("successMessage", message.getSuccessMessage());
+    message.resetMessage();
+
     return "modulBearbeiten";
   }
 
@@ -100,14 +98,10 @@ public class ModulController {
   @PostMapping("/modulBearbeiten/{id}")
   public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    Modul vorhandenesModul = modulService.findById(id).get();
-    vorhandenesModul.setName(modul.getName());
-    vorhandenesModul.setFrist(modul.getFrist());
-    vorhandenesModul.setOwner(principal.getName());
-    vorhandenesModul.setActive(true);
-    modulService.save(vorhandenesModul);
-
-    return "redirect:/zulassung1/modulAuswahl";
+    String[] messageArray = modulService.modulBearbeiten(modul, id, principal);
+    message.setErrorMessage(messageArray[0]);
+    message.setSuccessMessage(messageArray[1]);
+    return messageArray[2];
   }
 
   @Secured("ROLE_orga")
@@ -166,7 +160,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}")
-  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String[] messageArray = modulService.verarbeiteUploadliste(id, file);
     message.setErrorMessage(messageArray[0]);
@@ -177,7 +171,7 @@ public class ModulController {
   @Secured("ROLE_orga")
   @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   @ResponseBody
-  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
+  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     modulService.download(id, response);
   }

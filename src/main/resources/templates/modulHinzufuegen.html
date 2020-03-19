@@ -5,15 +5,76 @@
     <meta charset="utf-8">
     <title>Modul Hinzufügen</title>
     <th:block th:fragment="headcontent">
-        <!-- Links, Skripts, Styles hier einfügen! -->
+        <style>
+            /* Add padding and center-align text to the container */
+            .containerModal {
+                padding: 16px;
+                text-align: center;
+            }
+
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                /*z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgba(0, 0, 0, 0.42);
+                padding-top: 50px;
+            }
+
+            .modal-backdrop {
+                opacity: 0.5 !important;
+            }
+
+            /* Modal Content/Box */
+            .modal-content {
+                background-color: #fefefe;
+                margin: 10% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+                border: 1px solid #888;
+                width: 40%; /* Could be more or less, depending on screen size */
+            }
+
+            /* Style the horizontal ruler */
+            hr {
+                border: 1px solid #f1f1f1;
+                margin-bottom: 25px;
+            }
+
+            /* The Modal Close Button (x) */
+            .close {
+                position: absolute;
+                right: 35px;
+                top: 15px;
+                font-size: 40px;
+                font-weight: bold;
+                color: #000000;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #f44336;
+                cursor: pointer;
+            }
+
+            /* Clear floats */
+            .clearfix::after {
+                content: "";
+                clear: both;
+                display: table;
+            }
+        </style>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="/resources/demos/style.css">
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script>
-            $( function() {
-                $( "#datepicker" ).datepicker();
-            } );
+            $(function () {
+                $("#datepicker").datepicker();
+            });
         </script>
     </th:block>
 </head>
@@ -21,9 +82,6 @@
 <header>
     <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
         <ul>
-            <li>
-                <a href="/zulassung1/" th:href="@{/zulassung1}">Home</a>
-            </li>
             <li>
                 <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
             </li>
@@ -75,9 +133,10 @@
                                   th:if="${#fields.hasErrors('name')}"></span>
                         </div>
                         <div class="form-group">
-                            <label>Bitte geben Sie eine Frist für das Modul ein.</label>
+                            <label>Bitte geben Sie eine Frist für das Modul ein. Die Frist endet immer um 12:00 Uhr am
+                                gewählten Tag.</label>
                             <p><input class="form-control" type="text" id="datepicker" th:value="*{frist}"
-                                            placeholder="mm/dd/yyyy" th:field="*{frist}" th:errorclass="is-invalid"></p>
+                                      placeholder="mm/dd/yyyy" th:field="*{frist}" th:errorclass="is-invalid"></p>
                             <span class="text-danger" th:if="${#fields.hasErrors('frist')}"></span>
                         </div>
                         <div class="buttonModal">

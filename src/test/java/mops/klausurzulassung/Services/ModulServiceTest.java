@@ -52,6 +52,8 @@ class ModulServiceTest {
   private ModulService modulService;
   private HttpServletResponse response;
   private Principal principal;
+  private ServletOutputStream outputStream;
+
 
   @BeforeEach
   void initilize() {
@@ -64,6 +66,7 @@ class ModulServiceTest {
     quittungService = mock(QuittungService.class);
     response = mock(HttpServletResponse.class);
     principal = mock(Principal.class);
+    outputStream = mock(ServletOutputStream.class);
     modulService =
         new ModulService(
             modulRepository,
@@ -76,9 +79,116 @@ class ModulServiceTest {
   }
 
   @Test
+  void saveNewModulwithoutMissingAttribute() {
+    String frist = fristInZukunft();
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+    String owner = "orga";
+
+    String[] messages = modulService.saveNewModul(propra, owner);
+
+    assertNull(messages[0]);
+    assertNull(messages[1]);
+    assertEquals("orga", propra.getOwner());
+    assertEquals(true, propra.getActive());
+    assertEquals(frist + " 12:00", propra.getFrist());
+    assertEquals("ProPra1", propra.getName());
+  }
+
+  @Test
+  void saveNewModulwithMissingAttribute() throws ParseException {
+    String frist = fristInZukunft();
+    Modul propra = new Modul(null, "", null, frist, null);
+    String owner = "orga";
+
+    String[] messages = modulService.saveNewModul(propra, owner);
+
+    assertEquals("Bitte beide Felder ausfüllen!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertNull(propra.getActive());
+    assertEquals(frist, propra.getFrist());
+    assertEquals("", propra.getName());
+  }
+
+  @Test
+  void testFristAbgelaufen() throws ParseException {
+
+    Modul propra1 = new Modul(1L, "ProPra1", "orga", "12/21/2012", true);
+    Optional<Modul> modul = Optional.of(propra1);
+
+    boolean abgelaufen = modulService.isFristAbgelaufen(propra1);
+
+    assertTrue(abgelaufen);
+  }
+
+  @Test
+  void saveNewModulwithFristIsFalse() throws ParseException {
+    String frist = "12/20/2000";
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+    String owner = "orga";
+
+    String[] messages = modulService.saveNewModul(propra, owner);
+
+    assertNull(propra.getActive());
+    assertEquals("Die Frist muss in der Zukunft liegen!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertEquals(frist, propra.getFrist());
+    assertEquals("ProPra1", propra.getName());
+  }
+
+  @Test
+  void modulBearbeitenWithoutMissingAttribute() throws ParseException {
+    String frist = fristInZukunft();
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+    Modul vorhandenesModul = new Modul(1L, "ProPra", null, "", false);
+    Optional modul = Optional.of(vorhandenesModul);
+    when(principal.getName()).thenReturn("orga");
+    when(modulService.findById(1L)).thenReturn(modul);
+
+    String[] messages = modulService.modulBearbeiten(propra, 1L, principal);
+    assertNull(messages[0]);
+    assertNull(messages[1]);
+    assertEquals("ProPra1", vorhandenesModul.getName());
+    assertEquals("orga", vorhandenesModul.getOwner());
+    assertEquals(frist + " 12:00", vorhandenesModul.getFrist());
+    assertEquals(1L, vorhandenesModul.getId());
+    assertTrue(vorhandenesModul.getActive());
+  }
+
+  @Test
+  void modulBearbeitenMitAbgelaufenerFrist() throws ParseException {
+    String frist = "12/20/2000";
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+
+    String[] messages = modulService.modulBearbeiten(propra, 23L, principal);
+
+    assertNull(propra.getActive());
+    assertEquals("Die Frist muss in der Zukunft liegen!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertEquals(frist, propra.getFrist());
+    assertEquals("ProPra1", propra.getName());
+  }
+
+  @Test
+  void modulBearbeitenWithMissingAttribute() throws ParseException {
+    Modul propra = new Modul(null, "ProPra2", null, "", null);
+
+    String[] messages = modulService.modulBearbeiten(propra, 7L, principal);
+
+    assertNull(propra.getActive());
+    assertEquals("Beide Felder müssen ausgefüllt sein!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertEquals("", propra.getFrist());
+    assertEquals("ProPra2", propra.getName());
+  }
+
+  @Test
   void deleteExistingModulWithStudents() {
     long modulID = 1L;
-    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12", true));
+    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true));
     when(modulRepository.findById(modulID)).thenReturn(modul);
     ArrayList<Student> students = new ArrayList<>();
     students.add(new Student());
@@ -93,7 +203,7 @@ class ModulServiceTest {
   @Test
   void deleteExistingModulWithoutStudents() {
     long modulID = 1L;
-    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "2000-12-12", true));
+    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true));
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
     String[] result = modulService.deleteStudentsFromModul(modulID);
@@ -148,7 +258,7 @@ class ModulServiceTest {
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, null, null));
     students.add(new Student("Rebecca", "Fröhlich", "refro100@hhu.de", 2658447L, 1L, null, null));
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true));
 
     when(multipartFile.getInputStream()).thenReturn(input);
     when(csvService.getStudentListFromInputFile(any(), any())).thenReturn(students);
@@ -202,7 +312,7 @@ class ModulServiceTest {
             .nachname("Müller")
             .email("joshua@gmail.com")
             .matrikelnummer((long)1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true));
 
     when(quittungService.findQuittung("123","123")).thenReturn("132");
     when(modulRepository.findById((long) 1)).thenReturn(modul);
@@ -220,7 +330,7 @@ class ModulServiceTest {
             .nachname("Müller")
             .email("joshua@gmail.com")
             .matrikelnummer((long)1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true));
 
     when(quittungService.findQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
             "ERROR"));
@@ -240,7 +350,7 @@ class ModulServiceTest {
             .nachname("Müller")
             .email("joshua@gmail.com")
             .matrikelnummer((long)1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true));
 
     when(quittungService.findQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
             "ERROR"));
@@ -261,7 +371,7 @@ class ModulServiceTest {
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true));
 
 
     when(quittungService.findPublicKey(anyString(),anyString())).thenReturn(any());
@@ -283,7 +393,7 @@ class ModulServiceTest {
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true));
 
     when(quittungService.findPublicKey(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
@@ -305,7 +415,7 @@ class ModulServiceTest {
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "2000-01-01", true));
+    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true));
 
     when(quittungService.findPublicKey(anyString(),anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
@@ -319,8 +429,6 @@ class ModulServiceTest {
   
   @Test
   void downloadMitVorhandenerListe() throws IOException {
-    ServletOutputStream outputStream = mock(ServletOutputStream.class);
-
     File outputFile = new File("klausurliste_1.csv");
     FileWriter fileWriter = new FileWriter(outputFile);
     CSVWriter writer = new CSVWriter(fileWriter);
@@ -332,7 +440,7 @@ class ModulServiceTest {
     writer.flush();
     writer.close();
 
-    Modul propra2 = new Modul(1L, "ProPra2", "orga", "2000-12-12", true);
+    Modul propra2 = new Modul(1L, "ProPra2", "orga", "12/12/2000", true);
     Optional<Modul> modul = Optional.of(propra2);
 
     when(modulService.findById(1L)).thenReturn(modul);
@@ -344,32 +452,26 @@ class ModulServiceTest {
     assertFalse(outputFile.exists());
   }
 
-  /*@Test
+  @Test
   void downloadOhneVorhandeneListe() throws IOException {
-    ServletOutputStream outputStream = mock(ServletOutputStream.class);
+    csvService = new CsvService(studentService);
+    modulService = new ModulService(modulRepository, csvService, studentService, tokengenerierungService, emailService, quittungService);
 
-    Modul propra2 = new Modul(1L, "ProPra2", "orga", "2000-12-12", true);
+    Modul propra2 = new Modul(2L, "ProPra2", "orga", "12/12/2000", true);
     Optional<Modul> modul = Optional.of(propra2);
 
-    when(modulService.findById(1L)).thenReturn(modul);
+    when(modulService.findById(2L)).thenReturn(modul);
 
     when(response.getOutputStream()).thenReturn(outputStream);
-    modulService.download(1L, response);
+    modulService.download(2L, response);
 
-    File outputFile = new File("klausurliste_1.csv");
+    File outputFile = new File("klausurliste_2.csv");
     assertFalse(outputFile.exists());
-  }*/
+  }
 
   @Test
   void neuesModulErstellenFristInDerZukunftIdIsPresent() throws ParseException {
-    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
-    LocalDateTime future = now.plusYears(1);
-    int year = future.getYear();
-    int month = future.getMonthValue();
-    int day = future.getDayOfMonth();
-    int hour = future.getHour();
-    int minutes = future.getMinute();
-    String frist = day + "." + month + "." + year + " " + hour + ":" + minutes;
+    String frist = fristInZukunft();
 
     Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
     Optional<Modul> modul = Optional.of(propra);
@@ -385,16 +487,18 @@ class ModulServiceTest {
 
   }
 
-  @Test
-  void neuesModulErstellenFristInDerZukunftIdIsNotPresent() throws ParseException {
+  private String fristInZukunft() {
     LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime future = now.plusYears(1);
     int year = future.getYear();
     int month = future.getMonthValue();
     int day = future.getDayOfMonth();
-    int hour = future.getHour();
-    int minutes = future.getMinute();
-    String frist = day + "." + month + "." + year + " " + hour + ":" + minutes;
+    return month + "/" + day + "/" + year;
+  }
+
+  @Test
+  void neuesModulErstellenFristInDerZukunftIdIsNotPresent() {
+    String frist = fristInZukunft();
 
     Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
     Optional<Modul> modul = Optional.empty();
@@ -411,8 +515,8 @@ class ModulServiceTest {
   }
 
   @Test
-  void neuesModulErstellenFristAbgelaufen() throws ParseException {
-    Modul propra = new Modul(1L, "ProPra2", "orga", "20.12.2000 20:00", true);
+  void neuesModulErstellenFristAbgelaufen() {
+    Modul propra = new Modul(1L, "ProPra2", "orga", "12/12/2000", true);
     Optional<Modul> modul = Optional.of(propra);
 
     when(principal.getName()).thenReturn("orga");
@@ -427,7 +531,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void neuesModulFristLeer() throws ParseException {
+  void neuesModulFristLeer() {
     Modul propra = new Modul(1L, "ProPra1", "orga", "", true);
     Optional<Modul> modul = Optional.of(propra);
 

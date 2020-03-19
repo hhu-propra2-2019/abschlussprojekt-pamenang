@@ -30,9 +30,9 @@ public class Modul {
   private String owner;
 
   @Column(name="frist")
-  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm")
+  @DateTimeFormat(pattern = "MM/dd/yyyy hh:mm")
   private String frist;
 
   @Column(name = "active")
-  private boolean active;
+  private Boolean active;
 }
