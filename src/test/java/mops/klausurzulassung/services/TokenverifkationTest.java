@@ -43,7 +43,6 @@ class TokenverifkationTest {
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
     tokenverifikationService.verifikationToken(quittung);
-    when(studentService.save(student)).
     verify(studentService,times(1)).save(student);
   }
 

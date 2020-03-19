@@ -2,7 +2,6 @@ package mops.klausurzulassung.controller;
 
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.domain.FrontendMessage;
-import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.repositories.StudentRepository;
 import mops.klausurzulassung.services.StudentService;
 import mops.klausurzulassung.services.TokenverifikationService;
@@ -58,20 +57,12 @@ public class StudentenController {
   @GetMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
+    logger.debug("Rolle: " + token.getAccount().getPrincipal().toString());
     model.addAttribute("account", createAccountFromPrincipal(token));
-    model.addAttribute("student", false);
     model.addAttribute("token", new Token(""));
-
-    if (token.getAccount().getPrincipal().toString().equals("studentin")) {
-      model.addAttribute("student", true);
-      logger.debug(token.getAccount().getPrincipal().toString());
-    }
-
     model.addAttribute("errorMessage", message.getErrorMessage());
     model.addAttribute("successMessage", message.getSuccessMessage());
     message.resetMessage();
-
-
     return "student";
   }
 
@@ -79,7 +70,6 @@ public class StudentenController {
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model) {
     logger.debug("Token: " + token.getToken());
-
     try {
       tokenverifikation.verifikationToken(token.getToken());
     } catch (Exception e) {
