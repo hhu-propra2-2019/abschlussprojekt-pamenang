@@ -1,5 +1,6 @@
 package mops.klausurzulassung.Services;
 
+import mops.klausurzulassung.Exceptions.InvalidToken;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +26,16 @@ public class TokenverifikationService {
     this.quittungService = quittungService;
   }
 
-  public long[] verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoPublicKeyInDatabaseException {
+  public long[] verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
 
     quittung =  quittung.replaceAll("@", "/");
 
     String[] splitArray = quittung.split("§", 3);
     if(splitArray.length < 3){
       logger.error("Token fehlerhaft");
-      return new long[]{-1, -1};
+      throw new InvalidToken("Token ist fehlerhaft");
     }
+
     String token = splitArray[0];
     String base64Matr = splitArray[1];
     String base64ModulID = splitArray[2];

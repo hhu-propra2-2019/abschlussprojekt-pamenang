@@ -3,6 +3,7 @@ package mops.klausurzulassung.Controller;
 import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Domain.FrontendMessage;
 import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.Exceptions.InvalidToken;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Repositories.StudentRepository;
 import mops.klausurzulassung.Services.StudentService;
@@ -85,29 +86,28 @@ public class StudentenController {
 
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
-  public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model)
-      throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
-      NoPublicKeyInDatabaseException {
+  public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model) {
 
     logger.debug("Token: " + token.getToken());
 
-    long[] verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
+    long[] verifizierungsErgebnis;
+    try {
+      verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
+    } catch (Exception e) {
+      logger.error("Die Tokenverifikation ist fehlgeschlagen!");
+      logger.error(e.getMessage());
+      message.setErrorMessage("Token nicht valide!");
+      return "redirect:/zulassung1/student";
+    }
+
     logger.debug("ModulID: " + verifizierungsErgebnis[0]);
     logger.debug("Matrikelnummer : " + verifizierungsErgebnis[1]);
-    if (verifizierungsErgebnis[0] > 0 &&
-        verifizierungsErgebnis[1] > 0) {
-
       Student student = Student.builder()
           .matrikelnummer(verifizierungsErgebnis[0])
           .modulId(verifizierungsErgebnis[1]).build();
-
       studentService.save(student);
       message.setSuccessMessage("Altzulassung erfolgreich!");
       logger.debug("Altzulassung erfolgreich!");
-    } else {
-      message.setErrorMessage("Token nicht Valide");
-      logger.debug("Token nicht Valide");
-    }
 
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("student", false);
