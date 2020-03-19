@@ -1,5 +1,6 @@
 package mops.klausurzulassung.services;
 
+import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import org.slf4j.Logger;
@@ -25,8 +26,10 @@ public class TokenverifikationService {
   public TokenverifikationService(QuittungService quittungService) {
     this.quittungService = quittungService;
   }
-
-  public long[] verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
+  @Autowired
+  StudentService studentService;
+  public void verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException,
+          NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
 
     quittung =  quittung.replaceAll("@", "/");
 
@@ -49,7 +52,7 @@ public class TokenverifikationService {
     PublicKey publicKey = quittungService.findPublicKey(matr, modulID);
     if(publicKey == null){
       logger.error("Public Key ist null");
-      return new long[]{-1, -1};
+      return;
     }
 
     Signature sign = Signature.getInstance("SHA256withRSA");
@@ -60,8 +63,14 @@ public class TokenverifikationService {
 
     if(sign.verify(tokenByte)){
       logger.debug("Token Verifiziert");
-      return new long[]{Long.parseLong(matr), Long.parseLong(modulID)};
+      logger.debug("ModulID: " + modulID);
+      logger.debug("Matrikelnummer : " + matr);
+      Student student = Student.builder()
+              .matrikelnummer(Long.parseLong(matr))
+              .modulId(Long.parseLong(modulID)).build();
+      studentService.save(student);
+      logger.debug("Altzulassung erfolgreich!");
     }
-    return new long[]{-1, -1};
+    return;
   }
 }
