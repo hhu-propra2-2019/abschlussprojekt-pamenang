@@ -6,6 +6,15 @@
     <title>Modul anpassen</title>
     <th:block th:fragment="headcontent">
         <!-- Links, Skripts, Styles hier einfügen! -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script>
+            $( function() {
+                $( "#datepicker" ).datepicker();
+            } );
+        </script>
     </th:block>
 </head>
 <body>
@@ -39,8 +48,8 @@
         </div>
         <div class="form-group">
             <label>Bitte geben Sie eine Frist für das Modul ein.</label>
-            <input class="form-control" th:field="*{frist}" placeholder="dd.mm.yyyy hh:mm"
-                   th:errorclass="is-invalid" th:value="*{frist}" type="text">
+            <p><input class="form-control" type="text" id="datepicker" th:value="*{frist}"
+                      placeholder="mm/dd/yyyy" th:field="*{frist}" th:errorclass="is-invalid"></p>
             <span class="text-danger" th:if="${#fields.hasErrors('frist')}"></span>
         </div>
         <div class="buttonModal">
