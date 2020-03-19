@@ -8,8 +8,6 @@ import mops.klausurzulassung.Domain.Student;
 import mops.klausurzulassung.Services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -27,12 +25,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
-import java.text.ParseException;
 
 @Controller
 @SessionScope
@@ -41,7 +37,6 @@ public class ModulController {
 
   private final ModulService modulService;
   private Modul currentModul = new Modul();
-  private Logger logger = LoggerFactory.getLogger(ModulController.class);
 
   private FrontendMessage message = new FrontendMessage();
 
@@ -74,7 +69,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/neuesModulHinzufuegen")
-  public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) throws ParseException {
+  public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String orga = principal.getName();
     String[] messageArray = modulService.saveNewModul(modul, orga);
@@ -87,7 +82,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @GetMapping("/modulBearbeiten/{id}")
-  public String modulBearbeiten(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
+  public String modulBearbeiten(@PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Modul modul = modulService.findById(id).get();
     model.addAttribute("id", id);
@@ -101,7 +96,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modulBearbeiten/{id}")
-  public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) throws ParseException {
+  public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String[] messageArray = modulService.modulBearbeiten(modul, id, principal);
     message.setErrorMessage(messageArray[0]);
@@ -165,7 +160,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}")
-  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String[] messageArray = modulService.verarbeiteUploadliste(id, file);
     message.setErrorMessage(messageArray[0]);
@@ -175,7 +170,7 @@ public class ModulController {
 
   @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   @ResponseBody
-  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) throws IOException{
+  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     modulService.download(id, response);
   }

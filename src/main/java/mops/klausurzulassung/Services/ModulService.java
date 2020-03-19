@@ -45,6 +45,7 @@ public class ModulService {
   private final TokengenerierungService tokengenerierungService;
   private String errorMessage;
   private String successMessage;
+
   private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
 
@@ -73,12 +74,18 @@ public class ModulService {
 
   private void save(Modul modul) {
     modulRepository.save(modul);
+    logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
 
-  public String[] verarbeiteUploadliste(Long id, MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String[] verarbeiteUploadliste(Long id, MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     successMessage = null;
     errorMessage = null;
-    Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
+    Iterable<CSVRecord> records = null;
+    try {
+      records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
+    } catch (IOException e) {
+      logger.error("Fehler beim Einlesen der Datei!", e);
+    }
 
     boolean countColumns = true;
 
@@ -89,7 +96,13 @@ public class ModulService {
       }
     }
 
-    records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").withSkipHeaderRecord().parse(new InputStreamReader(file.getInputStream()));
+    logger.info("Die Liste wurde erfolgreich eingelesen.");
+
+    try {
+      records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").withSkipHeaderRecord().parse(new InputStreamReader(file.getInputStream()));
+    } catch (IOException e) {
+      logger.error("Fehler beim Einlesen der Datei!", e);
+    }
 
     if (!countColumns) {
       errorMessage = "Datei hat eine falsche Anzahl von Einträgen pro Zeile!";
@@ -104,6 +117,8 @@ public class ModulService {
         student.setFachname(modulname);
         erstelleTokenUndSendeEmail(student, id, false);
       }
+      logger.info("Token wurden generiert und Emails versendet!");
+
       csvService.writeCsvFile(id, students);
       successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
     }
@@ -113,6 +128,7 @@ public class ModulService {
   public String[] deleteStudentsFromModul(Long id) {
     successMessage = null;
     errorMessage = null;
+
     Optional<Modul> modul = findById(id);
     if (modul.isPresent()) {
       String modulName = modul.get().getName();
@@ -125,7 +141,6 @@ public class ModulService {
       for (Student student : students) {
         studentService.delete(student);
       }
-
       successMessage = "Das Modul " + modulName + " wurde gelöscht!";
     } else {
       errorMessage = "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.";
@@ -134,19 +149,15 @@ public class ModulService {
     return new String[]{errorMessage, successMessage};
   }
 
-  public  Object[] neuesModul(Modul modul, Principal principal) throws ParseException {
+  public Object[] neuesModul(Modul modul, Principal principal) {
     errorMessage = null;
     successMessage = null;
     modul.setOwner(principal.getName());
 
     if (!missingAttributeInModul(modul)) {
-      String frist = modul.getFrist();
-      Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
-      LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
-      LocalDateTime localFrist = date.toInstant()
-          .atZone(ZoneId.systemDefault())
-          .toLocalDateTime();
-
+      LocalDateTime[] dates = parseFrist(modul);
+      LocalDateTime localFrist = dates[1];
+      LocalDateTime actualDate = dates[0];
 
       if (localFrist.isAfter(actualDate)) {
         if (findById(modul.getId()).isPresent()) {
@@ -165,35 +176,61 @@ public class ModulService {
     return new Object[]{modul, errorMessage, successMessage};
   }
 
-  public void download(@PathVariable Long id, HttpServletResponse response) throws IOException {
+  private LocalDateTime[] parseFrist(Modul modul) {
+    String frist = modul.getFrist();
+    Date date = null;
+    try {
+      date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
+    } catch (ParseException e) {
+      logger.error("Frist hat fehlerhaftes Format!", e);
+    }
+    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime localFrist = date.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDateTime();
+    return new LocalDateTime[]{actualDate, localFrist};
+  }
 
-    byte[] bytes;
-    File klausurliste;
+  public void download(@PathVariable Long id, HttpServletResponse response) {
+
+    byte[] bytes = null;
+    File klausurliste = null;
 
     try {
-      klausurliste = new File("klausurliste_" + id + ".csv");
-      Path path = klausurliste.toPath();
-      bytes = Files.readAllBytes(path);
-    } catch (NoSuchFileException e) {
-      List<Student> empty = new ArrayList<>();
-      csvService.writeCsvFile(id, empty);
-      klausurliste = new File("klausurliste_" + id + ".csv");
-      Path path = klausurliste.toPath();
-      bytes = Files.readAllBytes(path);
+      try {
+        klausurliste = new File("klausurliste_" + id + ".csv");
+        Path path = klausurliste.toPath();
+        bytes = Files.readAllBytes(path);
+        logger.info("Klausurliste mit Neuzulassungen");
+      } catch (NoSuchFileException e) {
+        List<Student> empty = new ArrayList<>();
+        csvService.writeCsvFile(id, empty);
+        klausurliste = new File("klausurliste_" + id + ".csv");
+        Path path = klausurliste.toPath();
+        bytes = Files.readAllBytes(path);
+        logger.info("Klausurliste ohne Neuzulassungen");
+      }
+    } catch (IOException e) {
+      logger.error("Fehler in der zwischengespeicherten Liste.", e);
     }
 
     OutputStream outputStream = writeHeader(id, response);
-    outputStream.write(bytes);
-    outputStream.flush();
-    outputStream.close();
-    klausurliste.delete();
+    try {
+      outputStream.write(bytes);
+      outputStream.flush();
+      outputStream.close();
+      klausurliste.delete();
+    } catch (IOException e) {
+      logger.error("Outputstream fehlerhaft!", e);
+    }
 
+    logger.info("Klausurliste wurde erfolgreich heruntergeladen.");
   }
 
-  public String[] saveNewModul(Modul modul, String owner) throws ParseException {
+  public String[] saveNewModul(Modul modul, String owner) {
     successMessage = null;
     errorMessage = null;
-    String page;
+    String page = "redirect:/zulassung1/modulHinzufuegen";
 
     if (!missingAttributeInModul(modul)) {
       if (!isFristAbgelaufen(modul)) {
@@ -203,32 +240,27 @@ public class ModulService {
         page = "modulAuswahl";
       } else {
         errorMessage = "Die Frist muss in der Zukunft liegen!";
-        page = "redirect:/zulassung1/modulHinzufuegen";
       }
     } else {
       errorMessage = "Bitte beide Felder ausfüllen!";
-      page = "redirect:/zulassung1/modulHinzufuegen";
     }
     return new String[]{errorMessage, successMessage, page};
   }
 
-  public boolean isFristAbgelaufen(Modul zuPrüfendesModul) throws ParseException {
+  public boolean isFristAbgelaufen(Modul zuPruefendesModul) {
+    LocalDateTime[] dates = parseFrist(zuPruefendesModul);
+    LocalDateTime localFrist = dates[1];
+    LocalDateTime actualDate = dates[0];
 
-    String frist = zuPrüfendesModul.getFrist();
-    Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
-    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
-    LocalDateTime localFrist = date.toInstant()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDateTime();
     boolean result = localFrist.isBefore(actualDate);
-    logger.debug("Frist ist abgelaufen: " + result);
+    logger.info("Frist ist abgelaufen: " + result);
     return result;
   }
 
-  public String[] modulBearbeiten(Modul modul, Long id, Principal principal) throws ParseException {
+  public String[] modulBearbeiten(Modul modul, Long id, Principal principal) {
     successMessage = null;
     errorMessage = null;
-    String page;
+    String page = "redirect:/zulassung1/modulBearbeiten/" + id;
     if (!missingAttributeInModul(modul)) {
       if (!isFristAbgelaufen(modul)) {
         Modul vorhandenesModul = findById(id).get();
@@ -240,23 +272,27 @@ public class ModulService {
         page = "redirect:/zulassung1/modulAuswahl";
       } else {
         errorMessage = "Die Frist muss in der Zukunft liegen!";
-        page = "redirect:/zulassung1/modulBearbeiten/" + id;
       }
     } else {
       errorMessage = "Beide Felder müssen ausgefüllt sein!";
-      page = "redirect:/zulassung1/modulBearbeiten/" + id;
     }
     return new String[]{errorMessage, successMessage, page};
   }
 
-  private OutputStream writeHeader(Long id, HttpServletResponse response) throws IOException {
+  private OutputStream writeHeader(Long id, HttpServletResponse response) {
     String fachname = findById(id).get().getName();
     response.setContentType("text/csv");
     String newFilename = "\"klausurliste_" + fachname + ".csv\"";
     response.setHeader("Content-Disposition", "attachment; filename=" + newFilename);
-    OutputStream outputStream = response.getOutputStream();
-    String header = "Matrikelnummer,Nachname,Vorname\n";
-    outputStream.write(header.getBytes());
+    OutputStream outputStream = null;
+    try {
+      outputStream = response.getOutputStream();
+      String header = "Matrikelnummer,Nachname,Vorname\n";
+      outputStream.write(header.getBytes());
+    } catch (IOException e) {
+      logger.error("HTTPServletResponse liefert fehlerhaften Outputstream.", e);
+    }
+
     return outputStream;
   }
 
