@@ -1,9 +1,9 @@
 package mops.klausurzulassung.services;
 
 import com.opencsv.CSVWriter;
-import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
+import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.ModulRepository;
@@ -22,7 +22,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +94,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void saveNewModulwithMissingAttribute() throws ParseException {
+  void saveNewModulwithMissingAttribute() {
     String frist = fristInZukunft();
     Modul propra = new Modul(null, "", null, frist, null);
     String owner = "orga";
@@ -111,7 +110,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void testFristAbgelaufen() throws ParseException {
+  void testFristAbgelaufen() {
 
     Modul propra1 = new Modul(1L, "ProPra1", "orga", "12/21/2012", true);
     Optional<Modul> modul = Optional.of(propra1);
@@ -122,7 +121,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void saveNewModulwithFristIsFalse() throws ParseException {
+  void saveNewModulwithFristIsFalse() {
     String frist = "12/20/2000";
     Modul propra = new Modul(null, "ProPra1", null, frist, null);
     String owner = "orga";
@@ -138,7 +137,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void modulBearbeitenWithoutMissingAttribute() throws ParseException {
+  void modulBearbeitenWithoutMissingAttribute() {
     String frist = fristInZukunft();
     Modul propra = new Modul(null, "ProPra1", null, frist, null);
     Modul vorhandenesModul = new Modul(1L, "ProPra", null, "", false);
@@ -157,7 +156,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void modulBearbeitenMitAbgelaufenerFrist() throws ParseException {
+  void modulBearbeitenMitAbgelaufenerFrist() {
     String frist = "12/20/2000";
     Modul propra = new Modul(null, "ProPra1", null, frist, null);
 
@@ -172,7 +171,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void modulBearbeitenWithMissingAttribute() throws ParseException {
+  void modulBearbeitenWithMissingAttribute() {
     Modul propra = new Modul(null, "ProPra2", null, "", null);
 
     String[] messages = modulService.modulBearbeiten(propra, 7L, principal);
@@ -470,7 +469,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void neuesModulErstellenFristInDerZukunftIdIsPresent() throws ParseException {
+  void neuesModulErstellenFristInDerZukunftIdIsPresent() {
     String frist = fristInZukunft();
 
     Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
