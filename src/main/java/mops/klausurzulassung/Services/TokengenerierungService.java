@@ -33,19 +33,47 @@ public class TokengenerierungService {
         return matr+modulID;
     }
 
-    public String erstellenToken(String matr, String modulID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public String erstellenToken(String matr, String modulID){
 
         String hashValue = erstellenHashValue(matr, modulID);
-        KeyPair pair = KeyPaarGenerierung();
+        KeyPair pair = null;
+        try {
+            pair = KeyPaarGenerierung();
+        } catch (NoSuchAlgorithmException e) {
+            logger.debug("Keypaar konnte nicht erstellt werden");
+            e.printStackTrace();
+        }
         PrivateKey privateKey = pair.getPrivate();
-        Signature sign = Signature.getInstance("SHA256withRSA");
+        Signature sign = null;
+        try {
+            sign = Signature.getInstance("SHA256withRSA");
+        } catch (NoSuchAlgorithmException e) {
+            logger.debug("Signatur konnte nicht instanziert werden");
+            e.printStackTrace();
+        }
 
-        sign.initSign(privateKey);
+        try {
+            sign.initSign(privateKey);
+        } catch (InvalidKeyException e) {
+            logger.debug("Private Key ist nicht valide");
+            e.printStackTrace();
+        }
         byte[] hashValueBytes = hashValue.getBytes(StandardCharsets.UTF_8);
-        sign.update(hashValueBytes);
+        try {
+            sign.update(hashValueBytes);
+        } catch (SignatureException e) {
+            logger.debug("Signatur konnte nicht geupdatet werden");
+            e.printStackTrace();
+        }
 
         PublicKey publicKey = pair.getPublic();
-        byte[] token = sign.sign();
+        byte[] token = new byte[0];
+        try {
+            token = sign.sign();
+        } catch (SignatureException e) {
+            logger.debug("Signatur konnte nicht signiert werden");
+            e.printStackTrace();
+        }
 
         String base64Token= Base64.getEncoder().encodeToString(token);
         String base64Matr= Base64.getEncoder().encodeToString(matr.getBytes());
