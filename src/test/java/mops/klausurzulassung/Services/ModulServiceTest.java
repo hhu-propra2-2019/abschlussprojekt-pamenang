@@ -79,7 +79,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void saveNewModulwithoutMissingAttribute() throws ParseException {
+  void saveNewModulwithoutMissingAttribute() {
     String frist = fristInZukunft();
     Modul propra = new Modul(null, "ProPra1", null, frist, null);
     String owner = "orga";
@@ -90,7 +90,7 @@ class ModulServiceTest {
     assertNull(messages[1]);
     assertEquals("orga", propra.getOwner());
     assertEquals(true, propra.getActive());
-    assertEquals(frist, propra.getFrist());
+    assertEquals(frist + " 12:00", propra.getFrist());
     assertEquals("ProPra1", propra.getName());
   }
 
@@ -151,7 +151,7 @@ class ModulServiceTest {
     assertNull(messages[1]);
     assertEquals("ProPra1", vorhandenesModul.getName());
     assertEquals("orga", vorhandenesModul.getOwner());
-    assertEquals(frist, vorhandenesModul.getFrist());
+    assertEquals(frist + " 12:00", vorhandenesModul.getFrist());
     assertEquals(1L, vorhandenesModul.getId());
     assertTrue(vorhandenesModul.getActive());
   }
