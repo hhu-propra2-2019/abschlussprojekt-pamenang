@@ -85,13 +85,17 @@ public class StudentenController {
 
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
-  public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model)
-      throws SignatureException, NoSuchAlgorithmException, InvalidKeyException,
-      NoPublicKeyInDatabaseException {
+  public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model) {
 
     logger.debug("Token: " + token.getToken());
 
-    long[] verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
+    long[] verifizierungsErgebnis = new long[0];
+    try {
+      verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
+    } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | NoPublicKeyInDatabaseException e) {
+      logger.error("Die Tokenverifikation ist fehlgeschlagen.");
+      logger.error(e.getMessage());
+    }
     logger.debug("ModulID: " + verifizierungsErgebnis[0]);
     logger.debug("Matrikelnummer : " + verifizierungsErgebnis[1]);
     if (verifizierungsErgebnis[0] > 0 &&
