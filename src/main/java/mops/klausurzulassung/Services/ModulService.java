@@ -72,7 +72,7 @@ public class ModulService {
     return modulRepository.findByActive(active);
   }
 
-  private void save(Modul modul) {
+  public void save(Modul modul) {
     modulRepository.save(modul);
     logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
@@ -163,6 +163,7 @@ public class ModulService {
         if (findById(modul.getId()).isPresent()) {
           errorMessage = "Diese Modul-ID existiert schon, bitte eine andere ID eingeben!";
         } else {
+          modul.setFrist(modul.getFrist() + " 12:00");
           save(modul);
           successMessage = "Neues Modul wurde erfolgreich hinzugefügt!";
           modul = new Modul();
@@ -177,13 +178,14 @@ public class ModulService {
   }
 
   private LocalDateTime[] parseFrist(Modul modul) {
-    String frist = modul.getFrist();
+    String frist = modul.getFrist() + " 12:00";
     Date date = null;
     try {
-      date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
+      date = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(frist);
     } catch (ParseException e) {
       logger.error("Frist hat fehlerhaftes Format!", e);
     }
+
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
@@ -234,6 +236,7 @@ public class ModulService {
 
     if (!missingAttributeInModul(modul)) {
       if (!isFristAbgelaufen(modul)) {
+        modul.setFrist(modul.getFrist() + " 12:00");
         modul.setOwner(owner);
         modul.setActive(true);
         save(modul);
@@ -265,7 +268,7 @@ public class ModulService {
       if (!isFristAbgelaufen(modul)) {
         Modul vorhandenesModul = findById(id).get();
         vorhandenesModul.setName(modul.getName());
-        vorhandenesModul.setFrist(modul.getFrist());
+        vorhandenesModul.setFrist(modul.getFrist() + " 12:00");
         vorhandenesModul.setOwner(principal.getName());
         vorhandenesModul.setActive(true);
         save(vorhandenesModul);
