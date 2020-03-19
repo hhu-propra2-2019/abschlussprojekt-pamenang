@@ -195,36 +195,53 @@ public class ModulService {
     errorMessage = null;
     String page;
 
-    if (!missingAttributeInModul(modul) && !studentService.isFristAbgelaufen(modul.getId())) {
-      modul.setOwner(owner);
-      modul.setActive(true);
-      save(modul);
-      page = "modulAuswahl";
-    } else if (!missingAttributeInModul(modul)) {
-      errorMessage = "Bitte beide Felder ausfüllen!";
-      page = "redirect:/zulassung1/modulHinzufuegen";
+    if (!missingAttributeInModul(modul)) {
+      if (!isFristAbgelaufen(modul)) {
+        modul.setOwner(owner);
+        modul.setActive(true);
+        save(modul);
+        page = "modulAuswahl";
+      } else {
+        errorMessage = "Die Frist muss in der Zukunft liegen!";
+        page = "redirect:/zulassung1/modulHinzufuegen";
+      }
     } else {
-      errorMessage = "Die Frist muss in der Zukunft liegen!";
+      errorMessage = "Bitte beide Felder ausfüllen!";
       page = "redirect:/zulassung1/modulHinzufuegen";
     }
     return new String[]{errorMessage, successMessage, page};
+  }
+
+  public boolean isFristAbgelaufen(Modul zuPrüfendesModul) throws ParseException {
+
+    String frist = zuPrüfendesModul.getFrist();
+    Date date = new SimpleDateFormat("dd.MM.yyyy hh:mm").parse(frist);
+    LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime localFrist = date.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDateTime();
+    boolean result = localFrist.isBefore(actualDate);
+    logger.debug("Frist ist abgelaufen: " + result);
+    return result;
   }
 
   public String[] modulBearbeiten(Modul modul, Long id, Principal principal) throws ParseException {
     successMessage = null;
     errorMessage = null;
     String page;
-    if (!missingAttributeInModul(modul) && !studentService.isFristAbgelaufen(id)) {
-      Modul vorhandenesModul = findById(id).get();
-      vorhandenesModul.setName(modul.getName());
-      vorhandenesModul.setFrist(modul.getFrist());
-      vorhandenesModul.setOwner(principal.getName());
-      vorhandenesModul.setActive(true);
-      save(vorhandenesModul);
-      page = "redirect:/zulassung1/modulAuswahl";
-    } else if (!studentService.isFristAbgelaufen(id)) {
-      errorMessage = "Frist muss in der Zukunft liegen!";
-      page = "redirect:/zulassung1/modulBearbeiten/" + id;
+    if (!missingAttributeInModul(modul)) {
+      if (!isFristAbgelaufen(modul)) {
+        Modul vorhandenesModul = findById(id).get();
+        vorhandenesModul.setName(modul.getName());
+        vorhandenesModul.setFrist(modul.getFrist());
+        vorhandenesModul.setOwner(principal.getName());
+        vorhandenesModul.setActive(true);
+        save(vorhandenesModul);
+        page = "redirect:/zulassung1/modulAuswahl";
+      } else {
+        errorMessage = "Die Frist muss in der Zukunft liegen!";
+        page = "redirect:/zulassung1/modulBearbeiten/" + id;
+      }
     } else {
       errorMessage = "Beide Felder müssen ausgefüllt sein!";
       page = "redirect:/zulassung1/modulBearbeiten/" + id;

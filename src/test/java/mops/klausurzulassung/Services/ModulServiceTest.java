@@ -107,7 +107,18 @@ class ModulServiceTest {
     assertNull(propra.getOwner());
     assertNull(propra.getActive());
     assertEquals(frist, propra.getFrist());
-    assertEquals("ProPra1", propra.getName());
+    assertEquals("", propra.getName());
+  }
+
+  @Test
+  void testFristAbgelaufen() throws ParseException {
+
+    Modul propra1 = new Modul(1L, "ProPra1", "orga", "21.12.2012 20:00", true);
+    Optional<Modul> modul = Optional.of(propra1);
+
+    boolean abgelaufen = modulService.isFristAbgelaufen(propra1);
+
+    assertTrue(abgelaufen);
   }
 
   @Test
@@ -118,17 +129,18 @@ class ModulServiceTest {
 
     String[] messages = modulService.saveNewModul(propra, owner);
 
+    assertNull(propra.getActive());
     assertEquals("Die Frist muss in der Zukunft liegen!", messages[0]);
     assertNull(messages[1]);
     assertNull(propra.getOwner());
-    assertNull(propra.getActive());
     assertEquals(frist, propra.getFrist());
     assertEquals("ProPra1", propra.getName());
   }
 
   @Test
   void modulBearbeitenWithoutMissingAttribute() throws ParseException {
-    Modul propra = new Modul(null, "ProPra1", null, "20.12.2220 20:00", null);
+    String frist = fristInZukunft();
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
     Modul vorhandenesModul = new Modul(1L, "ProPra", null, "", false);
     Optional modul = Optional.of(vorhandenesModul);
     when(principal.getName()).thenReturn("orga");
@@ -139,10 +151,38 @@ class ModulServiceTest {
     assertNull(messages[1]);
     assertEquals("ProPra1", vorhandenesModul.getName());
     assertEquals("orga", vorhandenesModul.getOwner());
-    assertEquals("20.12.2220 20:00", vorhandenesModul.getFrist());
+    assertEquals(frist, vorhandenesModul.getFrist());
     assertEquals(1L, vorhandenesModul.getId());
     assertTrue(vorhandenesModul.getActive());
+  }
 
+  @Test
+  void modulBearbeitenMitAbgelaufenerFrist() throws ParseException {
+    String frist = "20.12.2000 20:00";
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+
+    String[] messages = modulService.modulBearbeiten(propra, 23L, principal);
+
+    assertNull(propra.getActive());
+    assertEquals("Die Frist muss in der Zukunft liegen!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertEquals(frist, propra.getFrist());
+    assertEquals("ProPra1", propra.getName());
+  }
+
+  @Test
+  void modulBearbeitenWithMissingAttribute() throws ParseException {
+    Modul propra = new Modul(null, "ProPra2", null, "", null);
+
+    String[] messages = modulService.modulBearbeiten(propra, 7L, principal);
+
+    assertNull(propra.getActive());
+    assertEquals("Beide Felder müssen ausgefüllt sein!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertEquals("", propra.getFrist());
+    assertEquals("ProPra2", propra.getName());
   }
 
   @Test
