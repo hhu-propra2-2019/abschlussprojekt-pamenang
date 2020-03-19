@@ -18,10 +18,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -248,7 +245,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteRichtigeUploadliste() throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, IOException {
+  void verarbeiteRichtigeUploadliste() throws IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447".getBytes());
@@ -269,7 +266,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteZuLangeUploadliste() throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, IOException {
+  void verarbeiteZuLangeUploadliste() throws IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,zu viel".getBytes());
@@ -281,7 +278,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteZuKurzeUploadliste() throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, IOException {
+  void verarbeiteZuKurzeUploadliste() throws IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de".getBytes());
@@ -293,7 +290,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteFalscheUploadliste() throws SignatureException, NoSuchAlgorithmException, IOException, InvalidKeyException {
+  void verarbeiteFalscheUploadliste() throws IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
 
     InputStream input = new ByteArrayInputStream("".getBytes());
@@ -305,7 +302,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoTokenInDatabaseException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -323,7 +320,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoTokenInDatabaseException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -343,7 +340,7 @@ class ModulServiceTest {
 
   
   @Test
-  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoTokenInDatabaseException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -362,7 +359,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void erstelleTokenUndSendeMail() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
+  void erstelleTokenUndSendeMail() throws NoPublicKeyInDatabaseException {
 
     Student student = new Student();
     student.setVorname("Joshua");
@@ -383,7 +380,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void erstelleTokenUndSendeMailWithExceptionMitAltzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
+  void erstelleTokenUndSendeMailWithExceptionMitAltzulassung() throws NoPublicKeyInDatabaseException {
 
     Student student = new Student();
     student.setVorname("Joshua");
@@ -405,7 +402,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void erstelleTokenUndSendeMailWithExceptionOhneAltzulassung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException {
+  void erstelleTokenUndSendeMailWithExceptionOhneAltzulassung() throws NoPublicKeyInDatabaseException {
 
     Student student = new Student();
     student.setVorname("Joshua");
