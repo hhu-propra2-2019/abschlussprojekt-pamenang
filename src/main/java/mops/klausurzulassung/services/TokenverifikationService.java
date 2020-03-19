@@ -71,6 +71,5 @@ public class TokenverifikationService {
       studentService.save(student);
       logger.debug("Altzulassung erfolgreich!");
     }
-    return;
   }
 }

@@ -1,6 +1,7 @@
 package mops.klausurzulassung.services;
 
 
+import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,17 +18,18 @@ import java.util.Base64;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class TokenverifkationTest {
 
   private QuittungService quittungService;
   private TokenverifikationService tokenverifikationService;
+  private StudentService studentService;
 
   @BeforeEach
   void setUp() {
     this.quittungService = mock(QuittungService.class);
+    this.studentService = mock(StudentService.class);
     this.tokenverifikationService = new TokenverifikationService(quittungService);
   }
 
@@ -37,15 +39,12 @@ class TokenverifkationTest {
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "123455237487";
     String fachId = "12";
-    boolean valid = false;
+    Student student = new Student("t1", "t2", "t3", 1234L, 1L, "t4", "token");
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
-    long[] validToken = tokenverifikationService.verifikationToken(quittung);
-    if(validToken[0]>0){
-      valid = true;
-    }
-
-    assertTrue(valid);
+    tokenverifikationService.verifikationToken(quittung);
+    when(studentService.save(student)).
+    verify(studentService,times(1)).save(student);
   }
 
   @Test
@@ -54,15 +53,11 @@ class TokenverifkationTest {
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "123455237487";
     String fachId = "12";
-    boolean valid = false;
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
-    long[] validToken = tokenverifikationService.verifikationToken(quittung);
-    if(validToken[0] > 0){
-      valid = true;
-    }
 
-    assertFalse(valid);
+    tokenverifikationService.verifikationToken(quittung);
+    verify(studentService,times(0)).save(any());
   }
 
   @Test
@@ -71,14 +66,10 @@ class TokenverifkationTest {
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CALLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "123455237487";
     String fachId = "12";
-    boolean valid = false;
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
-    long[] validToken = tokenverifikationService.verifikationToken(quittung);
-    if(validToken[0]>0){
-      valid = true;
-    }
-    assertFalse(valid);
+    tokenverifikationService.verifikationToken(quittung);
+    verify(studentService,times(0)).save(any());
   }
 
     @Test
@@ -97,14 +88,10 @@ class TokenverifkationTest {
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "12345523747";
     String fachId = "13";
-    boolean valid = false;
     when(quittungService.findPublicKey(any(),any())).thenReturn(null);
 
-    long[] validToken = tokenverifikationService.verifikationToken(quittung);
-    if(validToken[0]>0){
-      valid = true;
-    }
-    assertFalse(valid);
+    tokenverifikationService.verifikationToken(quittung);
+    verify(studentService,times(0)).save(any());
   }
 
 
