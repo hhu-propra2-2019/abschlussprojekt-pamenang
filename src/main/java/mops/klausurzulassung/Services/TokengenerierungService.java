@@ -43,7 +43,7 @@ public class TokengenerierungService {
         sign.initSign(privateKey);
         byte[] hashValueBytes = hashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
-
+    
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 

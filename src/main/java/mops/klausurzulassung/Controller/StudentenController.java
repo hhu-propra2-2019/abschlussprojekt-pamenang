@@ -3,6 +3,7 @@ package mops.klausurzulassung.Controller;
 import mops.klausurzulassung.Domain.Account;
 import mops.klausurzulassung.Domain.FrontendMessage;
 import mops.klausurzulassung.Domain.Student;
+import mops.klausurzulassung.Exceptions.InvalidToken;
 import mops.klausurzulassung.Exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.Repositories.StudentRepository;
 import mops.klausurzulassung.Services.StudentService;
@@ -89,29 +90,24 @@ public class StudentenController {
 
     logger.debug("Token: " + token.getToken());
 
-    long[] verifizierungsErgebnis = new long[0];
+    long[] verifizierungsErgebnis;
     try {
       verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
-    } catch (NoSuchAlgorithmException | SignatureException | InvalidKeyException | NoPublicKeyInDatabaseException e) {
-      logger.error("Die Tokenverifikation ist fehlgeschlagen.");
+    } catch (Exception e) {
+      logger.error("Die Tokenverifikation ist fehlgeschlagen!");
       logger.error(e.getMessage());
+      message.setErrorMessage("Token nicht valide!");
+      return "redirect:/zulassung1/student";
     }
+
     logger.debug("ModulID: " + verifizierungsErgebnis[0]);
     logger.debug("Matrikelnummer : " + verifizierungsErgebnis[1]);
-    if (verifizierungsErgebnis[0] > 0 &&
-        verifizierungsErgebnis[1] > 0) {
-
       Student student = Student.builder()
           .matrikelnummer(verifizierungsErgebnis[0])
           .modulId(verifizierungsErgebnis[1]).build();
-
       studentService.save(student);
       message.setSuccessMessage("Altzulassung erfolgreich!");
       logger.debug("Altzulassung erfolgreich!");
-    } else {
-      message.setErrorMessage("Token nicht Valide");
-      logger.debug("Token nicht Valide");
-    }
 
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
     model.addAttribute("student", false);
