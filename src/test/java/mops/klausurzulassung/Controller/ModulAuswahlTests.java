@@ -4,12 +4,14 @@ import com.c4_soft.springaddons.test.security.context.support.WithMockKeycloackA
 import mops.klausurzulassung.Domain.AltzulassungStudentDto;
 import mops.klausurzulassung.Domain.Modul;
 import mops.klausurzulassung.Services.ModulService;
+import org.bouncycastle.math.raw.Mod;
 import org.junit.jupiter.api.Test;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,7 +25,9 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -188,12 +192,13 @@ class ModulAuswahlTests {
   public void test_neuesModulHinzufuegen_modulWirdGespeichert() throws Exception {
     String modulName = "testen";
     String modulFrist = "2020-12-15 15:00";
-
+    String[] messageObject = {"message1", "message2", "redirect:/zulassung1/modulHinzufuegen"};
+    when(modulservice.saveNewModul(any(Modul.class), anyString())).thenReturn(messageObject);
     mockMvc.perform(post("/zulassung1/neuesModulHinzufuegen")
         .param("name", modulName)
         .param("frist", modulFrist))
-        .andExpect(status().isOk());
-    verify(modulservice, times(1)).save(new Modul(any(), modulName, "orga", modulFrist, true));
+        .andExpect(status().is3xxRedirection());
+    verify(modulservice, times(1)).saveNewModul(any(Modul.class), anyString());
   }
 
   @Test
@@ -216,7 +221,8 @@ class ModulAuswahlTests {
   public void test_ModeulBearbeiten_Postmodul() throws Exception {
     String modulName = "testen";
     String modulFrist = "2020-12-15 15:00";
-
+    String[] messageObject = {"message1", "message2", "redirect:/zulassung1/modulHinzufuegen"};
+    when(modulservice.modulBearbeiten(any(Modul.class), anyLong(), any(Principal.class))).thenReturn(messageObject);
     Modul modul = new Modul(1L, "testen", null, "2020-12-15 15:00", true);
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
 
@@ -224,7 +230,7 @@ class ModulAuswahlTests {
         .param("name", modulName)
         .param("frist", modulFrist))
         .andExpect(status().is3xxRedirection());
-    verify(modulservice, times(1)).save(modul);
+    verify(modulservice, times(1)).modulBearbeiten(any(Modul.class), anyLong(), any(Principal.class));
   }
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
