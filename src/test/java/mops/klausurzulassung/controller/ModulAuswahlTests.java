@@ -275,7 +275,7 @@ class ModulAuswahlTests {
             .param("papierzulassung", String.valueOf(true))).andExpect(status().is3xxRedirection());
     verify(modulservice, times(1)).altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
   }
-
+/*
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   public void test_modulAbschickenSuccessful() throws Exception {
@@ -328,29 +328,6 @@ class ModulAuswahlTests {
             .param("owner", modul.getOwner())
             .param("frist", modul.getFrist())
             .param("active", "true"))
-        .andExpect(status().is3xxRedirection());
-  }
-
-
-
-
-
-
-
-
-/*
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
-  @Test
-  public void newModule() throws Exception {
-
-    Principal principal = mock(Principal.class);
-
-    List<Modul> module = new ArrayList<>();
-    when(principal.getName()).thenReturn("orga");
-
-    when(modulservice.findByOwner(any())).thenReturn(module);
-    mockMvc
-        .perform(post("/zulassung1/modulHinzufuegen"))
         .andExpect(status().is3xxRedirection());
   }*/
 }
