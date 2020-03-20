@@ -4,6 +4,7 @@ import com.opencsv.CSVWriter;
 import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
+import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.ModulRepository;
@@ -18,16 +19,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.time.LocalDateTime;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -75,38 +76,6 @@ class ModulServiceTest {
   }
 
   @Test
-  void saveNewModulwithoutMissingAttribute() {
-    String frist = fristInZukunft();
-    Modul propra = new Modul(null, "ProPra1", null, frist, null);
-    String owner = "orga";
-
-    String[] messages = modulService.saveNewModul(propra, owner);
-
-    assertNull(messages[0]);
-    assertNull(messages[1]);
-    assertEquals("orga", propra.getOwner());
-    assertEquals(true, propra.getActive());
-    assertEquals(frist + " 12:00", propra.getFrist());
-    assertEquals("ProPra1", propra.getName());
-  }
-
-  @Test
-  void saveNewModulwithMissingAttribute() {
-    String frist = fristInZukunft();
-    Modul propra = new Modul(null, "", null, frist, null);
-    String owner = "orga";
-
-    String[] messages = modulService.saveNewModul(propra, owner);
-
-    assertEquals("Bitte beide Felder ausfüllen!", messages[0]);
-    assertNull(messages[1]);
-    assertNull(propra.getOwner());
-    assertNull(propra.getActive());
-    assertEquals(frist, propra.getFrist());
-    assertEquals("", propra.getName());
-  }
-
-  @Test
   void testFristAbgelaufen() {
 
     Modul propra1 = new Modul(1L, "ProPra1", "orga", "12/21/2012", true);
@@ -118,106 +87,42 @@ class ModulServiceTest {
   }
 
   @Test
-  void saveNewModulwithFristIsFalse() {
-    String frist = "12/20/2000";
-    Modul propra = new Modul(null, "ProPra1", null, frist, null);
-    String owner = "orga";
-
-    String[] messages = modulService.saveNewModul(propra, owner);
-
-    assertNull(propra.getActive());
-    assertEquals("Die Frist muss in der Zukunft liegen!", messages[0]);
-    assertNull(messages[1]);
-    assertNull(propra.getOwner());
-    assertEquals(frist, propra.getFrist());
-    assertEquals("ProPra1", propra.getName());
-  }
-
-  @Test
-  void modulBearbeitenWithoutMissingAttribute() {
-    String frist = fristInZukunft();
-    Modul propra = new Modul(null, "ProPra1", null, frist, null);
-    Modul vorhandenesModul = new Modul(1L, "ProPra", null, "", false);
-    Optional modul = Optional.of(vorhandenesModul);
-    when(principal.getName()).thenReturn("orga");
-    when(modulService.findById(1L)).thenReturn(modul);
-
-    String[] messages = modulService.modulBearbeiten(propra, 1L, principal);
-    assertNull(messages[0]);
-    assertNull(messages[1]);
-    assertEquals("ProPra1", vorhandenesModul.getName());
-    assertEquals("orga", vorhandenesModul.getOwner());
-    assertEquals(frist + " 12:00", vorhandenesModul.getFrist());
-    assertEquals(1L, vorhandenesModul.getId());
-    assertTrue(vorhandenesModul.getActive());
-  }
-
-  @Test
-  void modulBearbeitenMitAbgelaufenerFrist() {
-    String frist = "12/20/2000";
-    Modul propra = new Modul(null, "ProPra1", null, frist, null);
-
-    String[] messages = modulService.modulBearbeiten(propra, 23L, principal);
-
-    assertNull(propra.getActive());
-    assertEquals("Die Frist muss in der Zukunft liegen!", messages[0]);
-    assertNull(messages[1]);
-    assertNull(propra.getOwner());
-    assertEquals(frist, propra.getFrist());
-    assertEquals("ProPra1", propra.getName());
-  }
-
-  @Test
-  void modulBearbeitenWithMissingAttribute() {
-    Modul propra = new Modul(null, "ProPra2", null, "", null);
-
-    String[] messages = modulService.modulBearbeiten(propra, 7L, principal);
-
-    assertNull(propra.getActive());
-    assertEquals("Beide Felder müssen ausgefüllt sein!", messages[0]);
-    assertNull(messages[1]);
-    assertNull(propra.getOwner());
-    assertEquals("", propra.getFrist());
-    assertEquals("ProPra2", propra.getName());
-  }
-
-  @Test
   void deleteExistingModulWithStudents() {
     long modulID = 1L;
+    FrontendMessage message;
     Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true));
     when(modulRepository.findById(modulID)).thenReturn(modul);
     ArrayList<Student> students = new ArrayList<>();
     students.add(new Student());
     when(studentService.findByModulId(modulID)).thenReturn(students);
 
-    String[] result = modulService.deleteStudentsFromModul(modulID);
+    message = modulService.deleteStudentsFromModul(modulID);
 
-    assertNull(result[0]);
-    assertEquals("Das Modul fname wurde gelöscht!", result[1]);
+    assertEquals("Das Modul fname wurde gelöscht!", message.getSuccessMessage());
   }
 
   @Test
   void deleteExistingModulWithoutStudents() {
     long modulID = 1L;
+    FrontendMessage message;
     Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true));
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
-    String[] result = modulService.deleteStudentsFromModul(modulID);
+    message = modulService.deleteStudentsFromModul(modulID);
 
-    assertNull(result[0]);
-    assertEquals("Das Modul fname wurde gelöscht!", result[1]);
+    assertEquals("Das Modul fname wurde gelöscht!", message.getSuccessMessage());
   }
 
   @Test
   void deleteNonExistingModul() {
     long modulID = 1L;
+    FrontendMessage message;
     Optional<Modul> modul = Optional.empty();
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
-    String[] result = modulService.deleteStudentsFromModul(modulID);
+    message = modulService.deleteStudentsFromModul(modulID);
 
-    assertEquals("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", result[0]);
-    assertNull(result[1]);
+    assertEquals("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", message.getErrorMessage());
   }
 
   @Test
@@ -245,9 +150,9 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteRichtigeUploadliste() throws IOException {
+  void verarbeiteRichtigeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
-
+    FrontendMessage message;
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447".getBytes());
 
     List<Student> students = new ArrayList<>();
@@ -261,48 +166,49 @@ class ModulServiceTest {
     when(modulRepository.findById(anyLong())).thenReturn(modul);
 
     String successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
-    String success = modulService.verarbeiteUploadliste(69L, multipartFile)[1];
-    assertEquals(success, successMessage);
+    message = modulService.verarbeiteUploadliste(69L, multipartFile);
+    assertEquals(message.getSuccessMessage(), successMessage);
   }
 
   @Test
-  void verarbeiteZuLangeUploadliste() throws IOException {
+  void verarbeiteZuLangeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
+    FrontendMessage message;
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,zu viel".getBytes());
     when(multipartFile.getInputStream()).thenReturn(input);
 
     String errorMessage = "Datei hat eine falsche Anzahl von Einträgen pro Zeile!";
-    String message = modulService.verarbeiteUploadliste(69L, multipartFile)[0];
-    assertEquals(message, errorMessage);
+    message = modulService.verarbeiteUploadliste(69L, multipartFile);
+    assertEquals(message.getErrorMessage(), errorMessage);
   }
 
   @Test
-  void verarbeiteZuKurzeUploadliste() throws IOException {
+  void verarbeiteZuKurzeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
-
+    FrontendMessage message;
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de".getBytes());
     when(multipartFile.getInputStream()).thenReturn(input);
 
     String errorMessage = "Datei hat eine falsche Anzahl von Einträgen pro Zeile!";
-    String message = modulService.verarbeiteUploadliste(69L, multipartFile)[0];
-    assertEquals(message, errorMessage);
+    message = modulService.verarbeiteUploadliste(69L, multipartFile);
+    assertEquals(message.getErrorMessage(), errorMessage);
   }
 
   @Test
-  void verarbeiteFalscheUploadliste() throws IOException {
+  void verarbeiteFalscheUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
-
+    FrontendMessage message;
     InputStream input = new ByteArrayInputStream("".getBytes());
     when(multipartFile.getInputStream()).thenReturn(input);
     when(multipartFile.isEmpty()).thenReturn(true);
     String errorMessage = "Datei ist leer oder es wurde keine Datei ausgewählt!";
-    String message = modulService.verarbeiteUploadliste(69L, multipartFile)[0];
-    assertEquals(message, errorMessage);
+    message = modulService.verarbeiteUploadliste(69L, multipartFile);
+    assertEquals(message.getErrorMessage(), errorMessage);
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -320,7 +226,8 @@ class ModulServiceTest {
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    FrontendMessage message;
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -333,14 +240,15 @@ class ModulServiceTest {
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
 
-    String[] strings = modulService.altzulassungVerarbeiten(student, true, (long) 1);
+    message = modulService.altzulassungVerarbeiten(student, true, (long) 1);
     String successMessage = "Student " + "1231" + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
-    assertEquals(successMessage, strings[1]);
+    assertEquals(successMessage, message.getSuccessMessage());
   }
 
   
   @Test
-  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoTokenInDatabaseException {
+  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    FrontendMessage message;
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -353,9 +261,9 @@ class ModulServiceTest {
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
 
-    String[] strings = modulService.altzulassungVerarbeiten(student, false, (long) 1);
+    message = modulService.altzulassungVerarbeiten(student, false, (long) 1);
     String errorMessage = "Student " + "1231" + " hat keine Zulassung in diesem Modul!";
-    assertEquals(errorMessage, strings[0]);
+    assertEquals(errorMessage, message.getErrorMessage());
   }
 
   @Test
@@ -463,78 +371,5 @@ class ModulServiceTest {
 
     File outputFile = new File("klausurliste_2.csv");
     assertFalse(outputFile.exists());
-  }
-
-  @Test
-  void neuesModulErstellenFristInDerZukunftIdIsPresent() {
-    String frist = fristInZukunft();
-
-    Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
-    Optional<Modul> modul = Optional.of(propra);
-
-    when(principal.getName()).thenReturn("orga");
-    when(modulService.findById(1L)).thenReturn(modul);
-
-    Object[] returnValues = modulService.neuesModul(propra, principal);
-
-    assertEquals(propra, returnValues[0]);
-    assertNull(returnValues[2]);
-    assertEquals("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", returnValues[1]);
-
-  }
-
-  private String fristInZukunft() {
-    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
-    LocalDateTime future = now.plusYears(1);
-    int year = future.getYear();
-    int month = future.getMonthValue();
-    int day = future.getDayOfMonth();
-    return month + "/" + day + "/" + year;
-  }
-
-  @Test
-  void neuesModulErstellenFristInDerZukunftIdIsNotPresent() {
-    String frist = fristInZukunft();
-
-    Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
-    Optional<Modul> modul = Optional.empty();
-
-    when(principal.getName()).thenReturn("orga");
-    when(modulService.findById(1L)).thenReturn(modul);
-
-    Object[] returnValues = modulService.neuesModul(propra, principal);
-
-    assertNotEquals(propra, returnValues[0]);
-    assertNull(returnValues[1]);
-    assertEquals("Neues Modul wurde erfolgreich hinzugefügt!", returnValues[2]);
-
-  }
-
-  @Test
-  void neuesModulErstellenFristAbgelaufen() {
-    Modul propra = new Modul(1L, "ProPra2", "orga", "12/12/2000", true);
-    Optional<Modul> modul = Optional.of(propra);
-
-    when(principal.getName()).thenReturn("orga");
-    when(modulService.findById(1L)).thenReturn(modul);
-
-    Object[] returnValues = modulService.neuesModul(propra, principal);
-
-    assertEquals(propra, returnValues[0]);
-    assertEquals("Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!", returnValues[1]);
-    assertNull(returnValues[2]);
-
-  }
-
-  @Test
-  void neuesModulFristLeer() {
-    Modul propra = new Modul(1L, "ProPra1", "orga", "", true);
-    Optional<Modul> modul = Optional.of(propra);
-
-    Object[] returnValues = modulService.neuesModul(propra, principal);
-
-    assertEquals(propra, returnValues[0]);
-    assertEquals("Alle Felder im Formular müssen ausgefüllt sein!", returnValues[1]);
-    assertNull(returnValues[2]);
   }
 }
