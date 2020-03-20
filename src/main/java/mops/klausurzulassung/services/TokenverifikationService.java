@@ -20,14 +20,14 @@ import java.util.Base64;
 public class TokenverifikationService {
 
   private final QuittungService quittungService;
+  private final StudentService studentService;
   private Logger logger = LoggerFactory.getLogger(TokenverifikationService.class);
 
   @Autowired
-  public TokenverifikationService(QuittungService quittungService) {
+  public TokenverifikationService(QuittungService quittungService, StudentService studentService) {
     this.quittungService = quittungService;
+    this.studentService = studentService;
   }
-  @Autowired
-  StudentService studentService;
   public void verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException,
           NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
 
