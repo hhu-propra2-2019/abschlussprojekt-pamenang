@@ -2,11 +2,8 @@ package mops.klausurzulassung.services;
 
 import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
-<<<<<<< HEAD
 import mops.klausurzulassung.domain.FrontendMessage;
-=======
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
->>>>>>> f314c032c94feecca1f8d26b15dbb65b0a15bcc8
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.ModulRepository;
@@ -28,7 +25,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.security.SignatureException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -78,14 +74,8 @@ public class ModulService {
     logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
 
-<<<<<<< HEAD
   public FrontendMessage verarbeiteUploadliste(Long id, MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     message.resetMessage();
-=======
-  public String[] verarbeiteUploadliste(Long id, MultipartFile file) {
-    successMessage = null;
-    errorMessage = null;
->>>>>>> f314c032c94feecca1f8d26b15dbb65b0a15bcc8
     Iterable<CSVRecord> records = null;
     try {
       records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
@@ -238,14 +228,7 @@ public class ModulService {
     return outputStream;
   }
 
-<<<<<<< HEAD
   public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-
-=======
-  public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
-    successMessage = null;
-    errorMessage = null;
->>>>>>> f314c032c94feecca1f8d26b15dbb65b0a15bcc8
 
       message.resetMessage();
       String modulname = findById(id).get().getName();
