@@ -3,6 +3,7 @@ package mops.klausurzulassung.controller;
 import com.c4_soft.springaddons.test.security.context.support.WithMockKeycloackAuth;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.database_entity.Modul;
+import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.services.ModulService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Matchers;
@@ -184,19 +185,7 @@ class ModulAuswahlTests {
         .andExpect(model().attribute("moduls", module));
   }
 
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
-  @Test
-  public void test_neuesModulHinzufuegen_modulWirdGespeichert() throws Exception {
-    String modulName = "testen";
-    String modulFrist = "2020-12-15 15:00";
-    String[] messageObject = {"message1", "message2", "redirect:/zulassung1/modulHinzufuegen"};
-    when(modulservice.saveNewModul(any(Modul.class), anyString())).thenReturn(messageObject);
-    mockMvc.perform(post("/zulassung1/neuesModulHinzufuegen")
-        .param("name", modulName)
-        .param("frist", modulFrist))
-        .andExpect(status().is3xxRedirection());
-    verify(modulservice, times(1)).saveNewModul(any(Modul.class), anyString());
-  }
+
 
   @Test
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
@@ -213,28 +202,13 @@ class ModulAuswahlTests {
         .andDo(print());
   }
 
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
-  @Test
-  public void test_ModeulBearbeiten_Postmodul() throws Exception {
-    String modulName = "testen";
-    String modulFrist = "2020-12-15 15:00";
-    String[] messageObject = {"message1", "message2", "redirect:/zulassung1/modulHinzufuegen"};
-    when(modulservice.modulBearbeiten(any(Modul.class), anyLong(), any(Principal.class))).thenReturn(messageObject);
-    Modul modul = new Modul(1L, "testen", null, "2020-12-15 15:00", true);
-    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
 
-    mockMvc.perform(post("/zulassung1/modulBearbeiten/1")
-        .param("name", modulName)
-        .param("frist", modulFrist))
-        .andExpect(status().is3xxRedirection());
-    verify(modulservice, times(1)).modulBearbeiten(any(Modul.class), anyLong(), any(Principal.class));
-  }
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   public void test_deleteModulWirdAufgerufen() throws Exception {
-    String[] temp = {"message1", "message2"};
-    when(modulservice.deleteStudentsFromModul(1L)).thenReturn(temp);
+    FrontendMessage message = new FrontendMessage("error","success");
+    when(modulservice.deleteStudentsFromModul(1L)).thenReturn(message);
     mockMvc.perform(post("/zulassung1/modul/1/delete"))
         .andExpect(status().is3xxRedirection());
     verify(modulservice, times(1)).deleteStudentsFromModul(1L);
@@ -258,8 +232,9 @@ class ModulAuswahlTests {
   public void test_Modul_Select_Post() throws Exception {
 
     MockMultipartFile multipartFile = new MockMultipartFile("datei", "test.csv", "text/csv", "test;test;test".getBytes());
-    String[] temp = {"message1", "message2"};
-    when(modulservice.verarbeiteUploadliste(1L, multipartFile)).thenReturn(temp);
+    FrontendMessage message = new FrontendMessage("error","success");
+
+    when(modulservice.verarbeiteUploadliste(1L, multipartFile)).thenReturn(message);
     mockMvc.perform(MockMvcRequestBuilders.multipart("/zulassung1/modul/1").file(multipartFile))
         .andExpect(status().is3xxRedirection());
   }
@@ -288,8 +263,9 @@ class ModulAuswahlTests {
   public void test_altKlausurZulassungHinzufuegenMitVollemObject() throws Exception {
 
     AltzulassungStudentDto studentDto = new AltzulassungStudentDto("vorname", "nachname", "test@test.de", 1234567L, 1L);
-    String[] temp = {"message1", "message2"};
-    when(modulservice.altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong())).thenReturn(temp);
+    FrontendMessage message = new FrontendMessage("error","success");
+
+    when(modulservice.altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong())).thenReturn(message);
     mockMvc
         .perform(post("/zulassung1/1/altzulassungHinzufuegen")
             .param("vorname", studentDto.getVorname())
