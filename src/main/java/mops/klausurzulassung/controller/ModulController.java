@@ -62,8 +62,8 @@ public class ModulController {
 
     model.addAttribute("errorMessage",message.getErrorMessage());
     model.addAttribute("successMessage",message.getSuccessMessage());
-    message.resetMessage();
 
+    message.resetMessage();
     return "modulAuswahl";
   }
 
@@ -72,12 +72,28 @@ public class ModulController {
   public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String orga = principal.getName();
-    String[] messageArray = modulService.saveNewModul(modul, orga);
+    String page = "redirect:/zulassung1/modulHinzufuegen";
+    if (!modulService.missingAttributeInModul(modul)) {
+      if (!modulService.isFristAbgelaufen(modul)) {
+        modul.setFrist(modul.getFrist() + " 12:00");
+        modul.setOwner(orga);
+        modul.setActive(true);
+        modulService.save(modul);
+        page= "modulAuswahl";
+      } else {
+        message.setErrorMessage( "Die Frist muss in der Zukunft liegen!");
+      }
+    } else {
+      message.setErrorMessage("Bitte beide Felder ausfüllen!");
+    }
+
     Iterable<Modul> moduls = modulService.findByOwnerAndActive(orga, true);
     model.addAttribute("moduls", moduls);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
-    return messageArray[2];
+    model.addAttribute("errorMessage", message.getErrorMessage());
+    model.addAttribute("successMessage", message.getSuccessMessage());
+
+
+    return page;
   }
 
   @Secured("ROLE_orga")
@@ -98,10 +114,26 @@ public class ModulController {
   @PostMapping("/modulBearbeiten/{id}")
   public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String[] messageArray = modulService.modulBearbeiten(modul, id, principal);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
-    return messageArray[2];
+
+
+    String page = "redirect:/zulassung1/modulBearbeiten/" + id;
+    if (!modulService.missingAttributeInModul(modul)) {
+      if (!modulService.isFristAbgelaufen(modul)) {
+        Modul vorhandenesModul = modulService.findById(id).get();
+        vorhandenesModul.setName(modul.getName());
+        vorhandenesModul.setFrist(modul.getFrist() + " 12:00");
+        vorhandenesModul.setOwner(principal.getName());
+        vorhandenesModul.setActive(true);
+        modulService.save(vorhandenesModul);
+        page = "redirect:/zulassung1/modulAuswahl";
+      } else {
+        message.setErrorMessage("Die Frist muss in der Zukunft liegen!");
+      }
+    } else {
+      message.setErrorMessage("Beide Felder müssen ausgefüllt sein!");
+    }
+
+    return page;
   }
 
   @Secured("ROLE_orga")
@@ -132,9 +164,7 @@ public class ModulController {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-    String[] messageArray = modulService.deleteStudentsFromModul(id);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
+     message = modulService.deleteStudentsFromModul(id);
     return "redirect:/zulassung1/modulAuswahl";
   }
 
@@ -162,9 +192,7 @@ public class ModulController {
   @PostMapping("/modul/{id}")
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String[] messageArray = modulService.verarbeiteUploadliste(id, file);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
+    message= modulService.verarbeiteUploadliste(id, file);
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 
@@ -187,9 +215,7 @@ public class ModulController {
     }
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-    String[] messageArray = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
+    message = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
     return "redirect:/zulassung1/modul/" + id;
   }
 
