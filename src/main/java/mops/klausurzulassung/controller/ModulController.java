@@ -98,6 +98,7 @@ public class ModulController {
     String[] messageArray = modulService.modulBearbeiten(modul, id, principal);
     message.setErrorMessage(messageArray[0]);
     message.setSuccessMessage(messageArray[1]);
+
     return messageArray[2];
   }
 
@@ -118,8 +119,8 @@ public class ModulController {
 
     model.addAttribute("errorMessage", message.getErrorMessage());
     model.addAttribute("successMessage", message.getSuccessMessage());
+    message.resetMessage();
     return "modulHinzufuegen";
-
   }
 
 

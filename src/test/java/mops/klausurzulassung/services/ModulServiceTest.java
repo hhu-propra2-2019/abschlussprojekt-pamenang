@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -107,7 +107,7 @@ class ModulServiceTest {
   }
 
   @Test
-  void testFristAbgelaufen() {
+  void testFristAbgelaufen() throws ParseException {
 
     Modul propra1 = new Modul(1L, "ProPra1", "orga", "12/21/2012", true);
     Optional<Modul> modul = Optional.of(propra1);
@@ -465,24 +465,6 @@ class ModulServiceTest {
     assertFalse(outputFile.exists());
   }
 
-  @Test
-  void neuesModulErstellenFristInDerZukunftIdIsPresent() {
-    String frist = fristInZukunft();
-
-    Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
-    Optional<Modul> modul = Optional.of(propra);
-
-    when(principal.getName()).thenReturn("orga");
-    when(modulService.findById(1L)).thenReturn(modul);
-
-    Object[] returnValues = modulService.neuesModul(propra, principal);
-
-    assertEquals(propra, returnValues[0]);
-    assertNull(returnValues[2]);
-    assertEquals("Diese Modul-ID existiert schon, bitte eine andere ID eingeben!", returnValues[1]);
-
-  }
-
   private String fristInZukunft() {
     LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime future = now.plusYears(1);
@@ -490,51 +472,5 @@ class ModulServiceTest {
     int month = future.getMonthValue();
     int day = future.getDayOfMonth();
     return month + "/" + day + "/" + year;
-  }
-
-  @Test
-  void neuesModulErstellenFristInDerZukunftIdIsNotPresent() {
-    String frist = fristInZukunft();
-
-    Modul propra = new Modul(1L, "ProPra2", "orga", frist, true);
-    Optional<Modul> modul = Optional.empty();
-
-    when(principal.getName()).thenReturn("orga");
-    when(modulService.findById(1L)).thenReturn(modul);
-
-    Object[] returnValues = modulService.neuesModul(propra, principal);
-
-    assertNotEquals(propra, returnValues[0]);
-    assertNull(returnValues[1]);
-    assertEquals("Neues Modul wurde erfolgreich hinzugefügt!", returnValues[2]);
-
-  }
-
-  @Test
-  void neuesModulErstellenFristAbgelaufen() {
-    Modul propra = new Modul(1L, "ProPra2", "orga", "12/12/2000", true);
-    Optional<Modul> modul = Optional.of(propra);
-
-    when(principal.getName()).thenReturn("orga");
-    when(modulService.findById(1L)).thenReturn(modul);
-
-    Object[] returnValues = modulService.neuesModul(propra, principal);
-
-    assertEquals(propra, returnValues[0]);
-    assertEquals("Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!", returnValues[1]);
-    assertNull(returnValues[2]);
-
-  }
-
-  @Test
-  void neuesModulFristLeer() {
-    Modul propra = new Modul(1L, "ProPra1", "orga", "", true);
-    Optional<Modul> modul = Optional.of(propra);
-
-    Object[] returnValues = modulService.neuesModul(propra, principal);
-
-    assertEquals(propra, returnValues[0]);
-    assertEquals("Alle Felder im Formular müssen ausgefüllt sein!", returnValues[1]);
-    assertNull(returnValues[2]);
   }
 }

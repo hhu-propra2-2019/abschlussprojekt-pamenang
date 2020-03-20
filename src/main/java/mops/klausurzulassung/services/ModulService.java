@@ -150,48 +150,26 @@ public class ModulService {
     return new String[]{errorMessage, successMessage};
   }
 
-  public Object[] neuesModul(Modul modul, Principal principal) {
-    errorMessage = null;
-    successMessage = null;
-    modul.setOwner(principal.getName());
-
-    if (!missingAttributeInModul(modul)) {
-      LocalDateTime[] dates = parseFrist(modul);
-      LocalDateTime localFrist = dates[1];
-      LocalDateTime actualDate = dates[0];
-
-      if (localFrist.isAfter(actualDate)) {
-        if (findById(modul.getId()).isPresent()) {
-          errorMessage = "Diese Modul-ID existiert schon, bitte eine andere ID eingeben!";
-        } else {
-          modul.setFrist(modul.getFrist() + " 12:00");
-          save(modul);
-          successMessage = "Neues Modul wurde erfolgreich hinzugefügt!";
-          modul = new Modul();
-        }
-      } else {
-        errorMessage = "Frist liegt in der Vergangenheit, bitte eine andere Frist eingeben!";
-      }
-    } else {
-      errorMessage = "Alle Felder im Formular müssen ausgefüllt sein!";
-    }
-    return new Object[]{modul, errorMessage, successMessage};
-  }
-
-  private LocalDateTime[] parseFrist(Modul modul) {
+  private LocalDateTime[] parseFrist(Modul modul) throws ParseException {
     String frist = modul.getFrist() + " 12:00";
-    Date date = null;
-    try {
-      date = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(frist);
-    } catch (ParseException e) {
-      logger.error("Frist hat fehlerhaftes Format!", e);
-    }
-
+    Date date = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(frist);
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
         .toLocalDateTime();
     return new LocalDateTime[]{actualDate, localFrist};
+  }
+
+  private boolean fristIsDate(String frist) {
+    String[] elements = frist.split("/");
+    if (elements.length == 3) {
+      int month = Integer.parseInt(elements[0]);
+      if ((month > 0) && (month < 13)) {
+        int day = Integer.parseInt(elements[1]);
+        return (day > 0) && (day < 32);
+      }
+    }
+    return false;
   }
 
   public void download(@PathVariable Long id, HttpServletResponse response) {
@@ -236,14 +214,24 @@ public class ModulService {
     String page = "redirect:/zulassung1/modulHinzufuegen";
 
     if (!missingAttributeInModul(modul)) {
-      if (!isFristAbgelaufen(modul)) {
-        modul.setFrist(modul.getFrist() + " 12:00");
-        modul.setOwner(owner);
-        modul.setActive(true);
-        save(modul);
-        page = "modulAuswahl";
-      } else {
-        errorMessage = "Die Frist muss in der Zukunft liegen!";
+      if (!fristIsDate(modul.getFrist())) {
+        errorMessage = "Frist ist kein gültiges Datum!";
+        logger.error("Frist ist kein gültiges Datum!");
+        return new String[]{errorMessage, successMessage, page};
+      }
+      try {
+        if (!isFristAbgelaufen(modul)) {
+          modul.setFrist(modul.getFrist() + " 12:00");
+          modul.setOwner(owner);
+          modul.setActive(true);
+          save(modul);
+          page = "modulAuswahl";
+        } else {
+          errorMessage = "Die Frist muss in der Zukunft liegen!";
+        }
+      } catch (ParseException e) {
+        logger.error("Frist hat fehlerhaftes Format!", e);
+        errorMessage = "Frist hat fehlerhaftes Format!";
       }
     } else {
       errorMessage = "Bitte beide Felder ausfüllen!";
@@ -251,7 +239,7 @@ public class ModulService {
     return new String[]{errorMessage, successMessage, page};
   }
 
-  public boolean isFristAbgelaufen(Modul zuPruefendesModul) {
+  public boolean isFristAbgelaufen(Modul zuPruefendesModul) throws ParseException {
     LocalDateTime[] dates = parseFrist(zuPruefendesModul);
     LocalDateTime localFrist = dates[1];
     LocalDateTime actualDate = dates[0];
@@ -266,16 +254,26 @@ public class ModulService {
     errorMessage = null;
     String page = "redirect:/zulassung1/modulBearbeiten/" + id;
     if (!missingAttributeInModul(modul)) {
-      if (!isFristAbgelaufen(modul)) {
-        Modul vorhandenesModul = findById(id).get();
-        vorhandenesModul.setName(modul.getName());
-        vorhandenesModul.setFrist(modul.getFrist() + " 12:00");
-        vorhandenesModul.setOwner(principal.getName());
-        vorhandenesModul.setActive(true);
-        save(vorhandenesModul);
-        page = "redirect:/zulassung1/modulAuswahl";
-      } else {
-        errorMessage = "Die Frist muss in der Zukunft liegen!";
+      if (!fristIsDate(modul.getFrist())) {
+        errorMessage = "Frist ist kein gültiges Datum!";
+        logger.error("Frist ist kein gültiges Datum!");
+        return new String[]{errorMessage, successMessage, page};
+      }
+      try {
+        if (!isFristAbgelaufen(modul)) {
+          Modul vorhandenesModul = findById(id).get();
+          vorhandenesModul.setName(modul.getName());
+          vorhandenesModul.setFrist(modul.getFrist() + " 12:00");
+          vorhandenesModul.setOwner(principal.getName());
+          vorhandenesModul.setActive(true);
+          save(vorhandenesModul);
+          page = "redirect:/zulassung1/modulAuswahl";
+        } else {
+          errorMessage = "Die Frist muss in der Zukunft liegen!";
+        }
+      } catch (ParseException e) {
+        logger.error("Frist hat fehlerhaftes Format!", e);
+        errorMessage = "Frist hat fehlerhaftes Format!";
       }
     } else {
       errorMessage = "Beide Felder müssen ausgefüllt sein!";
