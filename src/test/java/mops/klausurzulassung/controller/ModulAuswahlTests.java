@@ -170,7 +170,7 @@ class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_modulAuswahl_modelHatRichtigeModule() throws Exception {
+  void test_modulAuswahl_modelHatRichtigeModule() throws Exception {
 
     Principal principal = mock(Principal.class);
 
@@ -205,7 +205,7 @@ class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_deleteModulWirdAufgerufen() throws Exception {
+  void test_deleteModulWirdAufgerufen() throws Exception {
     FrontendMessage message = new FrontendMessage("error", "success");
     when(modulservice.deleteStudentsFromModul(1L)).thenReturn(message);
     mockMvc.perform(post("/zulassung1/modul/1/delete"))
@@ -215,7 +215,7 @@ class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_Modul_Select_Get() throws Exception {
+  void test_Modul_Select_Get() throws Exception {
     Modul modul = new Modul(1L, "testen", null, "2020-12-15 15:00", true);
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
 
@@ -228,7 +228,7 @@ class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_Modul_Select_Post() throws Exception {
+  void test_Modul_Select_Post() throws Exception {
 
     MockMultipartFile multipartFile = new MockMultipartFile("datei", "test.csv", "text/csv", "test;test;test".getBytes());
     FrontendMessage message = new FrontendMessage("error", "success");
@@ -240,7 +240,7 @@ class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_downloadListeWirdAufgerufen() throws Exception {
+  void test_downloadListeWirdAufgerufen() throws Exception {
     mockMvc
         .perform(get("/zulassung1/modul/1/klausurliste"))
         .andExpect(status().isOk());
@@ -250,7 +250,7 @@ class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_altKlausurZulassungHinzufuegenLeer() throws Exception {
+  void test_altKlausurZulassungHinzufuegenLeer() throws Exception {
     mockMvc
         .perform(post("/zulassung1/1/altzulassungHinzufuegen"))
         .andExpect(status().is3xxRedirection());
@@ -259,7 +259,7 @@ class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_altKlausurZulassungHinzufuegenMitVollemObject() throws Exception {
+  void test_altKlausurZulassungHinzufuegenMitVollemObject() throws Exception {
 
     AltzulassungStudentDto studentDto = new AltzulassungStudentDto("vorname", "nachname", "test@test.de", 1234567L, 1L);
     FrontendMessage message = new FrontendMessage("error", "success");

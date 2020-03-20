@@ -34,21 +34,21 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class CsvTest {
+class CsvTest {
 
   private CsvService csvService;
   private MultipartFile multipartFile;
   private StudentService studentService;
 
   @BeforeEach
-  public void setUp(){
+   void setUp(){
     this.studentService = mock(StudentService.class);
     this.csvService = new CsvService(studentService);
     this.multipartFile = mock(MultipartFile.class);
   }
 
   @Test
-  public void getStudentListFromInputFileTest() throws IOException {
+  void getStudentListFromInputFileTest() throws IOException {
 
     this.multipartFile = mock(MultipartFile.class);
 
@@ -85,7 +85,7 @@ public class CsvTest {
 
 
   @Test
-  public void createStudentFromInputStreamTest() throws IOException {
+  void createStudentFromInputStreamTest() throws IOException {
 
     Student student = new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, "ProPra2", "123Ldnd");
 
@@ -122,7 +122,7 @@ public class CsvTest {
   }
 
   @Test
-  public void putStudentOntoListTest() throws IOException {
+  void putStudentOntoListTest() throws IOException {
 
     ArrayList<Student> students = new ArrayList<>();
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, "ProPra2", "123Ldnd"));
@@ -155,7 +155,7 @@ public class CsvTest {
   }
 
   @Test
-  public void altzulassungUndNeuzulassungInCsvFile() throws IOException {
+  void altzulassungUndNeuzulassungInCsvFile() throws IOException {
 
     List<Student> students = new ArrayList<>();
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2657396L, 1L, null, null));
@@ -189,7 +189,7 @@ public class CsvTest {
   }
 
   @Test
-  public void doppelterStudentaltzulassungUndNeuzulassung() throws IOException {
+  void doppelterStudentaltzulassungUndNeuzulassung() throws IOException {
     List<Student> students = new ArrayList<>();
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2657396L, 1L, null, null));
     students.add(new Student("Rebecca", "Fröhlich", "refro100@hhu.de", 2658447L, 1L, null, null));
