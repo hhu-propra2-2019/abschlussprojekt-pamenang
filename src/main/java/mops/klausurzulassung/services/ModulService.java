@@ -1,9 +1,12 @@
 package mops.klausurzulassung.services;
 
-import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
+<<<<<<< HEAD
 import mops.klausurzulassung.domain.FrontendMessage;
+=======
+import mops.klausurzulassung.domain.AltzulassungStudentDto;
+>>>>>>> f314c032c94feecca1f8d26b15dbb65b0a15bcc8
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.ModulRepository;
@@ -75,8 +78,14 @@ public class ModulService {
     logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
 
+<<<<<<< HEAD
   public FrontendMessage verarbeiteUploadliste(Long id, MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     message.resetMessage();
+=======
+  public String[] verarbeiteUploadliste(Long id, MultipartFile file) {
+    successMessage = null;
+    errorMessage = null;
+>>>>>>> f314c032c94feecca1f8d26b15dbb65b0a15bcc8
     Iterable<CSVRecord> records = null;
     try {
       records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
@@ -127,6 +136,7 @@ public class ModulService {
   public FrontendMessage deleteStudentsFromModul(Long id) {
 
 
+    logger.info("ID: " + id);
     Optional<Modul> modul = findById(id);
     if (modul.isPresent()) {
       String modulName = modul.get().getName();
@@ -228,8 +238,14 @@ public class ModulService {
     return outputStream;
   }
 
+<<<<<<< HEAD
   public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
+=======
+  public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
+    successMessage = null;
+    errorMessage = null;
+>>>>>>> f314c032c94feecca1f8d26b15dbb65b0a15bcc8
 
       message.resetMessage();
       String modulname = findById(id).get().getName();
@@ -261,7 +277,7 @@ public class ModulService {
     return message;
   }
 
-  void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) {
 
     try {
 
@@ -273,7 +289,12 @@ public class ModulService {
 
     } catch (NoPublicKeyInDatabaseException e){
 
-      String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
+      String tokenString = null;
+      try {
+        tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
+      } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException ex) {
+        logger.error("Fehler bei Erstellung des Tokens!", ex);
+      }
       student.setToken(tokenString);
       if (isAltzulassung){
         studentService.save(student);

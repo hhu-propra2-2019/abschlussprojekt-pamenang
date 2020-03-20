@@ -1,9 +1,9 @@
 package mops.klausurzulassung.services;
 
-import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
-import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.database_entity.QuittungDao;
 import mops.klausurzulassung.domain.QuittungDto;
+import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
+import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.QuittungRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class QuittungService {
         throw new NoPublicKeyInDatabaseException("kein Public Key in Database");
       }
       else{
-        logger.debug("Public Key gefunden");
+        logger.info("Public Key gefunden");
         return loadQuittungDto(quittungDao).getPublicKey();
       }
     }
@@ -47,7 +47,7 @@ public class QuittungService {
       QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndModulId(matr,modulID);
       if(quittungDao==null) throw new NoTokenInDatabaseException("Token wurde in der Datenbank nicht gefunden!");
       else{
-        logger.debug("Quittung gefunden");
+        logger.info("Quittung gefunden");
         return loadQuittungDto(quittungDao).getQuittung();
       }
 
