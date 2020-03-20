@@ -1,10 +1,10 @@
 package mops.klausurzulassung.controller;
 
+import mops.klausurzulassung.database_entity.Modul;
+import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.domain.FrontendMessage;
-import mops.klausurzulassung.database_entity.Modul;
-import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
@@ -25,10 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.security.SignatureException;
 
 @Controller
 @SessionScope
@@ -160,7 +157,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}")
-  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String[] messageArray = modulService.verarbeiteUploadliste(id, file);
     message.setErrorMessage(messageArray[0]);
@@ -179,7 +176,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
-  public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
     
     if(bindingResult.hasErrors()){
       message.setErrorMessage("Alle Felder im Formular müssen befüllt werden!");

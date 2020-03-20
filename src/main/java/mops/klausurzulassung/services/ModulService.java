@@ -1,8 +1,8 @@
 package mops.klausurzulassung.services;
 
-import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
+import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.ModulRepository;
@@ -77,7 +77,7 @@ public class ModulService {
     logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
 
-  public String[] verarbeiteUploadliste(Long id, MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String[] verarbeiteUploadliste(Long id, MultipartFile file) {
     successMessage = null;
     errorMessage = null;
     Iterable<CSVRecord> records = null;
@@ -129,6 +129,7 @@ public class ModulService {
     successMessage = null;
     errorMessage = null;
 
+    logger.info("ID: " + id);
     Optional<Modul> modul = findById(id);
     if (modul.isPresent()) {
       String modulName = modul.get().getName();
@@ -299,7 +300,7 @@ public class ModulService {
     return outputStream;
   }
 
-  public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
     successMessage = null;
     errorMessage = null;
 
@@ -332,7 +333,7 @@ public class ModulService {
     return new String[]{errorMessage, successMessage};
   }
 
-  void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) {
 
     try {
 
@@ -344,7 +345,12 @@ public class ModulService {
 
     } catch (NoPublicKeyInDatabaseException e){
 
-      String tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
+      String tokenString = null;
+      try {
+        tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
+      } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException ex) {
+        logger.error("Fehler bei Erstellung des Tokens!", ex);
+      }
       student.setToken(tokenString);
       if (isAltzulassung){
         studentService.save(student);
