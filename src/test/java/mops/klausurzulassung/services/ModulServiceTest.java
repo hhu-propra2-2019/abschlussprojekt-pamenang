@@ -23,15 +23,12 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -92,7 +89,7 @@ class ModulServiceTest {
   @Test
   void deleteExistingModulWithStudents() {
     long modulID = 1L;
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
     Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true));
     when(modulRepository.findById(modulID)).thenReturn(modul);
     ArrayList<Student> students = new ArrayList<>();
@@ -107,7 +104,7 @@ class ModulServiceTest {
   @Test
   void deleteExistingModulWithoutStudents() {
     long modulID = 1L;
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
     Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true));
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
@@ -119,7 +116,7 @@ class ModulServiceTest {
   @Test
   void deleteNonExistingModul() {
     long modulID = 1L;
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
     Optional<Modul> modul = Optional.empty();
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
@@ -155,7 +152,7 @@ class ModulServiceTest {
   @Test
   void verarbeiteRichtigeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447".getBytes());
 
     List<Student> students = new ArrayList<>();
@@ -176,7 +173,7 @@ class ModulServiceTest {
   @Test
   void verarbeiteZuLangeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
 
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,zu viel".getBytes());
     when(multipartFile.getInputStream()).thenReturn(input);
@@ -189,7 +186,7 @@ class ModulServiceTest {
   @Test
   void verarbeiteZuKurzeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de".getBytes());
     when(multipartFile.getInputStream()).thenReturn(input);
 
@@ -201,7 +198,7 @@ class ModulServiceTest {
   @Test
   void verarbeiteFalscheUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
     InputStream input = new ByteArrayInputStream("".getBytes());
     when(multipartFile.getInputStream()).thenReturn(input);
     when(multipartFile.isEmpty()).thenReturn(true);
@@ -230,7 +227,7 @@ class ModulServiceTest {
 
   @Test
   void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
@@ -251,7 +248,7 @@ class ModulServiceTest {
   
   @Test
   void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    FrontendMessage message = new FrontendMessage();
+    FrontendMessage message;
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
