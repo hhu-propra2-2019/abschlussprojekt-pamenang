@@ -6,6 +6,18 @@
     <meta charset="utf-8">
     <title>Modul Ansicht</title>
     <th:block th:fragment="headcontent">
+        <!-- JavaScript für DeleteModal -->
+        <script>
+            // Get the modal
+            var modal = document.getElementById('id01');
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
         <style>
             .csstab {
                 width: 250px;
@@ -37,9 +49,6 @@
                 padding-top: 50px;
             }
 
-            .modal-backdrop {
-                opacity: 0.5 !important;
-            }
 
             /* Modal Content/Box */
             .modal-content {
@@ -110,8 +119,44 @@
 
     <span class="csstab">Name des ausgewählten Moduls:</span><b><span th:text="${modul}">Propra</span></b><br>
     <span class="csstab">ID des ausgewählten Moduls:</span><b><span th:text="${id}">1234</span></b><br>
-    <span class="csstab">Frist des ausgewählten Moduls:</span><b><span th:text="${frist}">2020-10-01 10:00</span></b>
+    <span class="csstab">Frist des ausgewählten Moduls:</span><b><span th:text="${frist}">2020-10-01 12:00</span></b>
+    <div>
+        <br>
+        <button class="btn btn-dark btn-sm" th:align="right"
+                onclick="document.getElementById('id01').style.display='block'">Modul löschen
+        </button>
 
+        <div class="modal" id="id01">
+                                <span class="close" onclick="document.getElementById('id01').style.display='none'"
+                                      title="Close Modal">&times;</span>
+            <div class="modal-content">
+                <div class="containerModal">
+                    <h1 th:align="center">Modul löschen</h1>
+                    <p th:align="center">Sind Sie sicher, dass Sie das Modul <b><span
+                            th:text="${modul}">ProPra2</span></b>
+                        löschen wollen?</p>
+
+                    <div class="clearfix">
+                        <div th:align=center>
+                            <form action="#" method="POST"
+                                  th:action="'/zulassung1/modul'+'/' + ${id} + '/delete'">
+                                <input class="btn btn-primary" data-target="#myModal"
+                                       data-toggle="modal"
+                                       type="submit" value="Löschen">
+                            </form>
+                        </div>
+                        <div th:align=left>
+                            <form action="#" method="GET"
+                                  th:action="'/zulassung1/modul/'+${id}">
+                                <input class="btn btn-outline-dark btn-sm" data-target="#myModal"
+                                       data-toggle="modal"
+                                       type="submit" value="Abbrechen">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <hr>
     <label> Hier können Sie manuell Altklauzulassungen eintragen, falls der Student noch keine digitalisierte
@@ -164,17 +209,17 @@
                         <label for="papierZulassung">Student hat Zulassung auf Papier</label>
                     </div>
                     <div class="buttonModal">
-                        <input align="center" class="btn btn-primary" type="submit" value="Abschicken">
+                        <input th:align="center" class="btn btn-primary" type="submit" value="Abschicken">
 
                     </div>
                 </form>
 
 
                 <div class="clearfix">
-                    <div class="linkerButton">
+                    <div>
                         <form action="#" method="GET"
                               th:action="'/zulassung1/modul/'+${id}">
-                            <input class="btn btn-outline-dark btn-sm" data-target="#myModal"
+                            <input th:align="left" class="btn btn-outline-dark btn-sm" data-target="#myModal"
                                    data-toggle="modal"
                                    type="submit" value="Abbrechen">
                         </form>
