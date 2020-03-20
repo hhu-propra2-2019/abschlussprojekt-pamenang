@@ -32,14 +32,14 @@ public class CsvService {
   // Reihenfolge im output.csv:
   // Matrikelnummer, Nachname, Vorname
 
-  public List<Student> getStudentListFromInputFile(Iterable<CSVRecord> records, Long id) {
+  public List<Student> getStudentListFromInputFile(Iterable<CSVRecord> records, Long id) throws NumberFormatException {
     List<Student> studentList = new ArrayList<>();
 
     for (CSVRecord record : records) {
       studentList.add(createStudentFromInputStream(record, id));
     }
 
-    logger.debug("Studentenliste wurde aus Csv-Datei erstellt!");
+    logger.info("Studentenliste wurde aus Csv-Datei erstellt!");
 
     return studentList;
   }
@@ -47,10 +47,10 @@ public class CsvService {
   public void putStudentOntoList(CSVWriter writer, Student student) {
     String[] list = {String.valueOf(student.getMatrikelnummer()), student.getNachname(), student.getVorname()};
     writer.writeNext(list, false);
-    logger.debug("Studenten in Csv-Liste geschrieben");
+    logger.info("Studenten in Csv-Liste geschrieben");
   }
 
-  public Student createStudentFromInputStream(CSVRecord record, Long id) {
+  public Student createStudentFromInputStream(CSVRecord record, Long id) throws NumberFormatException {
 
     String vorname, nachname, email, fachname, token;
     Long matrikelnummer, modulId;
@@ -59,6 +59,7 @@ public class CsvService {
     nachname = record.get("Nachname");
     email = record.get("Email");
     matrikelnummer = Long.parseLong(record.get("Matrikelnummer"));
+
     modulId = id;
     fachname = null;
     token = null;

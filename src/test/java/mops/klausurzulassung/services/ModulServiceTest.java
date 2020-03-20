@@ -91,6 +91,22 @@ class ModulServiceTest {
   }
 
   @Test
+  void saveNewModulwithoutMissingAttributeAndFristIsNoDate() {
+    String frist = "30/50/20222";
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+    String owner = "orga";
+
+    String[] messages = modulService.saveNewModul(propra, owner);
+
+    assertEquals("Frist ist kein gültiges Datum!", messages[0]);
+    assertNull(messages[1]);
+    assertNull(propra.getOwner());
+    assertNull(propra.getActive());
+    assertEquals(frist, propra.getFrist());
+    assertEquals("ProPra1", propra.getName());
+  }
+
+  @Test
   void saveNewModulwithMissingAttribute() {
     String frist = fristInZukunft();
     Modul propra = new Modul(null, "", null, frist, null);
@@ -104,17 +120,6 @@ class ModulServiceTest {
     assertNull(propra.getActive());
     assertEquals(frist, propra.getFrist());
     assertEquals("", propra.getName());
-  }
-
-  @Test
-  void testFristAbgelaufen() throws ParseException {
-
-    Modul propra1 = new Modul(1L, "ProPra1", "orga", "12/21/2012", true);
-    Optional<Modul> modul = Optional.of(propra1);
-
-    boolean abgelaufen = modulService.isFristAbgelaufen(propra1);
-
-    assertTrue(abgelaufen);
   }
 
   @Test
@@ -134,6 +139,33 @@ class ModulServiceTest {
   }
 
   @Test
+  void testFristAbgelaufen() throws ParseException {
+
+    Modul propra1 = new Modul(1L, "ProPra1", "orga", "12/21/2012", true);
+    Optional<Modul> modul = Optional.of(propra1);
+
+    boolean abgelaufen = modulService.isFristAbgelaufen(propra1);
+
+    assertTrue(abgelaufen);
+  }
+
+  @Test
+  void fristIsNoDate() {
+    String frist = "38/53/2020";
+
+    boolean result = modulService.fristIsDate(frist);
+    assertFalse(result);
+  }
+
+  @Test
+  void fristIsDate() {
+    String frist = "03/12/2020";
+
+    boolean result = modulService.fristIsDate(frist);
+    assertTrue(result);
+  }
+
+  @Test
   void modulBearbeitenWithoutMissingAttribute() {
     String frist = fristInZukunft();
     Modul propra = new Modul(null, "ProPra1", null, frist, null);
@@ -150,6 +182,18 @@ class ModulServiceTest {
     assertEquals(frist + " 12:00", vorhandenesModul.getFrist());
     assertEquals(1L, vorhandenesModul.getId());
     assertTrue(vorhandenesModul.getActive());
+  }
+
+  @Test
+  void modulBearbeitenWithoutMissingAttributeAndFristIsNoDate() {
+    String frist = "20/55/2300";
+
+    Modul propra = new Modul(null, "ProPra1", null, frist, null);
+
+    String[] messages = modulService.modulBearbeiten(propra, 1L, principal);
+
+    assertEquals("Frist ist kein gültiges Datum!", messages[0]);
+    assertNull(messages[1]);
   }
 
   @Test

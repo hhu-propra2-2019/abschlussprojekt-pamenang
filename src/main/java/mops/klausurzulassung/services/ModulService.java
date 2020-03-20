@@ -72,7 +72,7 @@ public class ModulService {
     return modulRepository.findByActive(active);
   }
 
-  public void save(Modul modul) {
+  private void save(Modul modul) {
     modulRepository.save(modul);
     logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
@@ -109,18 +109,24 @@ public class ModulService {
     } else if (file.isEmpty()) {
       errorMessage = "Datei ist leer oder es wurde keine Datei ausgewählt!";
     } else {
-      List<Student> students = csvService.getStudentListFromInputFile(records, id);
+      try {
+        List<Student> students = csvService.getStudentListFromInputFile(records, id);
 
-      String modulname = findById(id).get().getName();
+        String modulname = findById(id).get().getName();
 
-      for (Student student : students) {
-        student.setFachname(modulname);
-        erstelleTokenUndSendeEmail(student, id, false);
+        for (Student student : students) {
+          student.setFachname(modulname);
+          erstelleTokenUndSendeEmail(student, id, false);
+        }
+        logger.info("Token wurden generiert und Emails versendet!");
+
+        csvService.writeCsvFile(id, students);
+        successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
+
+      } catch (NumberFormatException e) {
+        logger.error("Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!");
+        errorMessage = "Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!";
       }
-      logger.info("Token wurden generiert und Emails versendet!");
-
-      csvService.writeCsvFile(id, students);
-      successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
     }
     return new String[]{errorMessage, successMessage};
   }
@@ -160,7 +166,7 @@ public class ModulService {
     return new LocalDateTime[]{actualDate, localFrist};
   }
 
-  private boolean fristIsDate(String frist) {
+  public boolean fristIsDate(String frist) {
     String[] elements = frist.split("/");
     if (elements.length == 3) {
       int month = Integer.parseInt(elements[0]);
