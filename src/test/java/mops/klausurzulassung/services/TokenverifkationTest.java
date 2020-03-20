@@ -3,8 +3,6 @@ package mops.klausurzulassung.services;
 import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
-import mops.klausurzulassung.repositories.StudentRepository;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +17,11 @@ import java.util.Base64;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+
 
 class TokenverifkationTest {
 
@@ -41,8 +43,8 @@ class TokenverifkationTest {
     long matrikelnummer = 123455237487L;
     long modulID = 12L;
     Student student = new Student(null, null, null, matrikelnummer, modulID, null, null);
-    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
+    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
 
     verify(studentService,times(1)).save(student);
@@ -54,8 +56,8 @@ class TokenverifkationTest {
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "123455237487";
     String modulID = "12";
-    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
+    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
 
     verify(studentService,times(0)).save(any());
@@ -67,15 +69,15 @@ class TokenverifkationTest {
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CALLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "123455237487";
     String modulID = "12";
-    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
 
+    when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
 
     verify(studentService,times(0)).save(any());
   }
 
     @Test
-    void tokenIstZuKurz() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException, InvalidKeyException, SignatureException, InvalidToken {
+    void tokenIstZuKurz() {
       String quittung = "IM";
       String matrikelnummer = "1234567";
       String modulID = "17";
@@ -95,9 +97,10 @@ class TokenverifkationTest {
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     String matrikelnummer = "12345523747";
     String modulID = "13";
-    when(quittungService.findPublicKey(any(),any())).thenReturn(null);
 
+    when(quittungService.findPublicKey(any(),any())).thenReturn(null);
     tokenverifikationService.verifikationToken(quittung);
+
     verify(studentService,times(0)).save(any());
   }
 
