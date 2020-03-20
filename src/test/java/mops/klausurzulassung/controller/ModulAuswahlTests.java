@@ -5,6 +5,8 @@ import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.services.ModulService;
+import org.assertj.core.api.Assertions;
+import org.bouncycastle.math.raw.Mod;
 import org.junit.jupiter.api.Test;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -276,6 +278,62 @@ class ModulAuswahlTests {
             .param("papierzulassung", String.valueOf(true))).andExpect(status().is3xxRedirection());
     verify(modulservice, times(1)).altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
   }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  public void test_modulAbschickenSuccessful() throws Exception {
+
+    FrontendMessage message = new FrontendMessage("error","success");
+    Modul modul = new Modul( 1L,"testname","testorga", "01/02/2021 12:00",true);
+
+    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
+    mockMvc
+            .perform(post("/zulassung1/modulBearbeiten/1")
+                    .param("id", modul.getId().toString())
+                    .param("name", modul.getName())
+                    .param("owner", modul.getOwner())
+                    .param("frist", modul.getFrist())
+                    .param("active", "true"))
+                    .andExpect(status().is3xxRedirection());
+    verify(modulservice, times(1)).save(any(Modul.class));
+  }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  public void test_backToModulAuswahlSuccessful() throws Exception {
+
+    FrontendMessage message = new FrontendMessage("error","success");
+    Modul modul = new Modul( 1L,"testname","testorga", "01/02/2021",true);
+
+    mockMvc
+            .perform(post("/zulassung1/neuesModulHinzufuegen")
+                    .param("id", modul.getId().toString())
+                    .param("name", modul.getName())
+                    .param("owner", modul.getOwner())
+                    .param("frist", modul.getFrist())
+                    .param("active", "true"))
+            .andExpect(status().isOk());
+    verify(modulservice, times(1)).save(any(Modul.class));
+  }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  public void test_backToModulAuswahlInvalid() throws Exception {
+
+    FrontendMessage message = new FrontendMessage("error","success");
+    Modul modul = new Modul( 1L,"testname","testorga", "01/02/2021",true);
+
+    when(modulservice.isFristAbgelaufen(any())).thenReturn(true);
+    mockMvc
+            .perform(post("/zulassung1/neuesModulHinzufuegen")
+                    .param("id", modul.getId().toString())
+                    .param("name", modul.getName())
+                    .param("owner", modul.getOwner())
+                    .param("frist", modul.getFrist())
+                    .param("active", "true"))
+            .andExpect(status().is3xxRedirection());
+  }
+
 
 
 
