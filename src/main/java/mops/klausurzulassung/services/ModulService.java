@@ -2,8 +2,8 @@ package mops.klausurzulassung.services;
 
 import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
-import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
+import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.ModulRepository;
@@ -105,26 +105,30 @@ public class ModulService {
     } else if (file.isEmpty()) {
       message.setErrorMessage("Datei ist leer oder es wurde keine Datei ausgewählt!");
     } else {
-      List<Student> students = csvService.getStudentListFromInputFile(records, id);
+      try {
+        List<Student> students = csvService.getStudentListFromInputFile(records, id);
 
-      String modulname = findById(id).get().getName();
+        String modulname = findById(id).get().getName();
 
-      for (Student student : students) {
-        student.setFachname(modulname);
-        erstelleTokenUndSendeEmail(student, id, false);
+        for (Student student : students) {
+          student.setFachname(modulname);
+          erstelleTokenUndSendeEmail(student, id, false);
+        }
+        logger.info("Token wurden generiert und Emails versendet!");
+
+        csvService.writeCsvFile(id, students);
+        message.setSuccessMessage("Zulassungsliste wurde erfolgreich verarbeitet.");
+
+      } catch (NumberFormatException e) {
+        logger.error("Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!");
+        message.setErrorMessage("Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!");
       }
-      logger.info("Token wurden generiert und Emails versendet!");
-
-      csvService.writeCsvFile(id, students);
-      message.setSuccessMessage("Zulassungsliste wurde erfolgreich verarbeitet.");
     }
 
     return message;
-
   }
 
   public FrontendMessage deleteStudentsFromModul(Long id) {
-
 
     logger.info("ID: " + id);
     Optional<Modul> modul = findById(id);
@@ -147,21 +151,26 @@ public class ModulService {
     return message;
   }
 
-
-  private LocalDateTime[] parseFrist(Modul modul) {
+  private LocalDateTime[] parseFrist(Modul modul) throws ParseException {
     String frist = modul.getFrist() + " 12:00";
-    Date date = null;
-    try {
-      date = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(frist);
-    } catch (ParseException e) {
-      logger.error("Frist hat fehlerhaftes Format!", e);
-    }
-
+    Date date = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(frist);
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime localFrist = date.toInstant()
         .atZone(ZoneId.systemDefault())
         .toLocalDateTime();
     return new LocalDateTime[]{actualDate, localFrist};
+  }
+
+  public boolean fristIsDate(String frist) {
+    String[] elements = frist.split("/");
+    if (elements.length == 3) {
+      int month = Integer.parseInt(elements[0]);
+      if ((month > 0) && (month < 13)) {
+        int day = Integer.parseInt(elements[1]);
+        return (day > 0) && (day < 32);
+      }
+    }
+    return false;
   }
 
   public void download(@PathVariable Long id, HttpServletResponse response) {
@@ -200,8 +209,7 @@ public class ModulService {
     logger.info("Klausurliste wurde erfolgreich heruntergeladen.");
   }
 
-
-  public boolean isFristAbgelaufen(Modul zuPruefendesModul) {
+  public boolean isFristAbgelaufen(Modul zuPruefendesModul) throws ParseException {
     LocalDateTime[] dates = parseFrist(zuPruefendesModul);
     LocalDateTime localFrist = dates[1];
     LocalDateTime actualDate = dates[0];
@@ -230,7 +238,7 @@ public class ModulService {
 
   public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
-      message.resetMessage();
+    message.resetMessage();
       String modulname = findById(id).get().getName();
       Student  student = Student.builder()
               .email(studentDto.getEmail())
@@ -245,15 +253,15 @@ public class ModulService {
         String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
         student.setToken(token);
         studentService.save(student);
-        message.setSuccessMessage("Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
+        message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
         emailService.sendMail(student);
 
       } catch (NoTokenInDatabaseException e) {
         if (papierZulassung) {
           erstelleTokenUndSendeEmail(student, student.getModulId(), true);
-          message.setSuccessMessage("Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
+          message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
         } else {
-         message.setErrorMessage("Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
+          message.setErrorMessage("Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
         }
       }
 

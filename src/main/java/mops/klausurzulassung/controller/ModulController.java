@@ -8,6 +8,8 @@ import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -29,6 +31,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
+import java.text.ParseException;
 
 @Controller
 @SessionScope
@@ -39,6 +42,8 @@ public class ModulController {
   private Modul currentModul = new Modul();
 
   private FrontendMessage message = new FrontendMessage();
+
+  private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
   public ModulController(ModulService modulService) {
     this.modulService = modulService;
@@ -71,23 +76,35 @@ public class ModulController {
   @PostMapping("/neuesModulHinzufuegen")
   public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String orga = principal.getName();
+    String owner = principal.getName();
+
     String page = "redirect:/zulassung1/modulHinzufuegen";
+
     if (!modulService.missingAttributeInModul(modul)) {
-      if (!modulService.isFristAbgelaufen(modul)) {
-        modul.setFrist(modul.getFrist() + " 12:00");
-        modul.setOwner(orga);
-        modul.setActive(true);
-        modulService.save(modul);
-        page= "modulAuswahl";
-      } else {
-        message.setErrorMessage( "Die Frist muss in der Zukunft liegen!");
+      if (!modulService.fristIsDate(modul.getFrist())) {
+        message.setErrorMessage("Frist ist kein gültiges Datum!");
+        logger.error("Frist ist kein gültiges Datum!");
+        return page;
+      }
+      try {
+        if (!modulService.isFristAbgelaufen(modul)) {
+          modul.setFrist(modul.getFrist() + " 12:00");
+          modul.setOwner(owner);
+          modul.setActive(true);
+          modulService.save(modul);
+          page = "modulAuswahl";
+        } else {
+          message.setErrorMessage("Die Frist muss in der Zukunft liegen!");
+        }
+      } catch (ParseException e) {
+        logger.error("Frist hat fehlerhaftes Format!", e);
+        message.setErrorMessage("Frist hat fehlerhaftes Format!");
       }
     } else {
       message.setErrorMessage("Bitte beide Felder ausfüllen!");
     }
 
-    Iterable<Modul> moduls = modulService.findByOwnerAndActive(orga, true);
+    Iterable<Modul> moduls = modulService.findByOwnerAndActive(owner, true);
     model.addAttribute("moduls", moduls);
     model.addAttribute("errorMessage", message.getErrorMessage());
     model.addAttribute("successMessage", message.getSuccessMessage());
@@ -115,24 +132,32 @@ public class ModulController {
   public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-
     String page = "redirect:/zulassung1/modulBearbeiten/" + id;
     if (!modulService.missingAttributeInModul(modul)) {
-      if (!modulService.isFristAbgelaufen(modul)) {
-        Modul vorhandenesModul = modulService.findById(id).get();
-        vorhandenesModul.setName(modul.getName());
-        vorhandenesModul.setFrist(modul.getFrist() + " 12:00");
-        vorhandenesModul.setOwner(principal.getName());
-        vorhandenesModul.setActive(true);
-        modulService.save(vorhandenesModul);
-        page = "redirect:/zulassung1/modulAuswahl";
-      } else {
-        message.setErrorMessage("Die Frist muss in der Zukunft liegen!");
+      if (!modulService.fristIsDate(modul.getFrist())) {
+        message.setErrorMessage("Frist ist kein gültiges Datum!");
+        logger.error("Frist ist kein gültiges Datum!");
+        return page;
+      }
+      try {
+        if (!modulService.isFristAbgelaufen(modul)) {
+          Modul vorhandenesModul = modulService.findById(id).get();
+          vorhandenesModul.setName(modul.getName());
+          vorhandenesModul.setFrist(modul.getFrist() + " 12:00");
+          vorhandenesModul.setOwner(principal.getName());
+          vorhandenesModul.setActive(true);
+          modulService.save(vorhandenesModul);
+          page = "redirect:/zulassung1/modulAuswahl";
+        } else {
+          message.setErrorMessage("Die Frist muss in der Zukunft liegen!");
+        }
+      } catch (ParseException e) {
+        logger.error("Frist hat fehlerhaftes Format!", e);
+        message.setErrorMessage("Frist hat fehlerhaftes Format!");
       }
     } else {
       message.setErrorMessage("Beide Felder müssen ausgefüllt sein!");
     }
-
     return page;
   }
 
@@ -153,8 +178,8 @@ public class ModulController {
 
     model.addAttribute("errorMessage", message.getErrorMessage());
     model.addAttribute("successMessage", message.getSuccessMessage());
+    message.resetMessage();
     return "modulHinzufuegen";
-
   }
 
 
@@ -164,7 +189,7 @@ public class ModulController {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-     message = modulService.deleteStudentsFromModul(id);
+    message = modulService.deleteStudentsFromModul(id);
     return "redirect:/zulassung1/modulAuswahl";
   }
 
@@ -192,7 +217,7 @@ public class ModulController {
   @PostMapping("/modul/{id}")
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    message= modulService.verarbeiteUploadliste(id, file);
+    message = modulService.verarbeiteUploadliste(id, file);
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 

@@ -23,6 +23,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SignatureException;
+import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,14 +78,29 @@ class ModulServiceTest {
   }
 
   @Test
-  void testFristAbgelaufen() {
+  void testFristAbgelaufen() throws ParseException {
 
     Modul propra1 = new Modul(1L, "ProPra1", "orga", "12/21/2012", true);
-    Optional<Modul> modul = Optional.of(propra1);
 
     boolean abgelaufen = modulService.isFristAbgelaufen(propra1);
 
     assertTrue(abgelaufen);
+  }
+
+  @Test
+  void fristIsNoDate() {
+    String frist = "38/53/2020";
+
+    boolean result = modulService.fristIsDate(frist);
+    assertFalse(result);
+  }
+
+  @Test
+  void fristIsDate() {
+    String frist = "03/12/2020";
+
+    boolean result = modulService.fristIsDate(frist);
+    assertTrue(result);
   }
 
   @Test
@@ -371,5 +388,14 @@ class ModulServiceTest {
 
     File outputFile = new File("klausurliste_2.csv");
     assertFalse(outputFile.exists());
+  }
+
+  private String fristInZukunft() {
+    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime future = now.plusYears(1);
+    int year = future.getYear();
+    int month = future.getMonthValue();
+    int day = future.getDayOfMonth();
+    return month + "/" + day + "/" + year;
   }
 }

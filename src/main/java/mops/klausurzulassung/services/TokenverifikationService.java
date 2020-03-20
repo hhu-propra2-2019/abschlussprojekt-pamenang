@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.SignatureException;
 import java.util.Base64;
 
 @Service
@@ -28,8 +28,9 @@ public class TokenverifikationService {
     this.quittungService = quittungService;
     this.studentService = studentService;
   }
+
   public void verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException,
-          NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
+      NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
 
     quittung =  quittung.replaceAll("@", "/");
 
@@ -66,8 +67,8 @@ public class TokenverifikationService {
       logger.debug("ModulID: " + modulID);
       logger.debug("Matrikelnummer : " + matr);
       Student student = Student.builder()
-              .matrikelnummer(Long.parseLong(matr))
-              .modulId(Long.parseLong(modulID)).build();
+          .matrikelnummer(Long.parseLong(matr))
+          .modulId(Long.parseLong(modulID)).build();
       studentService.save(student);
       logger.debug("Altzulassung erfolgreich!");
     }

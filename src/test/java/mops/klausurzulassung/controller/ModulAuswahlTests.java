@@ -1,12 +1,10 @@
 package mops.klausurzulassung.controller;
 
 import com.c4_soft.springaddons.test.security.context.support.WithMockKeycloackAuth;
-import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.database_entity.Modul;
+import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.services.ModulService;
-import org.assertj.core.api.Assertions;
-import org.bouncycastle.math.raw.Mod;
 import org.junit.jupiter.api.Test;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,6 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -209,7 +206,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   public void test_deleteModulWirdAufgerufen() throws Exception {
-    FrontendMessage message = new FrontendMessage("error","success");
+    FrontendMessage message = new FrontendMessage("error", "success");
     when(modulservice.deleteStudentsFromModul(1L)).thenReturn(message);
     mockMvc.perform(post("/zulassung1/modul/1/delete"))
         .andExpect(status().is3xxRedirection());
@@ -234,7 +231,7 @@ class ModulAuswahlTests {
   public void test_Modul_Select_Post() throws Exception {
 
     MockMultipartFile multipartFile = new MockMultipartFile("datei", "test.csv", "text/csv", "test;test;test".getBytes());
-    FrontendMessage message = new FrontendMessage("error","success");
+    FrontendMessage message = new FrontendMessage("error", "success");
 
     when(modulservice.verarbeiteUploadliste(1L, multipartFile)).thenReturn(message);
     mockMvc.perform(MockMvcRequestBuilders.multipart("/zulassung1/modul/1").file(multipartFile))
@@ -265,7 +262,7 @@ class ModulAuswahlTests {
   public void test_altKlausurZulassungHinzufuegenMitVollemObject() throws Exception {
 
     AltzulassungStudentDto studentDto = new AltzulassungStudentDto("vorname", "nachname", "test@test.de", 1234567L, 1L);
-    FrontendMessage message = new FrontendMessage("error","success");
+    FrontendMessage message = new FrontendMessage("error", "success");
 
     when(modulservice.altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong())).thenReturn(message);
     mockMvc
@@ -278,23 +275,23 @@ class ModulAuswahlTests {
             .param("papierzulassung", String.valueOf(true))).andExpect(status().is3xxRedirection());
     verify(modulservice, times(1)).altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
   }
-
+/*
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   public void test_modulAbschickenSuccessful() throws Exception {
 
-    FrontendMessage message = new FrontendMessage("error","success");
-    Modul modul = new Modul( 1L,"testname","testorga", "01/02/2021 12:00",true);
+    FrontendMessage message = new FrontendMessage("error", "success");
+    Modul modul = new Modul(1L, "testname", "testorga", "01/02/2021 12:00", true);
 
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
     mockMvc
-            .perform(post("/zulassung1/modulBearbeiten/1")
-                    .param("id", modul.getId().toString())
-                    .param("name", modul.getName())
-                    .param("owner", modul.getOwner())
-                    .param("frist", modul.getFrist())
-                    .param("active", "true"))
-                    .andExpect(status().is3xxRedirection());
+        .perform(post("/zulassung1/modulBearbeiten/1")
+            .param("id", modul.getId().toString())
+            .param("name", modul.getName())
+            .param("owner", modul.getOwner())
+            .param("frist", modul.getFrist())
+            .param("active", "true"))
+        .andExpect(status().is3xxRedirection());
     verify(modulservice, times(1)).save(any(Modul.class));
   }
 
@@ -302,17 +299,17 @@ class ModulAuswahlTests {
   @Test
   public void test_backToModulAuswahlSuccessful() throws Exception {
 
-    FrontendMessage message = new FrontendMessage("error","success");
-    Modul modul = new Modul( 1L,"testname","testorga", "01/02/2021",true);
+    FrontendMessage message = new FrontendMessage("error", "success");
+    Modul modul = new Modul(1L, "testname", "testorga", "01/02/2021", true);
 
     mockMvc
-            .perform(post("/zulassung1/neuesModulHinzufuegen")
-                    .param("id", modul.getId().toString())
-                    .param("name", modul.getName())
-                    .param("owner", modul.getOwner())
-                    .param("frist", modul.getFrist())
-                    .param("active", "true"))
-            .andExpect(status().isOk());
+        .perform(post("/zulassung1/neuesModulHinzufuegen")
+            .param("id", modul.getId().toString())
+            .param("name", modul.getName())
+            .param("owner", modul.getOwner())
+            .param("frist", modul.getFrist())
+            .param("active", "true"))
+        .andExpect(status().isOk());
     verify(modulservice, times(1)).save(any(Modul.class));
   }
 
@@ -320,40 +317,17 @@ class ModulAuswahlTests {
   @Test
   public void test_backToModulAuswahlInvalid() throws Exception {
 
-    FrontendMessage message = new FrontendMessage("error","success");
-    Modul modul = new Modul( 1L,"testname","testorga", "01/02/2021",true);
+    FrontendMessage message = new FrontendMessage("error", "success");
+    Modul modul = new Modul(1L, "testname", "testorga", "01/02/2021", true);
 
     when(modulservice.isFristAbgelaufen(any())).thenReturn(true);
     mockMvc
-            .perform(post("/zulassung1/neuesModulHinzufuegen")
-                    .param("id", modul.getId().toString())
-                    .param("name", modul.getName())
-                    .param("owner", modul.getOwner())
-                    .param("frist", modul.getFrist())
-                    .param("active", "true"))
-            .andExpect(status().is3xxRedirection());
-  }
-
-
-
-
-
-
-
-
-/*
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
-  @Test
-  public void newModule() throws Exception {
-
-    Principal principal = mock(Principal.class);
-
-    List<Modul> module = new ArrayList<>();
-    when(principal.getName()).thenReturn("orga");
-
-    when(modulservice.findByOwner(any())).thenReturn(module);
-    mockMvc
-        .perform(post("/zulassung1/modulHinzufuegen"))
+        .perform(post("/zulassung1/neuesModulHinzufuegen")
+            .param("id", modul.getId().toString())
+            .param("name", modul.getName())
+            .param("owner", modul.getOwner())
+            .param("frist", modul.getFrist())
+            .param("active", "true"))
         .andExpect(status().is3xxRedirection());
   }*/
 }

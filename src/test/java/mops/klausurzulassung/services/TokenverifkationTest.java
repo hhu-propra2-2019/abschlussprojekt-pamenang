@@ -18,9 +18,9 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
 
 
 class TokenverifkationTest {
@@ -47,7 +47,7 @@ class TokenverifkationTest {
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
 
-    verify(studentService,times(1)).save(student);
+    verify(studentService, times(1)).save(student);
   }
 
   @Test
@@ -60,7 +60,7 @@ class TokenverifkationTest {
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
 
-    verify(studentService,times(0)).save(any());
+    verify(studentService, times(0)).save(any());
   }
 
   @Test
@@ -73,7 +73,7 @@ class TokenverifkationTest {
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
 
-    verify(studentService,times(0)).save(any());
+    verify(studentService, times(0)).save(any());
   }
 
     @Test
@@ -84,11 +84,10 @@ class TokenverifkationTest {
       try {
         tokenverifikationService.verifikationToken(quittung);
         fail();
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         assertThat(e.toString().contains("Token fehlerhaft"));
-        }
       }
+    }
 
 
 
@@ -101,7 +100,7 @@ class TokenverifkationTest {
     when(quittungService.findPublicKey(any(),any())).thenReturn(null);
     tokenverifikationService.verifikationToken(quittung);
 
-    verify(studentService,times(0)).save(any());
+    verify(studentService, times(0)).save(any());
   }
 
 
