@@ -2,7 +2,6 @@ package mops.klausurzulassung.controller;
 
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.domain.FrontendMessage;
-import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.repositories.StudentRepository;
 import mops.klausurzulassung.services.StudentService;
 import mops.klausurzulassung.services.TokenverifikationService;
@@ -58,32 +57,21 @@ public class StudentenController {
   @GetMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
+    logger.debug("Rolle: " + token.getAccount().getPrincipal().toString());
     model.addAttribute("account", createAccountFromPrincipal(token));
-    model.addAttribute("student", false);
     model.addAttribute("token", new Token(""));
-
-    if (token.getAccount().getPrincipal().toString().equals("studentin")) {
-      model.addAttribute("student", true);
-      logger.debug(token.getAccount().getPrincipal().toString());
-    }
-
     model.addAttribute("errorMessage", message.getErrorMessage());
     model.addAttribute("successMessage", message.getSuccessMessage());
     message.resetMessage();
-
-
     return "student";
   }
 
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model) {
-
     logger.debug("Token: " + token.getToken());
-
-    long[] verifizierungsErgebnis;
     try {
-      verifizierungsErgebnis = tokenverifikation.verifikationToken(token.getToken());
+      tokenverifikation.verifikationToken(token.getToken());
     } catch (Exception e) {
       logger.error("Die Tokenverifikation ist fehlgeschlagen!");
       logger.error(e.getMessage());
@@ -91,19 +79,9 @@ public class StudentenController {
       return "redirect:/zulassung1/student";
     }
 
-    logger.debug("ModulID: " + verifizierungsErgebnis[0]);
-    logger.debug("Matrikelnummer : " + verifizierungsErgebnis[1]);
-      Student student = Student.builder()
-          .matrikelnummer(verifizierungsErgebnis[0])
-          .modulId(verifizierungsErgebnis[1]).build();
-      studentService.save(student);
-      message.setSuccessMessage("Altzulassung erfolgreich!");
-      logger.debug("Altzulassung erfolgreich!");
+    message.setSuccessMessage("Altzulassung erfolgreich!");
 
     model.addAttribute("account", createAccountFromPrincipal(keycloakAuthenticationToken));
-    model.addAttribute("student", false);
-    if (keycloakAuthenticationToken.getAccount().getPrincipal().toString().equals("studentin"))
-      model.addAttribute("student", true);
     model.addAttribute("token", "");
     return "redirect:/zulassung1/student";
   }

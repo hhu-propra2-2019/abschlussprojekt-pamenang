@@ -1,5 +1,6 @@
 package mops.klausurzulassung.services;
 
+import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import org.slf4j.Logger;
@@ -10,23 +11,26 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.SignatureException;
 import java.util.Base64;
 
 @Service
 public class TokenverifikationService {
 
   private final QuittungService quittungService;
+  private final StudentService studentService;
   private Logger logger = LoggerFactory.getLogger(TokenverifikationService.class);
 
   @Autowired
-  public TokenverifikationService(QuittungService quittungService) {
+  public TokenverifikationService(QuittungService quittungService, StudentService studentService) {
     this.quittungService = quittungService;
+    this.studentService = studentService;
   }
 
-  public long[] verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException, NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
+  public void verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException,
+      NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
 
     quittung =  quittung.replaceAll("@", "/");
 
@@ -49,7 +53,7 @@ public class TokenverifikationService {
     PublicKey publicKey = quittungService.findPublicKey(matr, modulID);
     if(publicKey == null){
       logger.error("Public Key ist null");
-      return new long[]{-1, -1};
+      return;
     }
 
     Signature sign = Signature.getInstance("SHA256withRSA");
@@ -60,8 +64,13 @@ public class TokenverifikationService {
 
     if(sign.verify(tokenByte)){
       logger.debug("Token Verifiziert");
-      return new long[]{Long.parseLong(matr), Long.parseLong(modulID)};
+      logger.debug("ModulID: " + modulID);
+      logger.debug("Matrikelnummer : " + matr);
+      Student student = Student.builder()
+          .matrikelnummer(Long.parseLong(matr))
+          .modulId(Long.parseLong(modulID)).build();
+      studentService.save(student);
+      logger.debug("Altzulassung erfolgreich!");
     }
-    return new long[]{-1, -1};
   }
 }

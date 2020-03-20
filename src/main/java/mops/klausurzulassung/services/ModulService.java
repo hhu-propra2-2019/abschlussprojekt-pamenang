@@ -3,6 +3,7 @@ package mops.klausurzulassung.services;
 import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
+import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.ModulRepository;
@@ -24,7 +25,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.security.SignatureException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,9 +43,8 @@ public class ModulService {
   private final QuittungService quittungService;
   private final EmailService emailService;
   private final TokengenerierungService tokengenerierungService;
-  private String errorMessage;
-  private String successMessage;
 
+  private FrontendMessage message = new FrontendMessage();
   private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
 
@@ -56,8 +55,6 @@ public class ModulService {
     this.emailService = emailService;
     this.quittungService = quittungService;
     this.modulRepository = modulRepository;
-    this.errorMessage = null;
-    this.successMessage = null;
   }
 
   public Iterable<Modul> findByOwnerAndActive(String name, boolean active) {
@@ -72,14 +69,13 @@ public class ModulService {
     return modulRepository.findByActive(active);
   }
 
-  private void save(Modul modul) {
+  public void save(Modul modul) {
     modulRepository.save(modul);
     logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
 
-  public String[] verarbeiteUploadliste(Long id, MultipartFile file) {
-    successMessage = null;
-    errorMessage = null;
+  public FrontendMessage verarbeiteUploadliste(Long id, MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    message.resetMessage();
     Iterable<CSVRecord> records = null;
     try {
       records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
@@ -105,9 +101,9 @@ public class ModulService {
     }
 
     if (!countColumns) {
-      errorMessage = "Datei hat eine falsche Anzahl von Einträgen pro Zeile!";
+      message.setErrorMessage("Datei hat eine falsche Anzahl von Einträgen pro Zeile!");
     } else if (file.isEmpty()) {
-      errorMessage = "Datei ist leer oder es wurde keine Datei ausgewählt!";
+      message.setErrorMessage("Datei ist leer oder es wurde keine Datei ausgewählt!");
     } else {
       try {
         List<Student> students = csvService.getStudentListFromInputFile(records, id);
@@ -121,19 +117,18 @@ public class ModulService {
         logger.info("Token wurden generiert und Emails versendet!");
 
         csvService.writeCsvFile(id, students);
-        successMessage = "Zulassungsliste wurde erfolgreich verarbeitet.";
+        message.setSuccessMessage("Zulassungsliste wurde erfolgreich verarbeitet.");
 
       } catch (NumberFormatException e) {
         logger.error("Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!");
-        errorMessage = "Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!";
+        message.setErrorMessage("Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!");
       }
     }
-    return new String[]{errorMessage, successMessage};
+
+    return message;
   }
 
-  public String[] deleteStudentsFromModul(Long id) {
-    successMessage = null;
-    errorMessage = null;
+  public FrontendMessage deleteStudentsFromModul(Long id) {
 
     logger.info("ID: " + id);
     Optional<Modul> modul = findById(id);
@@ -148,12 +143,12 @@ public class ModulService {
       for (Student student : students) {
         studentService.delete(student);
       }
-      successMessage = "Das Modul " + modulName + " wurde gelöscht!";
+      message.setSuccessMessage("Das Modul " + modulName + " wurde gelöscht!");
     } else {
-      errorMessage = "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.";
+      message.setErrorMessage("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.");
     }
 
-    return new String[]{errorMessage, successMessage};
+    return message;
   }
 
   private LocalDateTime[] parseFrist(Modul modul) throws ParseException {
@@ -214,37 +209,6 @@ public class ModulService {
     logger.info("Klausurliste wurde erfolgreich heruntergeladen.");
   }
 
-  public String[] saveNewModul(Modul modul, String owner) {
-    successMessage = null;
-    errorMessage = null;
-    String page = "redirect:/zulassung1/modulHinzufuegen";
-
-    if (!missingAttributeInModul(modul)) {
-      if (!fristIsDate(modul.getFrist())) {
-        errorMessage = "Frist ist kein gültiges Datum!";
-        logger.error("Frist ist kein gültiges Datum!");
-        return new String[]{errorMessage, successMessage, page};
-      }
-      try {
-        if (!isFristAbgelaufen(modul)) {
-          modul.setFrist(modul.getFrist() + " 12:00");
-          modul.setOwner(owner);
-          modul.setActive(true);
-          save(modul);
-          page = "modulAuswahl";
-        } else {
-          errorMessage = "Die Frist muss in der Zukunft liegen!";
-        }
-      } catch (ParseException e) {
-        logger.error("Frist hat fehlerhaftes Format!", e);
-        errorMessage = "Frist hat fehlerhaftes Format!";
-      }
-    } else {
-      errorMessage = "Bitte beide Felder ausfüllen!";
-    }
-    return new String[]{errorMessage, successMessage, page};
-  }
-
   public boolean isFristAbgelaufen(Modul zuPruefendesModul) throws ParseException {
     LocalDateTime[] dates = parseFrist(zuPruefendesModul);
     LocalDateTime localFrist = dates[1];
@@ -253,38 +217,6 @@ public class ModulService {
     boolean result = localFrist.isBefore(actualDate);
     logger.info("Frist ist abgelaufen: " + result);
     return result;
-  }
-
-  public String[] modulBearbeiten(Modul modul, Long id, Principal principal) {
-    successMessage = null;
-    errorMessage = null;
-    String page = "redirect:/zulassung1/modulBearbeiten/" + id;
-    if (!missingAttributeInModul(modul)) {
-      if (!fristIsDate(modul.getFrist())) {
-        errorMessage = "Frist ist kein gültiges Datum!";
-        logger.error("Frist ist kein gültiges Datum!");
-        return new String[]{errorMessage, successMessage, page};
-      }
-      try {
-        if (!isFristAbgelaufen(modul)) {
-          Modul vorhandenesModul = findById(id).get();
-          vorhandenesModul.setName(modul.getName());
-          vorhandenesModul.setFrist(modul.getFrist() + " 12:00");
-          vorhandenesModul.setOwner(principal.getName());
-          vorhandenesModul.setActive(true);
-          save(vorhandenesModul);
-          page = "redirect:/zulassung1/modulAuswahl";
-        } else {
-          errorMessage = "Die Frist muss in der Zukunft liegen!";
-        }
-      } catch (ParseException e) {
-        logger.error("Frist hat fehlerhaftes Format!", e);
-        errorMessage = "Frist hat fehlerhaftes Format!";
-      }
-    } else {
-      errorMessage = "Beide Felder müssen ausgefüllt sein!";
-    }
-    return new String[]{errorMessage, successMessage, page};
   }
 
   private OutputStream writeHeader(Long id, HttpServletResponse response) {
@@ -304,10 +236,9 @@ public class ModulService {
     return outputStream;
   }
 
-  public String[] altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
-    successMessage = null;
-    errorMessage = null;
+  public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
+    message.resetMessage();
       String modulname = findById(id).get().getName();
       Student  student = Student.builder()
               .email(studentDto.getEmail())
@@ -322,19 +253,19 @@ public class ModulService {
         String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
         student.setToken(token);
         studentService.save(student);
-        successMessage = "Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt.";
+        message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
         emailService.sendMail(student);
 
       } catch (NoTokenInDatabaseException e) {
         if (papierZulassung) {
           erstelleTokenUndSendeEmail(student, student.getModulId(), true);
-          successMessage = "Student "+student.getMatrikelnummer()+" wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
+          message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
         } else {
-          errorMessage = "Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!";
+          message.setErrorMessage("Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
         }
       }
 
-    return new String[]{errorMessage, successMessage};
+    return message;
   }
 
   void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) {
@@ -367,7 +298,7 @@ public class ModulService {
     return student.getVorname().isEmpty() || student.getNachname().isEmpty() || student.getEmail().isEmpty() || student.getMatrikelnummer() == null;
   }
 
-  private boolean missingAttributeInModul(Modul modul) {
+  public boolean missingAttributeInModul(Modul modul) {
     return modul.getName().isEmpty() || modul.getFrist().isEmpty();
   }
 }

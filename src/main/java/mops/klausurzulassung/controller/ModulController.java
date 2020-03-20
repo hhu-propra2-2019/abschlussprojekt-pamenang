@@ -8,6 +8,8 @@ import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.services.ModulService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -25,7 +27,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.security.SignatureException;
+import java.text.ParseException;
 
 @Controller
 @SessionScope
@@ -36,6 +42,8 @@ public class ModulController {
   private Modul currentModul = new Modul();
 
   private FrontendMessage message = new FrontendMessage();
+
+  private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
   public ModulController(ModulService modulService) {
     this.modulService = modulService;
@@ -59,8 +67,8 @@ public class ModulController {
 
     model.addAttribute("errorMessage",message.getErrorMessage());
     model.addAttribute("successMessage",message.getSuccessMessage());
-    message.resetMessage();
 
+    message.resetMessage();
     return "modulAuswahl";
   }
 
@@ -68,13 +76,41 @@ public class ModulController {
   @PostMapping("/neuesModulHinzufuegen")
   public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String orga = principal.getName();
-    String[] messageArray = modulService.saveNewModul(modul, orga);
-    Iterable<Modul> moduls = modulService.findByOwnerAndActive(orga, true);
+    String owner = principal.getName();
+
+    String page = "redirect:/zulassung1/modulHinzufuegen";
+
+    if (!modulService.missingAttributeInModul(modul)) {
+      if (!modulService.fristIsDate(modul.getFrist())) {
+        message.setErrorMessage("Frist ist kein gültiges Datum!");
+        logger.error("Frist ist kein gültiges Datum!");
+        return page;
+      }
+      try {
+        if (!modulService.isFristAbgelaufen(modul)) {
+          modul.setFrist(modul.getFrist() + " 12:00");
+          modul.setOwner(owner);
+          modul.setActive(true);
+          modulService.save(modul);
+          page = "modulAuswahl";
+        } else {
+          message.setErrorMessage("Die Frist muss in der Zukunft liegen!");
+        }
+      } catch (ParseException e) {
+        logger.error("Frist hat fehlerhaftes Format!", e);
+        message.setErrorMessage("Frist hat fehlerhaftes Format!");
+      }
+    } else {
+      message.setErrorMessage("Bitte beide Felder ausfüllen!");
+    }
+
+    Iterable<Modul> moduls = modulService.findByOwnerAndActive(owner, true);
     model.addAttribute("moduls", moduls);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
-    return messageArray[2];
+    model.addAttribute("errorMessage", message.getErrorMessage());
+    model.addAttribute("successMessage", message.getSuccessMessage());
+
+
+    return page;
   }
 
   @Secured("ROLE_orga")
@@ -95,11 +131,34 @@ public class ModulController {
   @PostMapping("/modulBearbeiten/{id}")
   public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String[] messageArray = modulService.modulBearbeiten(modul, id, principal);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
 
-    return messageArray[2];
+    String page = "redirect:/zulassung1/modulBearbeiten/" + id;
+    if (!modulService.missingAttributeInModul(modul)) {
+      if (!modulService.fristIsDate(modul.getFrist())) {
+        message.setErrorMessage("Frist ist kein gültiges Datum!");
+        logger.error("Frist ist kein gültiges Datum!");
+        return page;
+      }
+      try {
+        if (!modulService.isFristAbgelaufen(modul)) {
+          Modul vorhandenesModul = modulService.findById(id).get();
+          vorhandenesModul.setName(modul.getName());
+          vorhandenesModul.setFrist(modul.getFrist() + " 12:00");
+          vorhandenesModul.setOwner(principal.getName());
+          vorhandenesModul.setActive(true);
+          modulService.save(vorhandenesModul);
+          page = "redirect:/zulassung1/modulAuswahl";
+        } else {
+          message.setErrorMessage("Die Frist muss in der Zukunft liegen!");
+        }
+      } catch (ParseException e) {
+        logger.error("Frist hat fehlerhaftes Format!", e);
+        message.setErrorMessage("Frist hat fehlerhaftes Format!");
+      }
+    } else {
+      message.setErrorMessage("Beide Felder müssen ausgefüllt sein!");
+    }
+    return page;
   }
 
   @Secured("ROLE_orga")
@@ -130,9 +189,7 @@ public class ModulController {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-    String[] messageArray = modulService.deleteStudentsFromModul(id);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
+    message = modulService.deleteStudentsFromModul(id);
     return "redirect:/zulassung1/modulAuswahl";
   }
 
@@ -158,11 +215,9 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}")
-  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) {
+  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    String[] messageArray = modulService.verarbeiteUploadliste(id, file);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
+    message = modulService.verarbeiteUploadliste(id, file);
     return "redirect:/zulassung1/modul" + "/" + id;
   }
 
@@ -177,7 +232,7 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
-  public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
+  public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     
     if(bindingResult.hasErrors()){
       message.setErrorMessage("Alle Felder im Formular müssen befüllt werden!");
@@ -185,9 +240,7 @@ public class ModulController {
     }
     model.addAttribute("account", createAccountFromPrincipal(token));
 
-    String[] messageArray = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
-    message.setErrorMessage(messageArray[0]);
-    message.setSuccessMessage(messageArray[1]);
+    message = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
     return "redirect:/zulassung1/modul/" + id;
   }
 
