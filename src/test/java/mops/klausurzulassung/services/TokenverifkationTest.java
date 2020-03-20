@@ -4,6 +4,7 @@ import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.repositories.StudentRepository;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +16,8 @@ import java.security.SignatureException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -76,11 +79,16 @@ class TokenverifkationTest {
       String quittung = "IM";
       String matrikelnummer = "1234567";
       String modulID = "17";
+      try {
+        tokenverifikationService.verifikationToken(quittung);
+        fail();
+      }
+      catch (Exception e) {
+        assertThat(e.toString().contains("Token fehlerhaft"));
+        }
+      }
 
-      tokenverifikationService.verifikationToken(quittung);
 
-      verify(studentService,times(0)).save(any());
-    }
 
   @Test
   void test_tokenVerifikation_publicKeyIsNUll() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken {
