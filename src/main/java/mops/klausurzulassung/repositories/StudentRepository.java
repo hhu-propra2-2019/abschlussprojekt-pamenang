@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface StudentRepository extends CrudRepository<Student, Long> {
   Iterable<Student> findByModulId(Long id);
 
-    Optional<Student> findByToken(String token);
 }

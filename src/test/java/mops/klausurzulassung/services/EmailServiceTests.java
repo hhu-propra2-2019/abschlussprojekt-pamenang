@@ -18,21 +18,21 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class EmailServiceTests {
+class EmailServiceTests {
 
   static EmailService emailService;
   static JavaMailSender javaMailSender;
   static MimeMessage mimeMessage;
 
   @BeforeAll
-  public static void beforeAllTests() {
+  static void beforeAllTests() {
     javaMailSender = mock(JavaMailSender.class);
     emailService = new EmailService(javaMailSender);
     mimeMessage = mock(MimeMessage.class);
   }
 
   @Test
-  public void test_sendMail_checkForMethodCalls() {
+  void test_sendMail_checkForMethodCalls() {
     // Arrange
     Student student = new Student("t1", "t2", "t3", 1234L, 1L, "t4", "token");
     // Act
@@ -43,10 +43,9 @@ public class EmailServiceTests {
   }
 
   @Test
-  public void test_generateValidToken_CheckIfSuccessfullyGeneratedLink() {
+  void test_generateValidToken_CheckIfSuccessfullyGeneratedLink() {
     Student student = new Student("t1", "t2", "t3", (long) 1234, (long) 1, "t4", "token");
     String link = emailService.generateValidTokenLink(student);
-    System.out.println(link);
     Assertions.assertThat(link).contains("token/");
   }
 }

@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class QuittungDaoServiceTest {
+class QuittungDaoServiceTest {
 
     @Test
-    public void testFindPublicKeyByQuittung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException {
+    void testFindPublicKeyByQuittung() throws NoSuchAlgorithmException, NoPublicKeyInDatabaseException {
         QuittungRepository quittungRepository = mock(QuittungRepository.class);
         QuittungService quittungService = new QuittungService(quittungRepository);
         String matr = "1234567";
@@ -40,7 +40,7 @@ public class QuittungDaoServiceTest {
     }
 
     @Test
-    public void testFindTokenByQuittung() throws NoSuchAlgorithmException, NoTokenInDatabaseException {
+    void testFindTokenByQuittung() throws NoSuchAlgorithmException, NoTokenInDatabaseException {
 
         QuittungRepository quittungRepository = mock(QuittungRepository.class);
         QuittungService quittungService = new QuittungService(quittungRepository);
