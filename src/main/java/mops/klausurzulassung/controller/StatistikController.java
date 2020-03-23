@@ -1,8 +1,11 @@
 package mops.klausurzulassung.controller;
 
 import mops.klausurzulassung.database_entity.Modul;
+import mops.klausurzulassung.database_entity.ModulStatistiken;
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.services.ModulService;
+import mops.klausurzulassung.services.StatistikService;
+import org.bouncycastle.math.raw.Mod;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
@@ -23,10 +26,12 @@ import java.util.Optional;
 public class StatistikController {
 
   private final ModulService modulService;
+  private final StatistikService statistikService;
   private Logger logger = LoggerFactory.getLogger(StatistikController.class);
 
-  public StatistikController(ModulService modulService) {
+  public StatistikController(ModulService modulService, StatistikService statistikService) {
     this.modulService = modulService;
+    this.statistikService = statistikService;
   }
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
@@ -40,8 +45,10 @@ public class StatistikController {
   @Secured("ROLE_orga")
   @GetMapping("/modul/{id}/statistik")
   public String selectStatistik(@PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
-    Optional<Modul> modul = modulService.findById(id);
-    model.addAttribute("modul", modul.get());
+    Modul modul = modulService.findById(id).get();
+    Iterable<ModulStatistiken> modulStatistikens = statistikService.findModulStatistikensByModulId(id);
+    model.addAttribute("currentModul", modul);
+    model.addAttribute("modulStatistiken", modulStatistikens);
     return "statistik";
   }
 }
