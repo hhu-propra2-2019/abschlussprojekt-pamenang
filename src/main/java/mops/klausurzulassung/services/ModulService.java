@@ -302,4 +302,10 @@ public class ModulService {
   public boolean missingAttributeInModul(Modul modul) {
     return modul.getName().isEmpty() || modul.getFrist().isEmpty();
   }
+
+  public void saveGesamtTeilnehmerzahlForModul(Long id, Long teilnehmerAnzahl) {
+    Modul modul = findById(id).get();
+    modul.setTeilnehmer(teilnehmerAnzahl);
+    save(modul);
+  }
 }

@@ -215,8 +215,6 @@
 
                         </div>
                     </form>
-
-
                     <div class="clearfix">
                         <div>
                             <form action="#" method="GET"
@@ -234,20 +232,38 @@
 
         <hr>
 
-        <form action="#" align="left" enctype="multipart/form-data" method="post"
-              th:action="'/zulassung1/modul'+'/'+${id}">
-            <div>
-                <label>Wählen Sie eine Zulassungsliste (.csv) aus Ihrem Dateimanager aus! Die CSV-Datei muss einen
-                    Kopfzeile
-                    mit den folgenden Spaltentitle: Vorname, Nachname, Email, Matrikelnummer enthalten.<br>
-                    <input accept=".csv" name="datei" size="50" type="file"> <br>
-                    Tragen Sie die Anzahl der Teilnehmer zu Beginn des Moduls ein.<br>
-                    <input name="teilnehmer" size="5" type="number">
-                </label>
-                <br>
-                <input class="btn btn-primary" type="submit" value="Liste abschicken">
+        <div class="row">
+            <div class="col-md-6">
+                <form action="#" align="left" enctype="multipart/form-data" method="post"
+                      th:action="'/zulassung1/modul'+'/'+${id}">
+                    <div>
+                        <label>Wählen Sie eine Zulassungsliste (.csv) aus Ihrem Dateimanager aus! Die CSV-Datei muss einen
+                            Kopfzeile
+                            mit den folgenden Spaltentitle: Vorname, Nachname, Email, Matrikelnummer enthalten.<br>
+                            <input accept=".csv" name="datei" size="50" type="file"> <br>
+                        </label>
+                        <br>
+                        <input class="btn btn-primary" type="submit" value="Liste abschicken" th:disabled="${teilnehmerAnzahl == 0}">
+                        <br>
+                        <br>
+                        <span class="alert alert-warning" th:if="${teilnehmerAnzahl == 0}">Bitte erst die Teilnehmeranzahl hinzufügen.</span>
+                    </div>
+                </form>
             </div>
-        </form>
+            <div class="col-md-6">
+                <form action="#" align="left" method="post"
+                      th:action="'/zulassung1/modul/teilnehmerHinzufuegen' + '/' +${id}">
+                    <div>
+                        <label>Fügen Sie die Gesamtanzahl der Teilnehmer hinzu.<br>
+                            <input class="form-control" style="width: 20vh;" pattern=".{1,5}" required name="teilnehmerAnzahl" type="number" min="1" max="99999"
+                            placeholder="Hier eintragen..." th:value="${teilnehmerAnzahl}">
+                        </label>
+                        <br>
+                        <input class="btn btn-primary" type="submit" value="Teilnehmeranzahl hinzufügen">
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <hr>
 

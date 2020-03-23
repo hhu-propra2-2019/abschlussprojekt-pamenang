@@ -190,7 +190,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   void test_ModulBearbeiten() throws Exception {
 
-    Modul modul = new Modul(1L, "Propra", "Max mustermann", "2020-12-15 15:00", true);
+    Modul modul = new Modul(1L, "Propra", "Max mustermann", "2020-12-15 15:00", true, 0L);
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
 
     mockMvc
@@ -216,7 +216,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   void test_Modul_Select_Get() throws Exception {
-    Modul modul = new Modul(1L, "testen", null, "2020-12-15 15:00", true);
+    Modul modul = new Modul(1L, "testen", null, "2020-12-15 15:00", true, 0L);
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
 
     mockMvc.perform(get("/zulassung1/modul/1"))

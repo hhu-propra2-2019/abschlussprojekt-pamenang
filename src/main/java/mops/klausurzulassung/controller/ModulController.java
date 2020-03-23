@@ -206,6 +206,7 @@ public class ModulController {
     model.addAttribute("frist", frist);
     model.addAttribute("student", new Student("", "", "", null, id, null, null));
     model.addAttribute("papierZulassung", false);
+    model.addAttribute("teilnehmerAnzahl", modul.getTeilnehmer());
 
     model.addAttribute("errorMessage", message.getErrorMessage());
     model.addAttribute("successMessage", message.getSuccessMessage());
@@ -228,6 +229,14 @@ public class ModulController {
   public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     modulService.download(id, response);
+  }
+
+  @Secured("ROLE_orga")
+  @PostMapping("modul/teilnehmerHinzufuegen/{id}")
+  public String modulTeilnehmerHinzufuegen(@PathVariable Long id, @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl, Model model, KeycloakAuthenticationToken keycloakAuthenticationToken){
+    modulService.saveGesamtTeilnehmerzahlForModul(id, teilnehmerAnzahl);
+    message.setSuccessMessage("Teilnehmeranzahl wurde erfolgreich übernommen.");
+    return "redirect:/zulassung1/modul/" + id;
   }
 
 
