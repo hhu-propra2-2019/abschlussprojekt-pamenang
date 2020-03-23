@@ -14,14 +14,20 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -45,7 +51,6 @@ class ModulAuswahlTests {
   private MockMvc mockMvc;
   @MockBean
   private ModulService modulservice;
-
 
   @Test
   void fuerModulAuswahlAnmelden() throws Exception {
@@ -275,59 +280,201 @@ class ModulAuswahlTests {
             .param("papierzulassung", String.valueOf(true))).andExpect(status().is3xxRedirection());
     verify(modulservice, times(1)).altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
   }
-/*
+
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_modulAbschickenSuccessful() throws Exception {
+  void modulAbschickenWithMissingAttribute() throws Exception {
+    Modul modul = new Modul(1L, "", "testorga", "01/02/2021", true);
 
-    FrontendMessage message = new FrontendMessage("error", "success");
-    Modul modul = new Modul(1L, "testname", "testorga", "01/02/2021 12:00", true);
+    when(modulservice.missingAttributeInModul(modul)).thenReturn(true);
 
-    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
-    mockMvc
-        .perform(post("/zulassung1/modulBearbeiten/1")
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/modulBearbeiten/1")
             .param("id", modul.getId().toString())
             .param("name", modul.getName())
             .param("owner", modul.getOwner())
             .param("frist", modul.getFrist())
-            .param("active", "true"))
+            .param("active", "true");
+
+    mockMvc.perform(builder)
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.redirectedUrl
+            ("/zulassung1/modulBearbeiten/1"))
         .andExpect(status().is3xxRedirection());
-    verify(modulservice, times(1)).save(any(Modul.class));
   }
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_backToModulAuswahlSuccessful() throws Exception {
+  void modulAbschickenMitfalscherFrist() throws Exception {
+    Modul modul = new Modul(2L, "name", "testorga", "50/02/2000", true);
 
-    FrontendMessage message = new FrontendMessage("error", "success");
-    Modul modul = new Modul(1L, "testname", "testorga", "01/02/2021", true);
+    when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
+    when(modulservice.fristIsDate(modul.getFrist())).thenReturn(false);
 
-    mockMvc
-        .perform(post("/zulassung1/neuesModulHinzufuegen")
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/modulBearbeiten/2")
             .param("id", modul.getId().toString())
             .param("name", modul.getName())
             .param("owner", modul.getOwner())
             .param("frist", modul.getFrist())
-            .param("active", "true"))
-        .andExpect(status().isOk());
-    verify(modulservice, times(1)).save(any(Modul.class));
+            .param("active", "true");
+
+    mockMvc.perform(builder)
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.redirectedUrl
+            ("/zulassung1/modulBearbeiten/2"))
+        .andExpect(status().is3xxRedirection());
+
   }
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
-  public void test_backToModulAuswahlInvalid() throws Exception {
+  void modulAbschickenMitAbgelaufenerFrist() throws Exception {
+    Modul modul = new Modul(3L, "name", "testorga", "01/02/2000", true);
 
-    FrontendMessage message = new FrontendMessage("error", "success");
-    Modul modul = new Modul(1L, "testname", "testorga", "01/02/2021", true);
+    when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
+    when(modulservice.fristIsDate(modul.getFrist())).thenReturn(true);
+    when(modulservice.isFristAbgelaufen(modul)).thenReturn(true);
 
-    when(modulservice.isFristAbgelaufen(any())).thenReturn(true);
-    mockMvc
-        .perform(post("/zulassung1/neuesModulHinzufuegen")
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/modulBearbeiten/3")
             .param("id", modul.getId().toString())
             .param("name", modul.getName())
             .param("owner", modul.getOwner())
             .param("frist", modul.getFrist())
-            .param("active", "true"))
+            .param("active", "true");
+
+    mockMvc.perform(builder)
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.redirectedUrl
+            ("/zulassung1/modulBearbeiten/3"))
         .andExpect(status().is3xxRedirection());
-  }*/
+  }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  void modulAbschicken() throws Exception {
+
+    String frist = fristInZukunft();
+
+    Modul modul = new Modul(null, "name", null, frist, true);
+    Modul vorhandenesModul = new Modul(4L, "ProPra", null, null, false);
+
+    when(modulservice.findById(4L)).thenReturn(Optional.of(vorhandenesModul));
+    when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
+    when(modulservice.fristIsDate(modul.getFrist())).thenReturn(true);
+    when(modulservice.isFristAbgelaufen(modul)).thenReturn(false);
+
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/modulBearbeiten/4")
+            .param("id", "4")
+            .param("name", modul.getName())
+            .param("frist", modul.getFrist());
+
+    mockMvc.perform(builder)
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.redirectedUrl
+            ("/zulassung1/modulAuswahl"))
+        .andExpect(status().is3xxRedirection());
+
+    verify(modulservice, times(1)).save(vorhandenesModul);
+
+    assertEquals("name", vorhandenesModul.getName());
+    assertEquals("orga", vorhandenesModul.getOwner());
+    assertEquals(true, vorhandenesModul.getActive());
+    assertEquals(frist + " 12:00", vorhandenesModul.getFrist());
+  }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  void backToModulAuswahlWithMissingAttribute() throws Exception {
+    Modul modul = new Modul(null, "", null, "01/02/2021", null);
+
+    when(modulservice.missingAttributeInModul(modul)).thenReturn(true);
+
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/neuesModulHinzufuegen")
+            .param("name", modul.getName())
+            .param("frist", modul.getFrist());
+
+    mockMvc.perform(builder)
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.redirectedUrl
+            ("/zulassung1/modulHinzufuegen"))
+        .andExpect(status().is3xxRedirection());
+  }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  void backToModulAuswahlFristIstUngueltig() throws Exception {
+    Modul modul = new Modul(null, "ProPra", null, "50/02/2021", null);
+
+    when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
+    when(modulservice.fristIsDate(modul.getFrist())).thenReturn(false);
+
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/neuesModulHinzufuegen")
+            .param("name", modul.getName())
+            .param("frist", modul.getFrist());
+
+    mockMvc.perform(builder)
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.redirectedUrl
+            ("/zulassung1/modulHinzufuegen"))
+        .andExpect(status().is3xxRedirection());
+  }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  void backToModulAuswahlFristIstAbgelaufen() throws Exception {
+    Modul modul = new Modul(null, "ProPra", null, "01/02/2000", null);
+
+    when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
+    when(modulservice.fristIsDate(modul.getFrist())).thenReturn(true);
+    when(modulservice.isFristAbgelaufen(modul)).thenReturn(true);
+
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/neuesModulHinzufuegen")
+            .param("name", modul.getName())
+            .param("frist", modul.getFrist());
+
+    mockMvc.perform(builder)
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.redirectedUrl
+            ("/zulassung1/modulHinzufuegen"))
+        .andExpect(status().is3xxRedirection());
+  }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  void backToModulAuswahl() throws Exception {
+    String frist = fristInZukunft();
+
+    Modul modul = new Modul(null, "ProPra", null, frist, null);
+
+    when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
+    when(modulservice.fristIsDate(modul.getFrist())).thenReturn(true);
+    when(modulservice.isFristAbgelaufen(modul)).thenReturn(false);
+
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/neuesModulHinzufuegen")
+            .param("name", modul.getName())
+            .param("frist", modul.getFrist());
+
+    mockMvc.perform(builder)
+        .andDo(MockMvcResultHandlers.print())
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulAuswahl"))
+        .andExpect(status().is3xxRedirection());
+
+    verify(modulservice, times(1)).save(any());
+  }
+
+  private String fristInZukunft() {
+    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime future = now.plusYears(1);
+    int year = future.getYear();
+    int month = future.getMonthValue();
+    int day = future.getDayOfMonth();
+    return month + "/" + day + "/" + year;
+  }
 }

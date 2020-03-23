@@ -92,7 +92,7 @@ public class ModulController {
           modul.setOwner(owner);
           modul.setActive(true);
           modulService.save(modul);
-          page = "modulAuswahl";
+          page = "redirect:/zulassung1/modulAuswahl";
         } else {
           message.setErrorMessage("Die Frist muss in der Zukunft liegen!");
         }
@@ -108,7 +108,6 @@ public class ModulController {
     model.addAttribute("moduls", moduls);
     model.addAttribute("errorMessage", message.getErrorMessage());
     model.addAttribute("successMessage", message.getSuccessMessage());
-
 
     return page;
   }
