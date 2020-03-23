@@ -137,6 +137,7 @@ public class ModulService {
       modul.get().setOwner(null);
       modul.get().setFrist(null);
       modul.get().setActive(false);
+      modul.get().setTeilnehmer(0L);
       save(modul.get());
 
       Iterable<Student> students = studentService.findByModulId(id);
@@ -239,31 +240,31 @@ public class ModulService {
   public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
     message.resetMessage();
-      String modulname = findById(id).get().getName();
-      Student  student = Student.builder()
-              .email(studentDto.getEmail())
-              .fachname(modulname)
-              .vorname(studentDto.getVorname())
-              .nachname(studentDto.getNachname())
-              .matrikelnummer(studentDto.getMatrikelnummer())
-              .modulId(id)
-              .build();
-      try {
+    String modulname = findById(id).get().getName();
+    Student student = Student.builder()
+        .email(studentDto.getEmail())
+        .fachname(modulname)
+        .vorname(studentDto.getVorname())
+        .nachname(studentDto.getNachname())
+        .matrikelnummer(studentDto.getMatrikelnummer())
+        .modulId(id)
+        .build();
+    try {
 
-        String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
-        student.setToken(token);
-        studentService.save(student);
-        message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
-        emailService.sendMail(student);
+      String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
+      student.setToken(token);
+      studentService.save(student);
+      message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
+      emailService.sendMail(student);
 
-      } catch (NoTokenInDatabaseException e) {
-        if (papierZulassung) {
-          erstelleTokenUndSendeEmail(student, student.getModulId(), true);
-          message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
-        } else {
-          message.setErrorMessage("Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
-        }
+    } catch (NoTokenInDatabaseException e) {
+      if (papierZulassung) {
+        erstelleTokenUndSendeEmail(student, student.getModulId(), true);
+        message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
+      } else {
+        message.setErrorMessage("Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
       }
+    }
 
     return message;
   }
@@ -274,11 +275,11 @@ public class ModulService {
 
       quittungService.findPublicKey(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
-      if (isAltzulassung){
+      if (isAltzulassung) {
         emailService.sendMail(student);
       }
 
-    } catch (NoPublicKeyInDatabaseException e){
+    } catch (NoPublicKeyInDatabaseException e) {
 
       String tokenString = null;
       try {
@@ -287,7 +288,7 @@ public class ModulService {
         logger.error("Fehler bei Erstellung des Tokens!", ex);
       }
       student.setToken(tokenString);
-      if (isAltzulassung){
+      if (isAltzulassung) {
         studentService.save(student);
       }
       emailService.sendMail(student);
