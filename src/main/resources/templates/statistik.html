@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{mopslayout :: html(name='Statistik', title='Optional: Tabtitel', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
+<html lang="en"
+      th:replace="~{mopslayout :: html(name='Statistik', title='Optional: Tabtitel', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>Name des Subsystems</title>
+    <title>Statistiken</title>
     <th:block th:fragment="headcontent">
         <!-- Links, Skripts, Styles hier einfügen! -->
     </th:block>
@@ -22,7 +23,7 @@
     </nav>
 </header>
 <main th:fragment="bodycontent">
-    <h1>Statistik</h1>
+    <h1>Statistik des Moduls <span th:text="${modul.getName()}"></span></h1>
 </main>
 </body>
 </html>
