@@ -65,8 +65,8 @@ public class ModulController {
     Iterable<Modul> moduls = modulService.findByOwnerAndActive(principal.getName(), true);
     model.addAttribute("moduls", moduls);
 
-    model.addAttribute("errorMessage",message.getErrorMessage());
-    model.addAttribute("successMessage",message.getSuccessMessage());
+    model.addAttribute("errorMessage", message.getErrorMessage());
+    model.addAttribute("successMessage", message.getSuccessMessage());
 
     message.resetMessage();
     return "modulAuswahl";
@@ -91,6 +91,7 @@ public class ModulController {
           modul.setFrist(modul.getFrist() + " 12:00");
           modul.setOwner(owner);
           modul.setActive(true);
+          modul.setTeilnehmer(0L);
           modulService.save(modul);
           page = "modulAuswahl";
         } else {
@@ -206,8 +207,8 @@ public class ModulController {
     model.addAttribute("student", new Student("", "", "", null, id, null, null));
     model.addAttribute("papierZulassung", false);
 
-    model.addAttribute("errorMessage",message.getErrorMessage());
-    model.addAttribute("successMessage",message.getSuccessMessage());
+    model.addAttribute("errorMessage", message.getErrorMessage());
+    model.addAttribute("successMessage", message.getSuccessMessage());
     message.resetMessage();
 
     return "modulAnsicht";
@@ -222,7 +223,7 @@ public class ModulController {
   }
 
   @Secured("ROLE_orga")
-  @GetMapping(value ="/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+  @GetMapping(value = "/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   @ResponseBody
   public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) {
     model.addAttribute("account", createAccountFromPrincipal(token));
@@ -233,8 +234,8 @@ public class ModulController {
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
   public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    
-    if(bindingResult.hasErrors()){
+
+    if (bindingResult.hasErrors()) {
       message.setErrorMessage("Alle Felder im Formular müssen befüllt werden!");
       return "redirect:/zulassung1/modul/" + id;
     }

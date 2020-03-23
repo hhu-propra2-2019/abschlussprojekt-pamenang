@@ -29,10 +29,13 @@ public class Modul {
   @Column(name = "owner")
   private String owner;
 
-  @Column(name="frist")
+  @Column(name = "frist")
   @DateTimeFormat(pattern = "MM/dd/yyyy hh:mm")
   private String frist;
 
   @Column(name = "active")
   private Boolean active;
+
+  @Column(name = "teilnehmer")
+  private Long teilnehmer;
 }
