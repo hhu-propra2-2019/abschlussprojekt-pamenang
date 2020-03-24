@@ -13,29 +13,26 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "moduls")
+@Table(name = "modul_statistik")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Modul {
+public class ModulStatistiken {
 
   @Id
   @GeneratedValue
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "name")
-  private String name;
-
-  @Column(name = "owner")
-  private String owner;
+  @Column(name = "modulId")
+  private Long modulId;
 
   @Column(name = "frist")
   @DateTimeFormat(pattern = "MM/dd/yyyy hh:mm")
   private String frist;
 
-  @Column(name = "active")
-  private Boolean active;
-
   @Column(name = "teilnehmer")
   private Long teilnehmer;
+
+  @Column(name = "zulassungsZahl")
+  private Long zulassungsZahl;
 }

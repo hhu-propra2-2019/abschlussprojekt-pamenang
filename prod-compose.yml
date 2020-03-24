@@ -13,7 +13,6 @@ services:
       - "MYSQL_DATABASE=organisatoren"
   make:
     build: .
-    restart: always
     command: sh -c "apk add bash && bash ./wait-for-it.sh database:3306 --timeout=20 -- java -Dspring.profiles.active=prod -jar app.jar"
     ports:
       - "8080:8080"

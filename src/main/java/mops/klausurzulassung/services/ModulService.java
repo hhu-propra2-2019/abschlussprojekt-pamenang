@@ -1,6 +1,7 @@
 package mops.klausurzulassung.services;
 
 import mops.klausurzulassung.database_entity.Modul;
+import mops.klausurzulassung.database_entity.ModulStatistiken;
 import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.domain.FrontendMessage;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -43,18 +46,20 @@ public class ModulService {
   private final QuittungService quittungService;
   private final EmailService emailService;
   private final TokengenerierungService tokengenerierungService;
+  private final StatistikService statistikService;
 
   private FrontendMessage message = new FrontendMessage();
   private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
 
-  public ModulService(ModulRepository modulRepository, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService, QuittungService quittungService) {
+  public ModulService(ModulRepository modulRepository, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService, QuittungService quittungService, StatistikService statistikService) {
     this.csvService = csvService;
     this.studentService = studentService;
     this.tokengenerierungService = tokengenerierungService;
     this.emailService = emailService;
     this.quittungService = quittungService;
     this.modulRepository = modulRepository;
+    this.statistikService = statistikService;
   }
 
   public Iterable<Modul> findByOwnerAndActive(String name, boolean active) {
@@ -137,6 +142,7 @@ public class ModulService {
       modul.get().setOwner(null);
       modul.get().setFrist(null);
       modul.get().setActive(false);
+      modul.get().setTeilnehmer(0L);
       save(modul.get());
 
       Iterable<Student> students = studentService.findByModulId(id);
@@ -201,12 +207,28 @@ public class ModulService {
       outputStream.write(bytes);
       outputStream.flush();
       outputStream.close();
+
+      countLines(id, klausurliste);
+
+
       klausurliste.delete();
     } catch (IOException e) {
       logger.error("Outputstream fehlerhaft!", e);
     }
 
     logger.info("Klausurliste wurde erfolgreich heruntergeladen.");
+  }
+
+  void countLines(@PathVariable Long id, File klausurliste) throws IOException {
+    BufferedReader reader = new BufferedReader(new FileReader(klausurliste));
+    Long lines = 0L;
+    while (reader.readLine() != null) lines++;
+    reader.close();
+    Optional<Modul> modul = findById(id);
+    Long einzigartigeID = statistikService.modulInDatabase(modul.get().getFrist(), id);
+    Optional<ModulStatistiken> modulstat = statistikService.findById(einzigartigeID);
+    modulstat.get().setZulassungsZahl(lines);
+    statistikService.save(modulstat.get());
   }
 
   public boolean isFristAbgelaufen(Modul zuPruefendesModul) throws ParseException {
@@ -239,31 +261,31 @@ public class ModulService {
   public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 
     message.resetMessage();
-      String modulname = findById(id).get().getName();
-      Student  student = Student.builder()
-              .email(studentDto.getEmail())
-              .fachname(modulname)
-              .vorname(studentDto.getVorname())
-              .nachname(studentDto.getNachname())
-              .matrikelnummer(studentDto.getMatrikelnummer())
-              .modulId(id)
-              .build();
-      try {
+    String modulname = findById(id).get().getName();
+    Student student = Student.builder()
+        .email(studentDto.getEmail())
+        .fachname(modulname)
+        .vorname(studentDto.getVorname())
+        .nachname(studentDto.getNachname())
+        .matrikelnummer(studentDto.getMatrikelnummer())
+        .modulId(id)
+        .build();
+    try {
 
-        String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
-        student.setToken(token);
-        studentService.save(student);
-        message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
-        emailService.sendMail(student);
+      String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
+      student.setToken(token);
+      studentService.save(student);
+      message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
+      emailService.sendMail(student);
 
-      } catch (NoTokenInDatabaseException e) {
-        if (papierZulassung) {
-          erstelleTokenUndSendeEmail(student, student.getModulId(), true);
-          message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
-        } else {
-          message.setErrorMessage("Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
-        }
+    } catch (NoTokenInDatabaseException e) {
+      if (papierZulassung) {
+        erstelleTokenUndSendeEmail(student, student.getModulId(), true);
+        message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
+      } else {
+        message.setErrorMessage("Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
       }
+    }
 
     return message;
   }
@@ -274,11 +296,11 @@ public class ModulService {
 
       quittungService.findPublicKey(student.getMatrikelnummer().toString(), student.getModulId().toString());
 
-      if (isAltzulassung){
+      if (isAltzulassung) {
         emailService.sendMail(student);
       }
 
-    } catch (NoPublicKeyInDatabaseException e){
+    } catch (NoPublicKeyInDatabaseException e) {
 
       String tokenString = null;
       try {
@@ -287,7 +309,7 @@ public class ModulService {
         logger.error("Fehler bei Erstellung des Tokens!", ex);
       }
       student.setToken(tokenString);
-      if (isAltzulassung){
+      if (isAltzulassung) {
         studentService.save(student);
       }
       emailService.sendMail(student);
@@ -300,5 +322,11 @@ public class ModulService {
 
   public boolean missingAttributeInModul(Modul modul) {
     return modul.getName().isEmpty() || modul.getFrist().isEmpty();
+  }
+
+  public void saveGesamtTeilnehmerzahlForModul(Long id, Long teilnehmerAnzahl) {
+    Modul modul = findById(id).get();
+    modul.setTeilnehmer(teilnehmerAnzahl);
+    save(modul);
   }
 }
