@@ -240,8 +240,8 @@ public class ModulController {
   public String modulTeilnehmerHinzufuegen(@PathVariable Long modulId, @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl, Model model, KeycloakAuthenticationToken keycloakAuthenticationToken) {
     modulService.saveGesamtTeilnehmerzahlForModul(modulId, teilnehmerAnzahl);
     String frist = modulService.findById(modulId).get().getFrist();
-
-    ModulStatistiken modul = new ModulStatistiken(null, modulId, frist, teilnehmerAnzahl, null);
+    Long id = statistikService.modulInDatabase(frist, modulId);
+    ModulStatistiken modul = new ModulStatistiken(id, modulId, frist, teilnehmerAnzahl, null);
     statistikService.save(modul);
     message.setSuccessMessage("Teilnehmeranzahl wurde erfolgreich übernommen.");
     return "redirect:/zulassung1/modul/" + modulId;
