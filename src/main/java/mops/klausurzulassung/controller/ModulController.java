@@ -1,6 +1,7 @@
 package mops.klausurzulassung.controller;
 
 import mops.klausurzulassung.database_entity.Modul;
+import mops.klausurzulassung.database_entity.ModulStatistiken;
 import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
@@ -238,9 +239,10 @@ public class ModulController {
   @PostMapping("modul/teilnehmerHinzufuegen/{modulId}")
   public String modulTeilnehmerHinzufuegen(@PathVariable Long modulId, @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl, Model model, KeycloakAuthenticationToken keycloakAuthenticationToken) {
     modulService.saveGesamtTeilnehmerzahlForModul(modulId, teilnehmerAnzahl);
-    //String frist = modulService.findById(modulId).get().getFrist();
-    //ModulStatistiken modul = new ModulStatistiken(null, modulId, frist, teilnehmerAnzahl, null);
-    //statistikService.save(modul);
+    String frist = modulService.findById(modulId).get().getFrist();
+
+    ModulStatistiken modul = new ModulStatistiken(null, modulId, frist, teilnehmerAnzahl, null);
+    statistikService.save(modul);
     message.setSuccessMessage("Teilnehmeranzahl wurde erfolgreich übernommen.");
     return "redirect:/zulassung1/modul/" + modulId;
   }

@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class StatistikService {
 
@@ -22,7 +24,19 @@ public class StatistikService {
     return statistikRepository.findModulStatistikensByModulId(id);
   }
 
+  public Long modulInDatabase(String frist, Long modulId) {
+    String date = frist.substring(0, frist.length() - 6);
+    Optional<ModulStatistiken> modul = statistikRepository.findByFristAndModulId(date, modulId);
+    if (modul.isPresent()) {
+      return modul.get().getId();
+    }
+    return null;
+  }
+
   public void save(ModulStatistiken modul) {
+    String frist = modul.getFrist();
+    String date = frist.substring(0, frist.length() - 6);
+    modul.setFrist(date);
     statistikRepository.save(modul);
     logger.info("Neue Statistik zum Modul wurde gespeichert!");
   }
