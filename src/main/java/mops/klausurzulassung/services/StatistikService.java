@@ -16,11 +16,11 @@ public class StatistikService {
   private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
   @Autowired
-  public StatistikService(StatistikRepository statistikRepository){
+  public StatistikService(StatistikRepository statistikRepository) {
     this.statistikRepository = statistikRepository;
   }
 
-  public Iterable<ModulStatistiken> findModulStatistikensByModulId(Long id){
+  public Iterable<ModulStatistiken> findModulStatistikensByModulId(Long id) {
     return statistikRepository.findModulStatistikensByModulId(id);
   }
 
@@ -39,5 +39,9 @@ public class StatistikService {
     modul.setFrist(date);
     statistikRepository.save(modul);
     logger.info("Neue Statistik zum Modul wurde gespeichert!");
+  }
+
+  public Optional<ModulStatistiken> findById(Long id) {
+    return statistikRepository.findById(id);
   }
 }

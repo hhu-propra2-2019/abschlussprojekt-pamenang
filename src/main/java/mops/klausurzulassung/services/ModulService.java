@@ -1,6 +1,7 @@
 package mops.klausurzulassung.services;
 
 import mops.klausurzulassung.database_entity.Modul;
+import mops.klausurzulassung.database_entity.ModulStatistiken;
 import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.domain.FrontendMessage;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -43,18 +46,20 @@ public class ModulService {
   private final QuittungService quittungService;
   private final EmailService emailService;
   private final TokengenerierungService tokengenerierungService;
+  private final StatistikService statistikService;
 
   private FrontendMessage message = new FrontendMessage();
   private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
 
-  public ModulService(ModulRepository modulRepository, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService, QuittungService quittungService) {
+  public ModulService(ModulRepository modulRepository, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService, QuittungService quittungService, StatistikService statistikService) {
     this.csvService = csvService;
     this.studentService = studentService;
     this.tokengenerierungService = tokengenerierungService;
     this.emailService = emailService;
     this.quittungService = quittungService;
     this.modulRepository = modulRepository;
+    this.statistikService = statistikService;
   }
 
   public Iterable<Modul> findByOwnerAndActive(String name, boolean active) {
@@ -202,6 +207,19 @@ public class ModulService {
       outputStream.write(bytes);
       outputStream.flush();
       outputStream.close();
+
+      BufferedReader reader = new BufferedReader(new FileReader(klausurliste));
+      Long lines = 0L;
+      while (reader.readLine() != null) lines++;
+      reader.close();
+      Optional<Modul> modul = findById(id);
+      Long einzigartigeID = statistikService.modulInDatabase(modul.get().getFrist(), id);
+      Optional<ModulStatistiken> modulstat = statistikService.findById(einzigartigeID);
+      modulstat.get().setZulassungsZahl(lines);
+      statistikService.save(modulstat.get());
+      logger.debug(lines + "");
+
+
       klausurliste.delete();
     } catch (IOException e) {
       logger.error("Outputstream fehlerhaft!", e);
