@@ -50,6 +50,7 @@ public class StatistikController {
   public String selectStatistik(@PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
     Modul modul = modulService.findById(id).get();
     List<ModulStatistiken> modulStatistikens1 = iteratorToListForModulStatistiks(statistikService.findModulStatistikensByModulId(id));
+    model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("currentModul", modul);
     model.addAttribute("modulStatistiken", modulStatistikens1);
     return "statistik";
