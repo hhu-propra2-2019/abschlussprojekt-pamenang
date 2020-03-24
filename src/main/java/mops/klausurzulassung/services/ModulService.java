@@ -208,17 +208,7 @@ public class ModulService {
       outputStream.flush();
       outputStream.close();
 
-      BufferedReader reader = new BufferedReader(new FileReader(klausurliste));
-      Long lines = 0L;
-      while (reader.readLine() != null) lines++;
-      reader.close();
-      Optional<Modul> modul = findById(id);
-      Long einzigartigeID = statistikService.modulInDatabase(modul.get().getFrist(), id);
-      Optional<ModulStatistiken> modulstat = statistikService.findById(einzigartigeID);
-      modulstat.get().setZulassungsZahl(lines);
-      statistikService.save(modulstat.get());
-
-      logger.debug(lines + "");
+      countLines(id, klausurliste);
 
 
       klausurliste.delete();
@@ -227,6 +217,18 @@ public class ModulService {
     }
 
     logger.info("Klausurliste wurde erfolgreich heruntergeladen.");
+  }
+
+  void countLines(@PathVariable Long id, File klausurliste) throws IOException {
+    BufferedReader reader = new BufferedReader(new FileReader(klausurliste));
+    Long lines = 0L;
+    while (reader.readLine() != null) lines++;
+    reader.close();
+    Optional<Modul> modul = findById(id);
+    Long einzigartigeID = statistikService.modulInDatabase(modul.get().getFrist(), id);
+    Optional<ModulStatistiken> modulstat = statistikService.findById(einzigartigeID);
+    modulstat.get().setZulassungsZahl(lines);
+    statistikService.save(modulstat.get());
   }
 
   public boolean isFristAbgelaufen(Modul zuPruefendesModul) throws ParseException {
