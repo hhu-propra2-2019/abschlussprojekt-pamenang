@@ -41,6 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.web.servlet.function.RequestPredicates.param;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -284,7 +285,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   void modulAbschickenWithMissingAttribute() throws Exception {
-    Modul modul = new Modul(1L, "", "testorga", "01/02/2021", true);
+    Modul modul = new Modul(1L, "", "testorga", "01/02/2021", true, 0L);
 
     when(modulservice.missingAttributeInModul(modul)).thenReturn(true);
 
@@ -306,7 +307,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   void modulAbschickenMitfalscherFrist() throws Exception {
-    Modul modul = new Modul(2L, "name", "testorga", "50/02/2000", true);
+    Modul modul = new Modul(2L, "name", "testorga", "50/02/2000", true, 0L);
 
     when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
     when(modulservice.fristIsDate(modul.getFrist())).thenReturn(false);
@@ -330,7 +331,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   void modulAbschickenMitAbgelaufenerFrist() throws Exception {
-    Modul modul = new Modul(3L, "name", "testorga", "01/02/2000", true);
+    Modul modul = new Modul(3L, "name", "testorga", "01/02/2000", true, 0L);
 
     when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
     when(modulservice.fristIsDate(modul.getFrist())).thenReturn(true);
@@ -342,7 +343,8 @@ class ModulAuswahlTests {
             .param("name", modul.getName())
             .param("owner", modul.getOwner())
             .param("frist", modul.getFrist())
-            .param("active", "true");
+            .param("active", "true")
+            .param("teilnehmer", "0");
 
     mockMvc.perform(builder)
         .andDo(MockMvcResultHandlers.print())
@@ -357,8 +359,8 @@ class ModulAuswahlTests {
 
     String frist = fristInZukunft();
 
-    Modul modul = new Modul(null, "name", null, frist, true);
-    Modul vorhandenesModul = new Modul(4L, "ProPra", null, null, false);
+    Modul modul = new Modul(null, "name", null, frist, true, 0L);
+    Modul vorhandenesModul = new Modul(4L, "ProPra", null, null, false, 0L);
 
     when(modulservice.findById(4L)).thenReturn(Optional.of(vorhandenesModul));
     when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
@@ -388,7 +390,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   void backToModulAuswahlWithMissingAttribute() throws Exception {
-    Modul modul = new Modul(null, "", null, "01/02/2021", null);
+    Modul modul = new Modul(null, "", null, "01/02/2021", null, 0L);
 
     when(modulservice.missingAttributeInModul(modul)).thenReturn(true);
 
@@ -407,7 +409,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   void backToModulAuswahlFristIstUngueltig() throws Exception {
-    Modul modul = new Modul(null, "ProPra", null, "50/02/2021", null);
+    Modul modul = new Modul(null, "ProPra", null, "50/02/2021", null, 0L);
 
     when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
     when(modulservice.fristIsDate(modul.getFrist())).thenReturn(false);
@@ -427,7 +429,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
   @Test
   void backToModulAuswahlFristIstAbgelaufen() throws Exception {
-    Modul modul = new Modul(null, "ProPra", null, "01/02/2000", null);
+    Modul modul = new Modul(null, "ProPra", null, "01/02/2000", null, 0L);
 
     when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
     when(modulservice.fristIsDate(modul.getFrist())).thenReturn(true);
@@ -441,7 +443,7 @@ class ModulAuswahlTests {
     mockMvc.perform(builder)
         .andDo(MockMvcResultHandlers.print())
         .andExpect(MockMvcResultMatchers.redirectedUrl
-            ("/zulassung1/modulHinzufuegen"))
+            ("/zulassung1/modulAuswahl"))
         .andExpect(status().is3xxRedirection());
   }
 
@@ -450,7 +452,7 @@ class ModulAuswahlTests {
   void backToModulAuswahl() throws Exception {
     String frist = fristInZukunft();
 
-    Modul modul = new Modul(null, "ProPra", null, frist, null);
+    Modul modul = new Modul(null, "ProPra", null, frist, null, 0L);
 
     when(modulservice.missingAttributeInModul(modul)).thenReturn(false);
     when(modulservice.fristIsDate(modul.getFrist())).thenReturn(true);
