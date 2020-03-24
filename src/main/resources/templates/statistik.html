@@ -24,54 +24,84 @@
     </nav>
 </header>
 <main th:fragment="bodycontent">
-    <h1>Statistik des Moduls <span th:text="${currentModul.getName()}"></span></h1>
+    <h1 class="text-center text-capitalize">Statistik des Moduls <span th:text="${currentModul.getName()}"></span></h1>
+    <div class="container" style="height: 50vh;" id="chart_div"></div>
     <br>
     <br>
-    <div id="chart_div"></div>
+    <div class="container" id="links" th:if="${modulStatistiken}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Modul-ID</th>
+                <th>Frist</th>
+                <th>Teilnehmerzahl</th>
+                <th>Zulassungszahl</th>
+            </tr>
+            </thead>
+            <tbody th:remove="all-but-first">
+            <tr th:each="modul,stats : ${modulStatistiken}">
+                <td>
+                    <span th:id="${'modul' + stats.index}" th:text="${modul.getModulId()}">1234</span>
+                </td>
+                <td>
+                    <span th:id="${'frist' + stats.index}" th:text="${modul.getFrist()}">ProPra2</span>
+                </td>
+                <td>
+                    <span th:id="${'teilnehmer' + stats.index}" th:text="${modul.getTeilnehmer()}">ProPra2</span>
+                </td>
+                <td>
+                    <span th:id="${'zulassung' + stats.index}" th:text="${modul.getZulassungsZahl()}">ProPra2</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </main>
 </body>
 </html>
 <script th:inline="javascript">
     /*<![CDATA[*/
+
     google.charts.load('current', {packages: ['corechart', 'line']});
     google.charts.setOnLoadCallback(drawLogScales);
 
     function drawLogScales() {
+
+        var modulStatistikenLaenge = /*[[${modulStatistiken.size()}]]*/ '0';
+        var modulData = [];
+        for (var i = 0; i < modulStatistikenLaenge; i++){
+            var frist = document.getElementById("frist" + i);
+            var teilnehmer = document.getElementById("teilnehmer" + i);
+            var zulassungen = document.getElementById("zulassung" + i);
+            modulData[i] = [new Date(parseInt(frist.innerText.substring(6,10)), parseInt(frist.innerText.substring(0, 2)), parseInt(frist.innerText.substring(3,5)))
+                , parseInt(teilnehmer.innerText)
+                , parseInt(zulassungen.innerText)];
+        }
+
         var data = new google.visualization.DataTable();
-        data.addColumn('date', 'X');
-        data.addColumn('number', 'Dogs');
-        data.addColumn('number', 'Cats');
+        data.addColumn('date', 'Zeit');
+        data.addColumn('number', 'Teilnehmer');
+        data.addColumn('number', 'Zulassungen');
 
-        data.addRows([
-            [new Date(2020, 1, 1), 0, 0],
-            [new Date(2020, 1, 2), 10, 5],
-            [new Date(2020, 1, 3), 23, 15],
-            [new Date(2020, 1, 4), 17, 9],
-            [new Date(2020, 1, 5), 18, 10],
-            [new Date(2020, 1, 6), 9, 5],
-            [new Date(2020, 1, 7), 11, 3],
-            [new Date(2020, 1, 8), 27, 19],
-            [new Date(2020, 1, 9), 33, 25],
-            [new Date(2020, 1, 10), 40, 32]
-        ]);
-
+        for(var i = 0; i < modulStatistikenLaenge; i++){
+            data.addRow([modulData[i][0], modulData[i][1], modulData[i][2]]);
+        }
         var options = {
             hAxis: {
-                title: 'Time',
+                title: 'Zeit',
                 logScale: false
             },
             vAxis: {
-                title: 'Popularity',
+                title: 'Anzahl',
                 logScale: false
             },
-            colors: ['#a52714', '#097138']
+            colors: ['#a52714', '#097138'],
+            curveType: 'function',
+            legend: { position: 'bottom' }
         };
 
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
-
-        var message = /*[[${zahl}]]*/ '0';
-        console.log(message);
     }
     /*]]>*/
 </script>
