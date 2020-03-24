@@ -1,11 +1,13 @@
 package mops.klausurzulassung.controller;
 
 import mops.klausurzulassung.database_entity.Modul;
+import mops.klausurzulassung.database_entity.ModulStatistiken;
 import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.services.ModulService;
+import mops.klausurzulassung.services.StatistikService;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.slf4j.Logger;
@@ -39,14 +41,16 @@ import java.text.ParseException;
 public class ModulController {
 
   private final ModulService modulService;
+  private final StatistikService statistikService;
   private Modul currentModul = new Modul();
 
   private FrontendMessage message = new FrontendMessage();
 
   private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
-  public ModulController(ModulService modulService) {
+  public ModulController(ModulService modulService, StatistikService statistikService) {
     this.modulService = modulService;
+    this.statistikService = statistikService;
   }
 
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
@@ -232,11 +236,17 @@ public class ModulController {
   }
 
   @Secured("ROLE_orga")
-  @PostMapping("modul/teilnehmerHinzufuegen/{id}")
-  public String modulTeilnehmerHinzufuegen(@PathVariable Long id, @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl, Model model, KeycloakAuthenticationToken keycloakAuthenticationToken){
-    modulService.saveGesamtTeilnehmerzahlForModul(id, teilnehmerAnzahl);
+  @PostMapping("modul/teilnehmerHinzufuegen/{modulId}")
+  public String modulTeilnehmerHinzufuegen(@PathVariable Long modulId, @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl, Model model, KeycloakAuthenticationToken keycloakAuthenticationToken) {
+    modulService.saveGesamtTeilnehmerzahlForModul(modulId, teilnehmerAnzahl);
+    String frist = modulService.findById(modulId).get().getFrist();
+    Long id = statistikService.modulInDatabase(frist, modulId);
+    ModulStatistiken modul = new ModulStatistiken(id, modulId, frist, teilnehmerAnzahl, null);
+    String date = frist.substring(0, frist.length() - 6);
+    modul.setFrist(date);
+    statistikService.save(modul);
     message.setSuccessMessage("Teilnehmeranzahl wurde erfolgreich übernommen.");
-    return "redirect:/zulassung1/modul/" + id;
+    return "redirect:/zulassung1/modul/" + modulId;
   }
 
 

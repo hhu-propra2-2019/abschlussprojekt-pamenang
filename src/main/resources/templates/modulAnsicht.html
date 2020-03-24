@@ -237,13 +237,15 @@
                 <form action="#" align="left" enctype="multipart/form-data" method="post"
                       th:action="'/zulassung1/modul'+'/'+${id}">
                     <div>
-                        <label>Wählen Sie eine Zulassungsliste (.csv) aus Ihrem Dateimanager aus! Die CSV-Datei muss einen
+                        <label>Wählen Sie eine Zulassungsliste (.csv) aus Ihrem Dateimanager aus! Die CSV-Datei muss
+                            einen
                             Kopfzeile
                             mit den folgenden Spaltentitle: Vorname, Nachname, Email, Matrikelnummer enthalten.<br>
                             <input accept=".csv" name="datei" size="50" type="file"> <br>
                         </label>
                         <br>
-                        <input class="btn btn-primary" type="submit" value="Liste abschicken" th:disabled="${teilnehmerAnzahl == 0}">
+                        <input class="btn btn-primary" th:disabled="${teilnehmerAnzahl == 0}" type="submit"
+                               value="Liste abschicken">
                         <br>
                         <br>
                         <span class="alert alert-warning" th:if="${teilnehmerAnzahl == 0}">Bitte erst die Teilnehmeranzahl hinzufügen.</span>
@@ -255,8 +257,9 @@
                       th:action="'/zulassung1/modul/teilnehmerHinzufuegen' + '/' +${id}">
                     <div>
                         <label>Fügen Sie die Gesamtanzahl der Teilnehmer hinzu.<br>
-                            <input class="form-control" style="width: 20vh;" pattern=".{1,5}" required name="teilnehmerAnzahl" type="number" min="1" max="99999"
-                            placeholder="Hier eintragen..." th:value="${teilnehmerAnzahl}">
+                            <input class="form-control" max="99999" min="1" name="teilnehmerAnzahl"
+                                   pattern=".{1,5}" placeholder="Hier eintragen..." required style="width: 20vh;"
+                                   th:value="${teilnehmerAnzahl}" type="number">
                         </label>
                         <br>
                         <input class="btn btn-primary" type="submit" value="Teilnehmeranzahl hinzufügen">
@@ -271,7 +274,8 @@
             <label> Hier können Sie die Klausurliste zum Modul <span th:text="${modul}">Propra</span> downladen! Denken
                 Sie nach Ende des Semesters daran das Modul zu löschen!
                 <form action="#" method="get" th:action="'/zulassung1/modul' +'/' + ${id}+'/klausurliste'">
-                    <button class="btn btn-outline-dark" type="submit">Download!</button>
+                    <button class="btn btn-outline-dark" th:disabled="${teilnehmerAnzahl == 0}" type="submit">Download
+                    </button>
                 </form>
             </label>
 

@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "modulStatistik")
+@Table(name = "modul_statistik")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ModulStatistiken {
