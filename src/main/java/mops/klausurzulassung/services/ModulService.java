@@ -217,6 +217,7 @@ public class ModulService {
       Optional<ModulStatistiken> modulstat = statistikService.findById(einzigartigeID);
       modulstat.get().setZulassungsZahl(lines);
       statistikService.save(modulstat.get());
+
       logger.debug(lines + "");
 
 

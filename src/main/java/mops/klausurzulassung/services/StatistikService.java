@@ -34,9 +34,7 @@ public class StatistikService {
   }
 
   public void save(ModulStatistiken modul) {
-    String frist = modul.getFrist();
-    String date = frist.substring(0, frist.length() - 6);
-    modul.setFrist(date);
+
     statistikRepository.save(modul);
     logger.info("Neue Statistik zum Modul wurde gespeichert!");
   }

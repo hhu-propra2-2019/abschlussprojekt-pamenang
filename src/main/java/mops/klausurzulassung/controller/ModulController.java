@@ -242,6 +242,8 @@ public class ModulController {
     String frist = modulService.findById(modulId).get().getFrist();
     Long id = statistikService.modulInDatabase(frist, modulId);
     ModulStatistiken modul = new ModulStatistiken(id, modulId, frist, teilnehmerAnzahl, null);
+    String date = frist.substring(0, frist.length() - 6);
+    modul.setFrist(date);
     statistikService.save(modul);
     message.setSuccessMessage("Teilnehmeranzahl wurde erfolgreich übernommen.");
     return "redirect:/zulassung1/modul/" + modulId;
