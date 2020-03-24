@@ -31,7 +31,8 @@
 </main>
 </body>
 </html>
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
     google.charts.load('current', {packages: ['corechart', 'line']});
     google.charts.setOnLoadCallback(drawLogScales);
 
@@ -68,5 +69,9 @@
 
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
+
+        var message = /*[[${zahl}]]*/ '0';
+        console.log(message);
     }
+    /*]]>*/
 </script>

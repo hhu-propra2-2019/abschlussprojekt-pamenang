@@ -49,6 +49,7 @@ public class StatistikController {
     Iterable<ModulStatistiken> modulStatistikens = statistikService.findModulStatistikensByModulId(id);
     model.addAttribute("currentModul", modul);
     model.addAttribute("modulStatistiken", modulStatistikens);
+    model.addAttribute("zahl", 10);
     return "statistik";
   }
 }
