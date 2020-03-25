@@ -79,7 +79,7 @@ public class ModulService {
     logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
 
-  public FrontendMessage verarbeiteUploadliste(Long id, MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public FrontendMessage verarbeiteUploadliste(Long id, MultipartFile file) {
     message.resetMessage();
     Iterable<CSVRecord> records = null;
     try {

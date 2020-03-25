@@ -223,7 +223,7 @@ public class ModulController {
   public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     model.addAttribute("account", createAccountFromPrincipal(token));
     message = modulService.verarbeiteUploadliste(id, file);
-    return "redirect:/zulassung1/modul" + "/" + id;
+    return "redirect:/zulassung1/emailError" + "/" + id;
   }
 
   @Secured("ROLE_orga")
