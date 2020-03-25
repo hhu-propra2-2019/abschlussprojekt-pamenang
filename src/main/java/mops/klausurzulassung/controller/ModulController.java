@@ -236,7 +236,8 @@ public class ModulController {
 
   @Secured("ROLE_orga")
   @PostMapping("modul/teilnehmerHinzufuegen/{modulId}")
-  public String modulTeilnehmerHinzufuegen(@PathVariable Long modulId, @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl, Model model, KeycloakAuthenticationToken keycloakAuthenticationToken) {
+  public String modulTeilnehmerHinzufuegen(@PathVariable Long modulId, @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl, Model model, KeycloakAuthenticationToken token) {
+    model.addAttribute("account", createAccountFromPrincipal(token));
     modulService.saveGesamtTeilnehmerzahlForModul(modulId, teilnehmerAnzahl);
     String frist = modulService.findById(modulId).get().getFrist();
     Long id = statistikService.modulInDatabase(frist, modulId);
