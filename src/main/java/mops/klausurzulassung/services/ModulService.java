@@ -258,7 +258,7 @@ public class ModulService {
     return outputStream;
   }
 
-  public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
 
     message.resetMessage();
     String modulname = findById(id).get().getName();
