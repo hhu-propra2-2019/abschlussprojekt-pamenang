@@ -34,11 +34,19 @@ public class StatistikController {
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
     return new Account(principal.getName(),
-        principal.getKeycloakSecurityContext().getIdToken().getEmail(),
-        null,
-        token.getAccount().getRoles());
+            principal.getKeycloakSecurityContext().getIdToken().getEmail(),
+            null,
+            token.getAccount().getRoles());
   }
 
+  /**
+   * This method is called for a GET request to /zulassung1/modul/{id}/statistik.
+   *
+   * @param id    of selected Modul
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
+   * @return view statistik
+   */
   @Secured("ROLE_orga")
   @GetMapping("/modul/{id}/statistik")
   public String selectStatistik(@PathVariable Long id, Model model, KeycloakAuthenticationToken token) {

@@ -79,7 +79,7 @@ public class ModulService {
     logger.info("Das Modul " + modul + " wurde gespeichert.");
   }
 
-  public FrontendMessage verarbeiteUploadliste(Long id, MultipartFile file) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public FrontendMessage verarbeiteUploadliste(Long id, MultipartFile file) {
     message.resetMessage();
     Iterable<CSVRecord> records = null;
     try {
@@ -258,17 +258,17 @@ public class ModulService {
     return outputStream;
   }
 
-  public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
 
     message.resetMessage();
     String modulname = findById(id).get().getName();
     Student student = Student.builder()
-        .email(studentDto.getEmail())
-        .fachname(modulname)
-        .vorname(studentDto.getVorname())
-        .nachname(studentDto.getNachname())
-        .matrikelnummer(studentDto.getMatrikelnummer())
-        .modulId(id)
+            .email(studentDto.getEmail())
+            .fachname(modulname)
+            .vorname(studentDto.getVorname())
+            .nachname(studentDto.getNachname())
+            .matrikelnummer(studentDto.getMatrikelnummer())
+            .modulId(id)
         .build();
     try {
 

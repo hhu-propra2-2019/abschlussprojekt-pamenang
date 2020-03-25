@@ -17,20 +17,27 @@ public class MainController {
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
     return new Account(
-        principal.getName(),
-        principal.getKeycloakSecurityContext().getIdToken().getEmail(),
-        null,
-        token.getAccount().getRoles());
+            principal.getName(),
+            principal.getKeycloakSecurityContext().getIdToken().getEmail(),
+            null,
+            token.getAccount().getRoles());
   }
 
+  /**
+   * This method is called for a GET request to /zulassung1.
+   *
+   * @param token contains role data
+   * @param model Spring object that is used as a container to supply the variables
+   * @return Redirects to viewzulassung1/modulHinzufuegen if role is orga
+   */
   @GetMapping("")
   public String mainpage(KeycloakAuthenticationToken token, Model model) {
     if (token != null) {
       Account account = createAccountFromPrincipal(token);
       model.addAttribute("account", account);
-      if(account.getRoles().contains("orga")){
+      if (account.getRoles().contains("orga")) {
         return "redirect:/zulassung1/modulHinzufuegen";
-      }else if(account.getRoles().contains("studentin")){
+      } else if (account.getRoles().contains("studentin")) {
         return "redirect:/zulassung1/student";
       }
     }

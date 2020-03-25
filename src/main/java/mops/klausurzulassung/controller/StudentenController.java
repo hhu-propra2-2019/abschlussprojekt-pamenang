@@ -38,11 +38,19 @@ public class StudentenController {
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
     return new Account(principal.getName(),
-        principal.getKeycloakSecurityContext().getIdToken().getEmail(),
-        null,
-        token.getAccount().getRoles());
+            principal.getKeycloakSecurityContext().getIdToken().getEmail(),
+            null,
+            token.getAccount().getRoles());
   }
 
+  /**
+   * This method is called for a GET request to /zulassung1/student/{tokenLink}.
+   *
+   * @param tokenLink link for token
+   * @param model     Spring object that is used as a container to supply the variables
+   * @param keyToken  contains role data
+   * @return view student
+   */
   @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{tokenLink}/")
   public String studentansichtMitToken(@PathVariable String tokenLink, Model model, KeycloakAuthenticationToken keyToken) {
@@ -54,6 +62,13 @@ public class StudentenController {
     return "student";
   }
 
+  /**
+   * This method is called for a GET request to /zulassung1/student
+   *
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
+   * @return view student
+   */
   @GetMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
@@ -66,6 +81,14 @@ public class StudentenController {
     return "student";
   }
 
+  /**
+   * This method is called for a POST request to /zulassung1/student.
+   *
+   * @param token                       form data input
+   * @param keycloakAuthenticationToken contains role data
+   * @param model                       Spring object that is used as a container to supply the variables
+   * @return Redirect of view zulassung1/student
+   */
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model) {
