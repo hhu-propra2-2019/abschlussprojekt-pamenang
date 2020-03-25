@@ -5,12 +5,8 @@ import mops.klausurzulassung.database_entity.ModulStatistiken;
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.services.ModulService;
 import mops.klausurzulassung.services.StatistikService;
-import org.bouncycastle.math.raw.Mod;
-import org.checkerframework.checker.units.qual.A;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +17,6 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequestMapping("/zulassung1")
 @SessionScope
@@ -30,7 +25,6 @@ public class StatistikController {
 
   private final ModulService modulService;
   private final StatistikService statistikService;
-  private Logger logger = LoggerFactory.getLogger(StatistikController.class);
 
   public StatistikController(ModulService modulService, StatistikService statistikService) {
     this.modulService = modulService;
@@ -56,7 +50,7 @@ public class StatistikController {
     return "statistik";
   }
 
-  public List<ModulStatistiken> iteratorToListForModulStatistiks(Iterable<ModulStatistiken> modulStatistikens){
+  List<ModulStatistiken> iteratorToListForModulStatistiks(Iterable<ModulStatistiken> modulStatistikens) {
     ArrayList<ModulStatistiken> modulStatistikenArrayList = new ArrayList<>();
     modulStatistikens.forEach(modulStatistikenArrayList::add);
     return modulStatistikenArrayList;
