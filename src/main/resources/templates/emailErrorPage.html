@@ -24,7 +24,7 @@
     </nav>
 </header>
 <main th:fragment="bodycontent">
-    <div class="container" id="links" th:if="${modulStatistiken}">
+    <div class="container" id="links">
         <h1>Fehlgeschlagene Emails:</h1>
         <table class="table">
             <thead>
@@ -34,10 +34,11 @@
                 <th>Matrikelnummer</th>
                 <th>Email</th>
                 <th>Token</th>
+                <th></th>
             </tr>
             </thead>
             <tbody th:remove="all-but-first">
-            <tr th:each="emailError : ${emailErrors}">
+            <tr th:each="emailError, stats : ${emailErrors}">
                 <td>
                     <span th:text="${emailError.getStudent().getVorname()}">Vorname</span>
                 </td>
@@ -51,7 +52,10 @@
                     <span th:text="${emailError.getStudent().getEmail()}">Email</span>
                 </td>
                 <td>
-                    <span th:text="${emailError.getStudent().getToken()}">Token</span>
+                    <input class="form-control" th:id="${'token' + stats.index}" type="text" th:value="${emailError.getStudent().getToken()}">
+                </td>
+                <td>
+                    <button class="btn btn-info" th:onclick="'copyToken(' + ${stats.index} + ')'">Copy Token</button>
                 </td>
             </tr>
             </tbody>
@@ -60,3 +64,17 @@
 </main>
 </body>
 </html>
+<script>
+    function copyToken(index){
+        console.log(index);
+        var copyText = document.getElementById("token" + index);
+
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+        /* Copy the text inside the text field */
+        document.execCommand("copy");
+
+        alert("Token wurde in die Zwischenablage kopiert.");
+    }
+</script>

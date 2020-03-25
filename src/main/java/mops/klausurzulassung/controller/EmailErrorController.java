@@ -1,5 +1,6 @@
 package mops.klausurzulassung.controller;
 
+import mops.klausurzulassung.database_entity.Student;
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.domain.EmailError;
 import mops.klausurzulassung.services.EmailErrorService;
@@ -43,7 +44,7 @@ public class EmailErrorController {
     ArrayList<EmailError> filteredAfterModulIdEmailErrors = filterAllEmailErrors(emailErrorService.getEmailErrors(), modulId);
     model.addAttribute("account", createAccountFromPrincipal(token));
     model.addAttribute("emailErrors", filteredAfterModulIdEmailErrors);
-    return "/emailErrorPage";
+    return "emailErrorPage";
   }
 
   private ArrayList<EmailError> filterAllEmailErrors(ArrayList<EmailError> allEmailErrors, Long modulId) {

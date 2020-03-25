@@ -37,6 +37,7 @@ public class EmailService {
       logger.error("Die mail konnte nicht versendet werden");
       logger.error(exception.getMessage());
       emailErrorService.addEmailErrorToList(new EmailError(student));
+      return;
     }
     logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
   }
