@@ -1,6 +1,7 @@
 package mops.klausurzulassung.controller;
 
 import com.c4_soft.springaddons.test.security.context.support.WithMockKeycloackAuth;
+import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.services.StudentService;
 import mops.klausurzulassung.services.TokenverifikationService;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -26,12 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class StudentenControllerTests {
 
-  @Autowired
-  private MockMvc mockMvc;
   @MockBean
   StudentService studentService;
   @MockBean
   TokenverifikationService tokenverifikation;
+  @Autowired
+  private MockMvc mockMvc;
 
   @Test
   @WithMockKeycloackAuth(name = "test", roles = "studentin")
@@ -59,6 +61,9 @@ class StudentenControllerTests {
   @Test
   @WithMockKeycloackAuth(name = "test", roles = "studentin")
   void test_postMapping_empfangeDaten_checkForRedirect() throws Exception {
+
+    doThrow(new InvalidToken("Invalid Token")).when(tokenverifikation).verifikationToken(any());
+
     mockMvc.perform(post("/zulassung1/student")
             .param("token", "testToken")
             .contentType("application/x-www-form-urlencoded"))
