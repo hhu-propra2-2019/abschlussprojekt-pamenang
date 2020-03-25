@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StatistikControllerTests {
 
   private StatistikController statistikController;
-  //private ModulService modulService;
   @MockBean
   private StatistikService statistikService;
   private Principal principal;
@@ -45,8 +44,6 @@ class StatistikControllerTests {
 
   @BeforeEach
   void setUp() {
-    //this.modulService = mock(ModulService.class);
-    //this.statistikService = mock(StatistikService.class);
     this.statistikController = new StatistikController(modulService, statistikService);
     this.principal = mock(Principal.class);
   }

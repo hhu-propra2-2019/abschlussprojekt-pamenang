@@ -5,6 +5,7 @@ import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.domain.AltzulassungStudentDto;
 import mops.klausurzulassung.domain.FrontendMessage;
 import mops.klausurzulassung.services.ModulService;
+import mops.klausurzulassung.services.StatistikService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,9 @@ class ModulAuswahlTests {
   private MockMvc mockMvc;
   @MockBean
   private ModulService modulservice;
+
+  @MockBean
+  private StatistikService statistikService;
 
   @Test
   void fuerModulAuswahlAnmelden() throws Exception {
@@ -469,6 +473,29 @@ class ModulAuswahlTests {
 
     verify(modulservice, times(1)).save(any());
   }
+
+  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @Test
+  void modulTeilnehmerHinzufuegen() throws Exception {
+    String frist = "01/01/2100";
+    Modul modul = new Modul(2L, "ProPra", null, frist, null, 100L);
+
+    when(modulservice.findById(2L)).thenReturn(Optional.of(modul));
+    when(statistikService.modulInDatabase(frist, 2L)).thenReturn(15L);
+
+    MockHttpServletRequestBuilder builder =
+        MockMvcRequestBuilders.post("/zulassung1/modul/teilnehmerHinzufuegen/2")
+            .param("teilnehmerAnzahl", "100");
+
+    mockMvc.perform(builder)
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modul/2"))
+        .andExpect(status().is3xxRedirection());
+
+    verify(modulservice, times(1)).saveGesamtTeilnehmerzahlForModul(any(), any());
+    verify(statistikService, times(1)).save(any());
+
+  }
+
 
   private String fristInZukunft() {
     LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
