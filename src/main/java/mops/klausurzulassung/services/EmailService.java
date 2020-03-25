@@ -74,4 +74,17 @@ public class EmailService {
         .path(quittung)
         .toUriString();
   }
+
+  public boolean resendEmail(Student student) {
+    try {
+      MimeMessage message = getEmailMessage(student);
+      javaMailSender.send(message);
+    } catch (Exception exception) {
+      logger.error("Email konnte nicht neu versendet werden.");
+      logger.error(exception.getMessage());
+      return false;
+    }
+    logger.debug("Email wurde erfolgreich an " + student.getMatrikelnummer() + " versendet.");
+    return true;
+  }
 }

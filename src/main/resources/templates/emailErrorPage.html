@@ -26,6 +26,13 @@
 <main th:fragment="bodycontent">
     <div class="container" id="links">
         <h1>Fehlgeschlagene Emails:</h1>
+        <div class="alert alert-warning" th:if="${errorMessage!=null}">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="alert alert-success" th:if="${successMessage!=null}">
+            <span th:text="${successMessage}"></span>
+        </div>
         <table class="table">
             <thead>
             <tr>
@@ -34,6 +41,7 @@
                 <th>Matrikelnummer</th>
                 <th>Email</th>
                 <th>Token</th>
+                <th></th>
                 <th></th>
             </tr>
             </thead>
@@ -56,6 +64,9 @@
                 </td>
                 <td>
                     <button class="btn btn-info" th:onclick="'copyToken(' + ${stats.index} + ')'">Copy Token</button>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:href="'/zulassung1/emailError/' + ${emailError.getStudent().getModulId()} + '/' + ${emailError.getStudent().getMatrikelnummer()}">Email nochmal senden</a>
                 </td>
             </tr>
             </tbody>
