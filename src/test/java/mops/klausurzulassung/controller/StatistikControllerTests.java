@@ -14,13 +14,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -34,7 +32,6 @@ class StatistikControllerTests {
   private StatistikController statistikController;
   @MockBean
   private StatistikService statistikService;
-  private Principal principal;
 
   @MockBean
   private ModulService modulService;
@@ -45,7 +42,6 @@ class StatistikControllerTests {
   @BeforeEach
   void setUp() {
     this.statistikController = new StatistikController(modulService, statistikService);
-    this.principal = mock(Principal.class);
   }
 
   @Test
@@ -57,9 +53,7 @@ class StatistikControllerTests {
     list.add(modul1);
     list.add(modul2);
 
-    Iterable<ModulStatistiken> modulStatistikens = list;
-
-    List<ModulStatistiken> result = statistikController.iteratorToListForModulStatistiks(modulStatistikens);
+    List<ModulStatistiken> result = statistikController.iteratorToListForModulStatistiks(list);
 
     assertEquals(modul1, result.get(0));
     assertEquals(modul2, result.get(1));
@@ -78,10 +72,8 @@ class StatistikControllerTests {
     list.add(modul1);
     list.add(modul2);
 
-    Iterable<ModulStatistiken> modulStatistikens = list;
-
     when(modulService.findById(3L)).thenReturn(Optional.of(modul));
-    when(statistikService.findModulStatistikensByModulId(3L)).thenReturn(modulStatistikens);
+    when(statistikService.findModulStatistikensByModulId(3L)).thenReturn(list);
 
     mockMvc.perform(get("/zulassung1/modul/3/statistik"))
         .andExpect(status().isOk())

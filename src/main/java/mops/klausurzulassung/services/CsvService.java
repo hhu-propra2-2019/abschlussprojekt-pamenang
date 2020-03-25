@@ -53,7 +53,7 @@ public class CsvService {
   public Student createStudentFromInputStream(CSVRecord record, Long id) throws NumberFormatException {
 
     String vorname, nachname, email, fachname, token;
-    Long matrikelnummer, modulId;
+    long matrikelnummer, modulId;
 
     vorname = record.get("Vorname");
     nachname = record.get("Nachname");
@@ -81,8 +81,9 @@ public class CsvService {
         for (Student altStudent : altzugelassene) {
           bereitsEnthalten = false;
           for (Student student : students) {
-            if (student.getMatrikelnummer().equals(altStudent.getMatrikelnummer())){
+            if (student.getMatrikelnummer().equals(altStudent.getMatrikelnummer())) {
               bereitsEnthalten = true;
+              break;
             }
           }
           if (!bereitsEnthalten) {
