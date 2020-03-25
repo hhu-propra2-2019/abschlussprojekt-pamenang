@@ -2,6 +2,7 @@ package mops.klausurzulassung.controller;
 
 import com.c4_soft.springaddons.test.security.context.support.WithMockKeycloackAuth;
 import mops.klausurzulassung.services.StudentService;
+import mops.klausurzulassung.services.TokenverifikationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,9 +10,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -26,6 +30,8 @@ class StudentenControllerTests {
   private MockMvc mockMvc;
   @MockBean
   StudentService studentService;
+  @MockBean
+  TokenverifikationService tokenverifikation;
 
   @Test
   @WithMockKeycloackAuth(name = "test", roles = "studentin")
@@ -52,10 +58,25 @@ class StudentenControllerTests {
 
   @Test
   @WithMockKeycloackAuth(name = "test", roles = "studentin")
-  public void test_postMapping_empfangeDaten_checkForRedirect() throws Exception {
+  void test_postMapping_empfangeDaten_checkForRedirect() throws Exception {
     mockMvc.perform(post("/zulassung1/student")
             .param("token", "testToken")
             .contentType("application/x-www-form-urlencoded"))
             .andExpect(status().is3xxRedirection());
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "test", roles = "studentin")
+  void postMappingValidToken() throws Exception {
+
+    doNothing().when(tokenverifikation).verifikationToken(any());
+
+    mockMvc.perform(post("/zulassung1/student/")
+        .param("token", "testtoken"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/student"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(model().attribute("token", nullValue()));
+
+
   }
 }
