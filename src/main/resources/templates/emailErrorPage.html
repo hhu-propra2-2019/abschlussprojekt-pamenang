@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{mopslayout :: html(name='Statistik', title='Optional: Tabtitel', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Email Status</title>
+    <th:block th:fragment="headcontent">
+        <!-- Links, Skripts, Styles hier einfügen! -->
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    </th:block>
+</head>
+<body>
+<header>
+    <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
+        <ul>
+            <li>
+                <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
+            </li>
+            <li>
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main th:fragment="bodycontent">
+    <div class="container" id="links" th:if="${modulStatistiken}">
+        <h1>Fehlgeschlagene Emails:</h1>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Vorname</th>
+                <th>Nachname</th>
+                <th>Matrikelnummer</th>
+                <th>Email</th>
+                <th>Token</th>
+            </tr>
+            </thead>
+            <tbody th:remove="all-but-first">
+            <tr th:each="emailError : ${emailErrors}">
+                <td>
+                    <span th:text="${emailError.getStudent().getVorname()}">Vorname</span>
+                </td>
+                <td>
+                    <span th:text="${emailError.getStudent().getNachname()}">Nachname</span>
+                </td>
+                <td>
+                    <span th:text="${emailError.getStudent().getMatrikelnummer()}">Matrikelnummer</span>
+                </td>
+                <td>
+                    <span th:text="${emailError.getStudent().getEmail()}">Email</span>
+                </td>
+                <td>
+                    <span th:text="${emailError.getStudent().getToken()}">Token</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
