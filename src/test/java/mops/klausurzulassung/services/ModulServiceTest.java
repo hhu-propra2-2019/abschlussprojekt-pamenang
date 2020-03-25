@@ -22,10 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.security.SignatureException;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +49,6 @@ class ModulServiceTest {
   private QuittungService quittungService;
   private ModulService modulService;
   private HttpServletResponse response;
-  private Principal principal;
   private ServletOutputStream outputStream;
   private StatistikService statistikService;
 
@@ -66,7 +63,6 @@ class ModulServiceTest {
     emailService = mock(EmailService.class);
     quittungService = mock(QuittungService.class);
     response = mock(HttpServletResponse.class);
-    principal = mock(Principal.class);
     outputStream = mock(ServletOutputStream.class);
     statistikService = mock(StatistikService.class);
 
@@ -230,12 +226,12 @@ class ModulServiceTest {
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     AltzulassungStudentDto student = AltzulassungStudentDto.builder()
-        .vorname("Joshua")
-        .nachname("Müller")
-        .email("joshua@gmail.com")
-        .matrikelnummer((long) 1231).build();
+            .vorname("Joshua")
+            .nachname("Müller")
+            .email("joshua@gmail.com")
+            .matrikelnummer((long) 1231).build();
     Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
     Optional<ModulStatistiken> modulstat = Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
     when(statistikService.findById(any())).thenReturn(modulstat);
@@ -422,14 +418,5 @@ class ModulServiceTest {
     assertEquals(2, modulstat.get().getZulassungsZahl());
 
 
-  }
-
-  private String fristInZukunft() {
-    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
-    LocalDateTime future = now.plusYears(1);
-    int year = future.getYear();
-    int month = future.getMonthValue();
-    int day = future.getDayOfMonth();
-    return month + "/" + day + "/" + year;
   }
 }

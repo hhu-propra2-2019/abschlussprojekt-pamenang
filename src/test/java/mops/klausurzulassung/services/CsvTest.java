@@ -26,6 +26,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -181,8 +182,8 @@ class CsvTest {
     String line3 = br.readLine();
     String line4 = br.readLine();
 
-    assertEquals(null, br.readLine());
-    assertEquals("2657396,Überschär,Cara",line1);
+    assertNull(br.readLine());
+    assertEquals("2657396,Überschär,Cara", line1);
     assertEquals("2658447,Fröhlich,Rebecca",line2);
     assertEquals("4326465,Schweden,Gustav",line3);
     assertEquals("6345144,Schweden,Karl",line4);
@@ -213,8 +214,8 @@ class CsvTest {
     String line2 = br.readLine();
     String line3 = br.readLine();
 
-    assertEquals(null,br.readLine());
-    assertEquals("2657396,Überschär,Cara",line1);
+    assertNull(br.readLine());
+    assertEquals("2657396,Überschär,Cara", line1);
     assertEquals("2658447,Fröhlich,Rebecca",line2);
     assertEquals("4326465,Schweden,Gustav",line3);
   }

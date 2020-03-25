@@ -1,7 +1,7 @@
 package mops.klausurzulassung.services;
 
-import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.database_entity.QuittungDao;
+import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.QuittungRepository;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,6 @@ class QuittungDaoServiceTest {
         PublicKey publicKey = quittungService.findPublicKey(matr, modulID);
 
         assertEquals(pK, publicKey);
-
     }
 
     @Test
@@ -46,7 +45,6 @@ class QuittungDaoServiceTest {
         QuittungService quittungService = new QuittungService(quittungRepository);
         String matr = "1234567";
         String modulID = "1111";
-
 
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
@@ -58,7 +56,5 @@ class QuittungDaoServiceTest {
         String quittung = quittungService.findQuittung(matr, modulID);
 
         assertEquals("1324235", quittung);
-
-
     }
 }

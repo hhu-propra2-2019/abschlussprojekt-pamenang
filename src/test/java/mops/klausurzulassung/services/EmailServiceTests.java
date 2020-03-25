@@ -20,9 +20,9 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 class EmailServiceTests {
 
-  static EmailService emailService;
-  static JavaMailSender javaMailSender;
-  static MimeMessage mimeMessage;
+  private static EmailService emailService;
+  private static JavaMailSender javaMailSender;
+  private static MimeMessage mimeMessage;
 
   @BeforeAll
   static void beforeAllTests() {
