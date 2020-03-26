@@ -22,6 +22,13 @@ public class QuittungService {
     this.quittungRepository = quittungRepository;
   }
 
+  /**
+   * This method finds the specific PublicKey which depends on the ID-Number of the Student and the Modul-ID
+   *
+   * @param matr contains the Identificationnumber of the Student
+   * @param modulID contains the Id of a individually created Modul from an Organizer
+   * @return Publickey if key is found in Database
+   */
   public PublicKey findPublicKey(String matr, String modulID) throws NoPublicKeyInDatabaseException {
     QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndModulId(matr, modulID);
     if (quittungDao == null) {
@@ -32,6 +39,12 @@ public class QuittungService {
     }
   }
 
+  /**
+   * This method loads an QuittingDto-Object as a data-transfer-object
+   *
+   * @param quittungDao is used to persist in Database
+   * @return quittungDto
+   */
   private QuittungDto loadQuittungDto(QuittungDao quittungDao) {
     QuittungDto quittungDto = new QuittungDto();
     quittungDto.setModulId(quittungDao.getModulId());
@@ -41,6 +54,14 @@ public class QuittungService {
     return quittungDto;
   }
 
+
+  /**
+   * This method finds a Receipt which depends on ID-Number of the Student and Modul-ID
+   *
+   * @param matr is the ID-Number of the Student
+   * @param modulID is the Modul-ID of a specific Modul created by an Organizer
+   * @return Receipt in form of a String which contains the Token,ID-Number and Modul-ID
+   */
   public String findQuittung(String matr, String modulID) throws NoTokenInDatabaseException {
 
     QuittungDao quittungDao = quittungRepository.findByMatrikelnummerAndModulId(matr, modulID);
@@ -52,6 +73,11 @@ public class QuittungService {
 
   }
 
+  /**
+   * This method saves a QuittingDto into the Database with the help of a Repository
+   *
+   * @param quittungDao contains the Information of the Receipt, which will be persisted into the Database
+   */
   void save(QuittungDao quittungDao) {
     quittungRepository.save(quittungDao);
   }

@@ -29,6 +29,12 @@ public class EmailService {
     this.emailErrorService = emailErrorService;
   }
 
+
+  /**
+   * This method sends an individual Email to the Student
+   *
+   * @param student contains Information for sending the Email
+   */
   public void sendMail(Student student) {
     try {
       MimeMessage message = getEmailMessage(student);
@@ -42,6 +48,12 @@ public class EmailService {
     logger.debug("Email wurde an: " + student.getEmail() + " abgeschickt");
   }
 
+  /**
+   * This method builds the Content of the Email
+   *
+   * @param student contains Information for sending the Email
+   * @return MimeMessage-Object which wraps the message
+   */
   private MimeMessage getEmailMessage(Student student) throws MessagingException {
     String body = STYLESHEET_BOOTSTRAP
             + "<h3>Hallo, "
@@ -64,7 +76,12 @@ public class EmailService {
     return message;
   }
 
-  /*Generiert einen Link für den Studenten der das ganze Studentenformular zur Aktivierung des Tokens direkt ausfüllt*/
+  /**
+   * Generates a specific Activiationlink with Tokeninformation, which will be parsed directly into the form.
+   *
+   * @param student contains the Token which is part of the linkl
+   * @return Link as String
+   */
   public String generateValidTokenLink(Student student) {
     logger.debug("Link wird erstellt");
     String studentAddUri = "/zulassung1/student/";
@@ -75,6 +92,12 @@ public class EmailService {
         .toUriString();
   }
 
+  /**
+   * This method resends an individual Email to the Student
+   *
+   * @param student contains Information for sending the Email
+   * @return true if Email was sucessfully send. Else it returns false.
+   */
   public boolean resendEmail(Student student) {
     try {
       MimeMessage message = getEmailMessage(student);
