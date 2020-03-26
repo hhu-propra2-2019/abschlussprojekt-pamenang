@@ -75,7 +75,7 @@ public class EmailErrorController {
     return "redirect:/zulassung1/emailError/" + modulId;
   }
 
-  private ArrayList<EmailError> filterAllEmailErrors(ArrayList<EmailError> allEmailErrors, Long modulId) {
+    ArrayList<EmailError> filterAllEmailErrors(ArrayList<EmailError> allEmailErrors, Long modulId) {
     ArrayList<EmailError> filteredList = new ArrayList<>();
     for (EmailError emailError : allEmailErrors) {
         if(emailError.getStudent().getModulId().equals(modulId)){
