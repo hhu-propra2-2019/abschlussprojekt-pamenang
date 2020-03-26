@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{mopslayout :: html(name='Statistik', title='Optional: Tabtitel', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Email Status</title>
+    <th:block th:fragment="headcontent">
+        <!-- Links, Skripts, Styles hier einfügen! -->
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    </th:block>
+</head>
+<body>
+<header>
+    <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
+        <ul>
+            <li>
+                <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
+            </li>
+            <li>
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main th:fragment="bodycontent">
+    <div class="container" id="links">
+        <h1>Fehlgeschlagene Emails:</h1>
+        <div class="alert alert-warning" th:if="${errorMessage!=null}">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="alert alert-success" th:if="${successMessage!=null}">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Vorname</th>
+                <th>Nachname</th>
+                <th>Matrikelnummer</th>
+                <th>Email</th>
+                <th>Token</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody th:remove="all-but-first">
+            <tr th:each="emailError, stats : ${emailErrors}">
+                <td>
+                    <span th:text="${emailError.getStudent().getVorname()}">Vorname</span>
+                </td>
+                <td>
+                    <span th:text="${emailError.getStudent().getNachname()}">Nachname</span>
+                </td>
+                <td>
+                    <span th:text="${emailError.getStudent().getMatrikelnummer()}">Matrikelnummer</span>
+                </td>
+                <td>
+                    <span th:text="${emailError.getStudent().getEmail()}">Email</span>
+                </td>
+                <td>
+                    <input class="form-control" th:id="${'token' + stats.index}" type="text" th:value="${emailError.getStudent().getToken()}">
+                </td>
+                <td>
+                    <button class="btn btn-info" th:onclick="'copyToken(' + ${stats.index} + ')'">Copy Token</button>
+                </td>
+                <td>
+                    <a class="btn btn-info" th:href="'/zulassung1/emailError/' + ${emailError.getStudent().getModulId()} + '/' + ${emailError.getStudent().getMatrikelnummer()}">Email nochmal senden</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
+<script>
+    function copyToken(index){
+        console.log(index);
+        var copyText = document.getElementById("token" + index);
+
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+        /* Copy the text inside the text field */
+        document.execCommand("copy");
+
+        alert("Token wurde in die Zwischenablage kopiert.");
+    }
+</script>

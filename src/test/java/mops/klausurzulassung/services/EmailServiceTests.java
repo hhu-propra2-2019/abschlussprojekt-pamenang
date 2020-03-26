@@ -27,7 +27,7 @@ class EmailServiceTests {
   @BeforeAll
   static void beforeAllTests() {
     javaMailSender = mock(JavaMailSender.class);
-    emailService = new EmailService(javaMailSender);
+    emailService = new EmailService(javaMailSender, new EmailErrorService());
     mimeMessage = mock(MimeMessage.class);
   }
 
