@@ -17,32 +17,32 @@ import javax.persistence.Lob;
 @Entity(name = "students")
 public class Student {
 
-  @Column(name="Vorname")
+  @Column(name = "Vorname")
   private String vorname;
 
 
-  @Column(name="Nachname")
+  @Column(name = "Nachname")
   private String nachname;
 
 
-  @Column(name="Email")
+  @Column(name = "Email")
   private String email;
 
 
   @Id
-  @Column(name="Matrikelnummer")
+  @Column(name = "Matrikelnummer")
   private Long matrikelnummer;
 
 
-  @Column(name="ModulID")
+  @Column(name = "ModulID")
   private Long modulId;
 
-  @Column(name="Fachname")
+  @Column(name = "Fachname")
   private String fachname;
 
 
   @Lob
-  @Column(name="Token")
+  @Column(name = "Token")
   private String token;
 
 }

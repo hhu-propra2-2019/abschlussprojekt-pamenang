@@ -2,6 +2,7 @@ package mops.klausurzulassung.controller;
 
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.domain.FrontendMessage;
+import mops.klausurzulassung.exceptions.InvalidFrist;
 import mops.klausurzulassung.repositories.StudentRepository;
 import mops.klausurzulassung.services.StudentService;
 import mops.klausurzulassung.services.TokenverifikationService;
@@ -43,6 +44,14 @@ public class StudentenController {
         token.getAccount().getRoles());
   }
 
+  /**
+   * This method is called for a GET request to /zulassung1/student/{tokenLink}.
+   *
+   * @param tokenLink link for token
+   * @param model     Spring object that is used as a container to supply the variables
+   * @param keyToken  contains role data
+   * @return view student
+   */
   @Secured({"ROLE_studentin", "ROLE_orga"})
   @GetMapping("/student/{tokenLink}/")
   public String studentansichtMitToken(@PathVariable String tokenLink, Model model, KeycloakAuthenticationToken keyToken) {
@@ -54,6 +63,13 @@ public class StudentenController {
     return "student";
   }
 
+  /**
+   * This method is called for a GET request to /zulassung1/student
+   *
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
+   * @return view student
+   */
   @GetMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String studentansicht(Model model, KeycloakAuthenticationToken token) {
@@ -66,12 +82,25 @@ public class StudentenController {
     return "student";
   }
 
+  /**
+   * This method is called for a POST request to /zulassung1/student.
+   *
+   * @param token                       form data input
+   * @param keycloakAuthenticationToken contains role data
+   * @param model                       Spring object that is used as a container to supply the variables
+   * @return Redirect of view zulassung1/student
+   */
   @PostMapping("/student")
   @Secured({"ROLE_studentin", "ROLE_orga"})
   public String empfangeDaten(@ModelAttribute("token") Token token, KeycloakAuthenticationToken keycloakAuthenticationToken, Model model) {
     logger.debug("Token: " + token.getToken());
     try {
       tokenverifikation.verifikationToken(token.getToken());
+    } catch (InvalidFrist ex) {
+      logger.error("Die Tokenverifikation ist fehlgeschlagen!");
+      logger.error(ex.getMessage());
+      message.setErrorMessage("Die Frist zur Einreichung von Altzulassung ist bereits abgelaufen!");
+      return "redirect:/zulassung1/student";
     } catch (Exception e) {
       logger.error("Die Tokenverifikation ist fehlgeschlagen!");
       logger.error(e.getMessage());

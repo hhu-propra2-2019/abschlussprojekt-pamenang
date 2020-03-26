@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.persistence.Column;
-import javax.persistence.Lob;
-import javax.persistence.Id;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
 import java.security.PublicKey;
 
 @Data
@@ -33,5 +33,7 @@ public class QuittungDao {
   @Lob
   private String quittung;
 
-  @Id @GeneratedValue private int id;
+  @Id
+  @GeneratedValue
+  private int id;
 }

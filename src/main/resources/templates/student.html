@@ -26,7 +26,6 @@
     <h1 class="text-center">Klausuranmeldung</h1>
 
 
-
     <div class="container">
         <h5 class="lead text-center"> Hier kannst du mithilfe deines Tokens deine Altklausurzulassung einreichen.</h5>
         <br>
@@ -42,7 +41,7 @@
 
         <form method="post" th:action="@{/zulassung1/student}" th:object="${token}">
             <div class="form-group">
-                <label for="token">Bitte geben Sie ihren Token ein.</label>
+                <label>Bitte geben Sie ihren Token ein.</label>
                 <input class="form-control" th:field="*{token}" th:placeholder="Token"
                        th:value="*{token}"
                        type="text">
