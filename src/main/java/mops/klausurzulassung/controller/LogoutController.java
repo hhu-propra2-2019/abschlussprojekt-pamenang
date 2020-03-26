@@ -9,7 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class LogoutController {
 
-
+  /**
+   * This method is called for a GET request to /logout.
+   *
+   * @return Redirects to view zulassung1
+   */
   @GetMapping("/logout")
   public String logout(HttpServletRequest httpRequest) throws ServletException {
     httpRequest.logout();

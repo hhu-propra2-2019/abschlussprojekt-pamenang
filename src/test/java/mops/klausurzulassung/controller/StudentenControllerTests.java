@@ -1,6 +1,7 @@
 package mops.klausurzulassung.controller;
 
 import com.c4_soft.springaddons.test.security.context.support.WithMockKeycloackAuth;
+import mops.klausurzulassung.exceptions.InvalidFrist;
 import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.services.StudentService;
 import mops.klausurzulassung.services.TokenverifikationService;
@@ -75,6 +76,21 @@ class StudentenControllerTests {
   void postMappingValidToken() throws Exception {
 
     doNothing().when(tokenverifikation).verifikationToken(any());
+
+    mockMvc.perform(post("/zulassung1/student/")
+        .param("token", "testtoken"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/student"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(model().attribute("token", nullValue()));
+
+
+  }
+
+  @Test
+  @WithMockKeycloackAuth(name = "test", roles = "studentin")
+  void postMappingInvalidFrist() throws Exception {
+
+    doThrow(new InvalidFrist("Frist ist abgelaufen!")).when(tokenverifikation).verifikationToken(any());
 
     mockMvc.perform(post("/zulassung1/student/")
         .param("token", "testtoken"))

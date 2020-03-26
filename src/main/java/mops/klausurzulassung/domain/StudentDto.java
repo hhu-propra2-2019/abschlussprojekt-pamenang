@@ -16,27 +16,27 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class StudentDto {
 
-    @NotNull
-    @NotEmpty
-    @Column(name="Vorname")
-    private String vorname;
+  @NotNull
+  @NotEmpty
+  @Column(name = "Vorname")
+  private String vorname;
 
-    @NotNull
-    @NotEmpty
-    private String nachname;
+  @NotNull
+  @NotEmpty
+  private String nachname;
 
-    private String email;
+  private String email;
 
-    @Id
-    @NotNull
-    private Long matrikelnummer;
+  @Id
+  @NotNull
+  private Long matrikelnummer;
 
-    @NotNull
-    private Long modulId;
+  @NotNull
+  private Long modulId;
 
-    private String fachname;
+  private String fachname;
 
-    @NotNull
-    @NotEmpty
-    private String token;
+  @NotNull
+  @NotEmpty
+  private String token;
 }

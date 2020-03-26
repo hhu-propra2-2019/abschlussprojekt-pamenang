@@ -12,26 +12,27 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class KeycloakConfig {
-    @Bean
-    @Primary
-    public KeycloakSpringBootConfigResolver KeycloakConfigResolver(){
-        return new KeycloakSpringBootConfigResolver();
-    }
+  @Bean
+  @Primary
+  public KeycloakSpringBootConfigResolver KeycloakConfigResolver() {
+    return new KeycloakSpringBootConfigResolver();
+  }
 
-    @Value("${keycloak.resource}")
-    private String clientId;
-    @Value("${keycloak.credentials.secret}")
-    private String clientSecret;
-    @Value("${hhu_keycloak.token-uri}")
-    private String tokenUri;
+  @Value("${keycloak.resource}")
+  private String clientId;
+  @Value("${keycloak.credentials.secret}")
+  private String clientSecret;
+  @Value("${hhu_keycloak.token-uri}")
+  private String tokenUri;
 
-    @Bean public RestTemplate serviceAccountRestTemplate(){
-        ClientCredentialsResourceDetails resourceDetails = new ClientCredentialsResourceDetails();
-        resourceDetails.setGrantType(OAuth2Constants.CLIENT_CREDENTIALS);
-        resourceDetails.setAccessTokenUri(tokenUri);
-        resourceDetails.setClientId(clientId);
-        resourceDetails.setClientSecret(clientSecret);
+  @Bean
+  public RestTemplate serviceAccountRestTemplate() {
+    ClientCredentialsResourceDetails resourceDetails = new ClientCredentialsResourceDetails();
+    resourceDetails.setGrantType(OAuth2Constants.CLIENT_CREDENTIALS);
+    resourceDetails.setAccessTokenUri(tokenUri);
+    resourceDetails.setClientId(clientId);
+    resourceDetails.setClientSecret(clientSecret);
 
-        return new OAuth2RestTemplate(resourceDetails);
-    }
+    return new OAuth2RestTemplate(resourceDetails);
+  }
 }
