@@ -24,7 +24,7 @@ public class EmailErrorService {
       emailErrors.remove(emailError);
     }
 
-  private EmailError findEmailErrorWithStudent(Student student) {
+   EmailError findEmailErrorWithStudent(Student student) {
     for (EmailError emailError : emailErrors) {
         Student studentFromList = emailError.getStudent();
         if (studentFromList.equals(student)){
