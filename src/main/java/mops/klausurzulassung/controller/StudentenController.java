@@ -2,6 +2,7 @@ package mops.klausurzulassung.controller;
 
 import mops.klausurzulassung.domain.Account;
 import mops.klausurzulassung.domain.FrontendMessage;
+import mops.klausurzulassung.exceptions.InvalidFrist;
 import mops.klausurzulassung.repositories.StudentRepository;
 import mops.klausurzulassung.services.StudentService;
 import mops.klausurzulassung.services.TokenverifikationService;
@@ -95,6 +96,11 @@ public class StudentenController {
     logger.debug("Token: " + token.getToken());
     try {
       tokenverifikation.verifikationToken(token.getToken());
+    } catch (InvalidFrist ex) {
+      logger.error("Die Tokenverifikation ist fehlgeschlagen!");
+      logger.error(ex.getMessage());
+      message.setErrorMessage("Die Frist zur Einreichung von Altzulassung ist bereits abgelaufen!");
+      return "redirect:/zulassung1/student";
     } catch (Exception e) {
       logger.error("Die Tokenverifikation ist fehlgeschlagen!");
       logger.error(e.getMessage());

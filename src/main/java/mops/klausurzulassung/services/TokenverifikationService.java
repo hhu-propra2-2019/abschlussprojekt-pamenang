@@ -1,6 +1,9 @@
 package mops.klausurzulassung.services;
 
+import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
+import mops.klausurzulassung.domain.FrontendMessage;
+import mops.klausurzulassung.exceptions.InvalidFrist;
 import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import org.slf4j.Logger;
@@ -14,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.text.ParseException;
 import java.util.Base64;
 
 @Service
@@ -21,16 +25,19 @@ public class TokenverifikationService {
 
   private final QuittungService quittungService;
   private final StudentService studentService;
+  private final ModulService modulService;
+  private FrontendMessage message = new FrontendMessage();
   private Logger logger = LoggerFactory.getLogger(TokenverifikationService.class);
 
   @Autowired
-  public TokenverifikationService(QuittungService quittungService, StudentService studentService) {
+  public TokenverifikationService(QuittungService quittungService, StudentService studentService, ModulService modulService) {
     this.quittungService = quittungService;
     this.studentService = studentService;
+    this.modulService = modulService;
   }
 
   public void verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException,
-      NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken {
+      NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken, InvalidFrist {
 
     quittung =  quittung.replaceAll("@", "/");
 
@@ -48,6 +55,11 @@ public class TokenverifikationService {
     String matr = new String(matrByte);
     byte[] modulIDByte = Base64.getDecoder().decode(base64ModulID);
     String modulID = new String(modulIDByte);
+
+
+    if (!fristIsValid(modulID)) {
+      throw new InvalidFrist("Frist ist abgelaufen!");
+    }
 
     String hashValue = matr+modulID;
     PublicKey publicKey = quittungService.findPublicKey(matr, modulID);
@@ -72,5 +84,21 @@ public class TokenverifikationService {
       studentService.save(student);
       logger.debug("Altzulassung erfolgreich!");
     }
+  }
+
+  private boolean fristIsValid(String modulID) {
+    Modul modul = modulService.findById(Long.parseLong(modulID)).get();
+
+    try {
+      boolean abgelaufen = modulService.isFristAbgelaufen(modul);
+
+      if (abgelaufen) {
+        return false;
+      }
+    } catch (ParseException e) {
+      logger.error("Frist hat fehlerhaftes Format.", e);
+      return false;
+    }
+    return true;
   }
 }
