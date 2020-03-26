@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.KeyPairGenerator;
 import java.security.Signature;
-import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.Base64;
 
@@ -29,8 +29,8 @@ public class TokengenerierungService {
         this.quittungService = quittungService;
     }
 
-    public String erstellenHashValue(String matr, String modulID){
-        return matr+modulID;
+    public String erstellenHashValue(String matr, String modulID) {
+        return matr + modulID;
     }
 
     public String erstellenToken(String matr, String modulID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
@@ -43,27 +43,27 @@ public class TokengenerierungService {
         sign.initSign(privateKey);
         byte[] hashValueBytes = hashValue.getBytes(StandardCharsets.UTF_8);
         sign.update(hashValueBytes);
-    
+
         PublicKey publicKey = pair.getPublic();
         byte[] token = sign.sign();
 
-        String base64Token= Base64.getEncoder().encodeToString(token);
-        String base64Matr= Base64.getEncoder().encodeToString(matr.getBytes());
-        String base64ModulID= Base64.getEncoder().encodeToString(modulID.getBytes());
+        String base64Token = Base64.getEncoder().encodeToString(token);
+        String base64Matr = Base64.getEncoder().encodeToString(matr.getBytes());
+        String base64ModulID = Base64.getEncoder().encodeToString(modulID.getBytes());
 
-        String quittung = base64Token+"§"+base64Matr+"§"+base64ModulID;
+        String quittung = base64Token + "§" + base64Matr + "§" + base64ModulID;
 
         // Slash wird ersetzt, da sonst Fehler bei Linkgenierierung auftreten
         quittung = quittung.replaceAll("/", "@");
 
-        logger.debug("Quittung wurde erstellt und ist encoded:"+ quittung);
+        logger.debug("Quittung wurde erstellt und ist encoded:" + quittung);
 
 
-        QuittungDto quittungDto = new QuittungDto(matr, modulID,publicKey, quittung);
+        QuittungDto quittungDto = new QuittungDto(matr, modulID, publicKey, quittung);
         QuittungDao quittungDao = erstelleQuittungDao(quittungDto);
 
         quittungService.save(quittungDao);
-        logger.debug("Speichere Quittung von  Student: "+quittungDao.getMatrikelnummer()+ " in Datenbank");
+        logger.debug("Speichere Quittung von  Student: " + quittungDao.getMatrikelnummer() + " in Datenbank");
 
         return quittung;
     }
@@ -75,7 +75,7 @@ public class TokengenerierungService {
         return keyPairGen.generateKeyPair();
     }
 
-    private QuittungDao erstelleQuittungDao(QuittungDto quittungDto){
+    private QuittungDao erstelleQuittungDao(QuittungDto quittungDto) {
         QuittungDao quittungDao = new QuittungDao();
         quittungDao.setModulId(quittungDto.getModulId());
         quittungDao.setMatrikelnummer(quittungDto.getMatrikelnummer());

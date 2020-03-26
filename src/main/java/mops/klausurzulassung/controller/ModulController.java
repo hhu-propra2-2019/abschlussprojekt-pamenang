@@ -53,10 +53,10 @@ public class ModulController {
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
     return new Account(
-            principal.getName(),
-            principal.getKeycloakSecurityContext().getIdToken().getEmail(),
-            null,
-            token.getAccount().getRoles());
+        principal.getName(),
+        principal.getKeycloakSecurityContext().getIdToken().getEmail(),
+        null,
+        token.getAccount().getRoles());
   }
 
   /**
@@ -207,8 +207,8 @@ public class ModulController {
   @Secured("ROLE_orga")
   @GetMapping("/modulHinzufuegen")
   public String newModul(
-          Model model,
-          KeycloakAuthenticationToken token) {
+      Model model,
+      KeycloakAuthenticationToken token) {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
 

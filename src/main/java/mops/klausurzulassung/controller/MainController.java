@@ -17,10 +17,10 @@ public class MainController {
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
     return new Account(
-            principal.getName(),
-            principal.getKeycloakSecurityContext().getIdToken().getEmail(),
-            null,
-            token.getAccount().getRoles());
+        principal.getName(),
+        principal.getKeycloakSecurityContext().getIdToken().getEmail(),
+        null,
+        token.getAccount().getRoles());
   }
 
   /**

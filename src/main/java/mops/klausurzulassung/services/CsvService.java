@@ -67,8 +67,8 @@ public class CsvService {
     return new Student(vorname, nachname, email, matrikelnummer, modulId, fachname, token);
   }
 
-  public void writeCsvFile(Long id, List<Student> students)  {
-    File outputFile = new File("klausurliste_"+id+".csv");
+  public void writeCsvFile(Long id, List<Student> students) {
+    File outputFile = new File("klausurliste_" + id + ".csv");
     FileWriter fileWriter;
 
     try {
@@ -100,7 +100,6 @@ public class CsvService {
     } catch (IOException e) {
       logger.error(e.getMessage());
     }
-
 
 
   }

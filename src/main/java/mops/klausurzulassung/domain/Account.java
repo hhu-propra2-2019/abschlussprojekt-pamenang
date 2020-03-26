@@ -9,8 +9,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class Account {
 
-    private final String name;
-    private final String email;
-    private final String image;
-    private final Set<String> roles;
+  private final String name;
+  private final String email;
+  private final String image;
+  private final Set<String> roles;
 }

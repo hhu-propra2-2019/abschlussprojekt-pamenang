@@ -263,12 +263,12 @@ public class ModulService {
     message.resetMessage();
     String modulname = findById(id).get().getName();
     Student student = Student.builder()
-            .email(studentDto.getEmail())
-            .fachname(modulname)
-            .vorname(studentDto.getVorname())
-            .nachname(studentDto.getNachname())
-            .matrikelnummer(studentDto.getMatrikelnummer())
-            .modulId(id)
+        .email(studentDto.getEmail())
+        .fachname(modulname)
+        .vorname(studentDto.getVorname())
+        .nachname(studentDto.getNachname())
+        .matrikelnummer(studentDto.getMatrikelnummer())
+        .modulId(id)
         .build();
     try {
 

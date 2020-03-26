@@ -39,10 +39,10 @@ public class TokenverifikationService {
   public void verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException,
       NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken, InvalidFrist {
 
-    quittung =  quittung.replaceAll("@", "/");
+    quittung = quittung.replaceAll("@", "/");
 
     String[] splitArray = quittung.split("§", 3);
-    if(splitArray.length < 3){
+    if (splitArray.length < 3) {
       logger.error("Token fehlerhaft");
       throw new InvalidToken("Token ist fehlerhaft");
     }
@@ -61,9 +61,9 @@ public class TokenverifikationService {
       throw new InvalidFrist("Frist ist abgelaufen!");
     }
 
-    String hashValue = matr+modulID;
+    String hashValue = matr + modulID;
     PublicKey publicKey = quittungService.findPublicKey(matr, modulID);
-    if(publicKey == null){
+    if (publicKey == null) {
       logger.error("Public Key ist null");
       return;
     }
@@ -74,7 +74,7 @@ public class TokenverifikationService {
     sign.update(hashValueBytes);
     byte[] tokenByte = Base64.getDecoder().decode(String.valueOf(token));
 
-    if(sign.verify(tokenByte)){
+    if (sign.verify(tokenByte)) {
       logger.debug("Token Verifiziert");
       logger.debug("ModulID: " + modulID);
       logger.debug("Matrikelnummer : " + matr);

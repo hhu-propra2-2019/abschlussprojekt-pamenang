@@ -12,7 +12,7 @@ public class FrontendMessage {
   private String errorMessage;
   private String successMessage;
 
-  public void resetMessage(){
+  public void resetMessage() {
     this.setErrorMessage(null);
     this.setSuccessMessage(null);
   }

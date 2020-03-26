@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
       th:replace="~{mopslayout :: html(name='Statistik', title='Optional: Tabtitel', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
     <title>Statistiken</title>
@@ -69,11 +69,11 @@
 
         var modulStatistikenLaenge = /*[[${modulStatistiken.size()}]]*/ '0';
         var modulData = [];
-        for (var i = 0; i < modulStatistikenLaenge; i++){
+        for (var i = 0; i < modulStatistikenLaenge; i++) {
             var frist = document.getElementById("frist" + i);
             var teilnehmer = document.getElementById("teilnehmer" + i);
             var zulassungen = document.getElementById("zulassung" + i);
-            modulData[i] = [new Date(parseInt(frist.innerText.substring(6,10)), parseInt(frist.innerText.substring(0, 2)), parseInt(frist.innerText.substring(3,5)))
+            modulData[i] = [new Date(parseInt(frist.innerText.substring(6, 10)), parseInt(frist.innerText.substring(0, 2)), parseInt(frist.innerText.substring(3, 5)))
                 , parseInt(teilnehmer.innerText)
                 , parseInt(zulassungen.innerText)];
         }
@@ -83,7 +83,7 @@
         data.addColumn('number', 'Teilnehmer');
         data.addColumn('number', 'Zulassungen');
 
-        for(var i = 0; i < modulStatistikenLaenge; i++){
+        for (var i = 0; i < modulStatistikenLaenge; i++) {
             data.addRow([modulData[i][0], modulData[i][1], modulData[i][2]]);
         }
         var options = {
@@ -97,11 +97,12 @@
             },
             colors: ['#a52714', '#097138'],
             curveType: 'function',
-            legend: { position: 'bottom' }
+            legend: {position: 'bottom'}
         };
 
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
     }
+
     /*]]>*/
 </script>

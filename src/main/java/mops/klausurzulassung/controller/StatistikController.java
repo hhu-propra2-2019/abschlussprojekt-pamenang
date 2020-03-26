@@ -34,9 +34,9 @@ public class StatistikController {
   private Account createAccountFromPrincipal(KeycloakAuthenticationToken token) {
     KeycloakPrincipal principal = (KeycloakPrincipal) token.getPrincipal();
     return new Account(principal.getName(),
-            principal.getKeycloakSecurityContext().getIdToken().getEmail(),
-            null,
-            token.getAccount().getRoles());
+        principal.getKeycloakSecurityContext().getIdToken().getEmail(),
+        null,
+        token.getAccount().getRoles());
   }
 
   /**
