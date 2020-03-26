@@ -23,15 +23,13 @@ public class CsvService {
     this.studentService = studentService;
   }
 
-  /*CsvImportService kümmert sich um ein Multipartfile welches ein .csv File repräsentiert. Aus diesem File werden Studenten-Objekte
-  generiert die als Liste weitergegeben werden*/
-
-  // Reihenfolge im input.csv:
-  // Vorname, Nachname, Email, Matrikelnummer
-
-  // Reihenfolge im output.csv:
-  // Matrikelnummer, Nachname, Vorname
-
+  /**
+   * This method is called from ModulService.verarbeiteUploadliste.
+   *
+   * @param records contains the lines of the csv-file with header: name, surname, email, matriculationnumber
+   * @param id      of the selected modul
+   * @return List of students from input file
+   */
   public List<Student> getStudentListFromInputFile(Iterable<CSVRecord> records, Long id) throws NumberFormatException {
     List<Student> studentList = new ArrayList<>();
 
@@ -44,12 +42,27 @@ public class CsvService {
     return studentList;
   }
 
+  /**
+   * This method is called from CsvService.writeCsvFile.
+   *
+   * Writes student on output file.
+   *
+   * @param writer   writer for output csv files
+   * @param student  student which should be written onto list
+   */
   public void putStudentOntoList(CSVWriter writer, Student student) {
     String[] list = {String.valueOf(student.getMatrikelnummer()), student.getNachname(), student.getVorname()};
     writer.writeNext(list, false);
     logger.info("Studenten in Csv-Liste geschrieben");
   }
 
+  /**
+   * This method is called from CsvService.getStudentListFromInputFile.
+   *
+   * @param record   contains one line of the csv-file
+   * @param id       of the selected modul
+   * @return Student object created from record
+   */
   public Student createStudentFromInputStream(CSVRecord record, Long id) throws NumberFormatException {
 
     String vorname, nachname, email, fachname, token;
@@ -67,6 +80,14 @@ public class CsvService {
     return new Student(vorname, nachname, email, matrikelnummer, modulId, fachname, token);
   }
 
+  /**
+   * This method is called from ModulService.verarbeiteUploadliste and ModulService.download.
+   *
+   * Writes students from input file and students with an old license onto the output file with header: matriculationnumber, surname, name.
+   *
+   * @param id       of the selected modul
+   * @param students List of from the input file
+   */
   public void writeCsvFile(Long id, List<Student> students) {
     File outputFile = new File("klausurliste_" + id + ".csv");
     FileWriter fileWriter;
@@ -100,7 +121,5 @@ public class CsvService {
     } catch (IOException e) {
       logger.error(e.getMessage());
     }
-
-
   }
 }

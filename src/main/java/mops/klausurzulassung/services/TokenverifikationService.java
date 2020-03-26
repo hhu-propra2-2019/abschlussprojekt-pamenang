@@ -36,6 +36,13 @@ public class TokenverifikationService {
     this.modulService = modulService;
   }
 
+  /**
+   * This method decodes and verifies the Receipt. It replaces all '@' with '/'. For more Information take a look at
+   * TokengenerierungsService.erstelleToken().
+   * Also the deadline of a specific Modul is checked based on the Receipt.
+   * If the Receipt is verified the Student will be saved in the database.
+   * @param quittung contains the Information of the Receipt
+   */
   public void verifikationToken(String quittung) throws NoSuchAlgorithmException, SignatureException,
       NoPublicKeyInDatabaseException, InvalidKeyException, InvalidToken, InvalidFrist {
 
@@ -86,6 +93,12 @@ public class TokenverifikationService {
     }
   }
 
+  /**
+   * This method checks if the deadline is Valid
+   *
+   * @param modulID contains the Identification-Number of the Modul
+   * @return true if the deadline is Valid. Else false
+   */
   private boolean fristIsValid(String modulID) {
     Modul modul = modulService.findById(Long.parseLong(modulID)).get();
 

@@ -144,30 +144,6 @@ class ModulServiceTest {
   }
 
   @Test
-  void testStudentIsEmptyIsEmpty() {
-    Student student = new Student();
-    student.setVorname("Joshua");
-    student.setNachname("Müller");
-    student.setEmail("");
-    student.setMatrikelnummer((long) 1231);
-    boolean b = modulService.studentIsEmpty(student);
-    assertTrue(b);
-  }
-
-  @Test
-  void testStudentIsEmptyIsNotEmpty() {
-    Student student = new Student();
-    student.setVorname("Joshua");
-    student.setNachname("Müller");
-    student.setEmail("joshua.müller@web.de");
-    student.setMatrikelnummer((long) 1231);
-
-    boolean b = modulService.studentIsEmpty(student);
-
-    assertFalse(b);
-  }
-
-  @Test
   void verarbeiteRichtigeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
