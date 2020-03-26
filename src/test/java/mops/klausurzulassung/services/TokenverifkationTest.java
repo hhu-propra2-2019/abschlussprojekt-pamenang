@@ -1,6 +1,8 @@
 package mops.klausurzulassung.services;
 
+import mops.klausurzulassung.database_entity.Modul;
 import mops.klausurzulassung.database_entity.Student;
+import mops.klausurzulassung.exceptions.InvalidFrist;
 import mops.klausurzulassung.exceptions.InvalidToken;
 import mops.klausurzulassung.exceptions.NoPublicKeyInDatabaseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +14,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.spec.X509EncodedKeySpec;
+import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -28,21 +33,27 @@ class TokenverifkationTest {
   private QuittungService quittungService;
   private TokenverifikationService tokenverifikationService;
   private StudentService studentService;
+  private ModulService modulService;
 
   @BeforeEach
   void setUp() {
     this.quittungService = mock(QuittungService.class);
     this.studentService = mock(StudentService.class);
-    this.tokenverifikationService = new TokenverifikationService(quittungService, studentService);
+    this.modulService = mock(ModulService.class);
+    this.tokenverifikationService = new TokenverifikationService(quittungService, studentService, modulService);
   }
 
   @Test
-  void test_tokenVerifikation_shouldReturnTrue() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken {
+  void test_tokenVerifikation_shouldReturnTrue() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken, InvalidFrist {
     String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMmHAssfzLds1MyR0LXFyetlKFPShZXBbsNFSJVmFe21YIMKmSZkmiaWgMudOFo0lCxiSF/w9SrymA9T6tFQ6KkCAwEAAQ==";
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
     long matrikelnummer = 123455237487L;
     long modulID = 12L;
     Student student = new Student(null, null, null, matrikelnummer, modulID, null, null);
+    String frist = fristInZukunft();
+    Modul modul = new Modul(12L, "ProPra2", "orga", frist, true, 140L);
+
+    when(modulService.findById(12L)).thenReturn(Optional.of(modul));
 
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
@@ -51,11 +62,14 @@ class TokenverifkationTest {
   }
 
   @Test
-  void test_tokenVerifikation_publicKeyIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken {
+  void test_tokenVerifikation_publicKeyIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken, InvalidFrist {
     String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSTJBAMmHAssfzLds1MyR0LXFyetlKFPShZXBbsNFSJVmFe21YIMKmSZkmiaWgMudOFo0lCxiSF/w9SrymA9T6tFQ6KkCAwEAAQ==";
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
-    String matrikelnummer = "123455237487";
-    String modulID = "12";
+
+    String frist = fristInZukunft();
+    Modul modul = new Modul(12L, "ProPra2", "orga", frist, true, 140L);
+
+    when(modulService.findById(12L)).thenReturn(Optional.of(modul));
 
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
@@ -64,12 +78,14 @@ class TokenverifkationTest {
   }
 
   @Test
-  void test_tokenVerifikation_tokenIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken {
+  void test_tokenVerifikation_tokenIstInvalide_shouldReturnFalse() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken, InvalidFrist {
     String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMmHAssfzLds1MyR0LXFyetlKFPShZXBbsNFSJVmFe21YIMKmSZkmiaWgMudOFo0lCxiSF/w9SrymA9T6tFQ6KkCAwEAAQ==";
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CALLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
-    String matrikelnummer = "123455237487";
-    String modulID = "12";
 
+    String frist = fristInZukunft();
+    Modul modul = new Modul(12L, "ProPra2", "orga", frist, true, 140L);
+
+    when(modulService.findById(12L)).thenReturn(Optional.of(modul));
     when(quittungService.findPublicKey(any(),any())).thenReturn(getKey(publicKey));
     tokenverifikationService.verifikationToken(quittung);
 
@@ -79,8 +95,7 @@ class TokenverifkationTest {
     @Test
     void tokenIstZuKurz() {
       String quittung = "IM";
-      String matrikelnummer = "1234567";
-      String modulID = "17";
+
       try {
         tokenverifikationService.verifikationToken(quittung);
         fail();
@@ -92,15 +107,37 @@ class TokenverifkationTest {
 
 
   @Test
-  void test_tokenVerifikation_publicKeyIsNUll() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken {
+  void test_tokenVerifikation_publicKeyIsNUll() throws NoPublicKeyInDatabaseException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, InvalidToken, InvalidFrist {
     String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
-    String matrikelnummer = "12345523747";
-    String modulID = "13";
 
+    String frist = fristInZukunft();
+    Modul modul = new Modul(13L, "ProPra2", "orga", frist, true, 140L);
+
+    when(modulService.findById(any())).thenReturn(Optional.of(modul));
     when(quittungService.findPublicKey(any(),any())).thenReturn(null);
     tokenverifikationService.verifikationToken(quittung);
 
     verify(studentService, times(0)).save(any());
+  }
+
+  @Test
+  void invalidFrist() throws NoPublicKeyInDatabaseException, ParseException {
+    String publicKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMmHAssfzLds1MyR0LXFyetlKFPShZXBbsNFSJVmFe21YIMKmSZkmiaWgMudOFo0lCxiSF/w9SrymA9T6tFQ6KkCAwEAAQ==";
+    String quittung = "WlPnhwXQlOsO4Ez3cosVsqaMVDK5IJMzTsfeRmlEwC2CCLLIDXTniqcuQHua5HKejcuY6SyAwjiQrfQY7iJAsQ==§MTIzNDU1MjM3NDg3§MTI=";
+    long matrikelnummer = 123455237487L;
+    long modulID = 12L;
+    String frist = "03/03/2000 12:00";
+    Modul modul = new Modul(12L, "ProPra2", "orga", frist, true, 140L);
+
+    when(modulService.findById(12L)).thenReturn(Optional.of(modul));
+    when(modulService.isFristAbgelaufen(any())).thenReturn(true);
+    when(quittungService.findPublicKey(any(), any())).thenReturn(getKey(publicKey));
+
+    try {
+      tokenverifikationService.verifikationToken(quittung);
+    } catch (Exception e) {
+      assertThat(e.toString().contains("Frist ist abgelaufen!"));
+    }
   }
 
 
@@ -117,5 +154,14 @@ class TokenverifkationTest {
     }
 
     return null;
+  }
+
+  private String fristInZukunft() {
+    LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
+    LocalDateTime future = now.plusYears(1);
+    int year = future.getYear();
+    int month = future.getMonthValue();
+    int day = future.getDayOfMonth();
+    return month + "/" + day + "/" + year;
   }
 }

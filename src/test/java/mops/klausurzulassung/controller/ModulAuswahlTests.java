@@ -496,7 +496,6 @@ class ModulAuswahlTests {
 
   }
 
-
   private String fristInZukunft() {
     LocalDateTime now = LocalDateTime.now().withNano(0).withSecond(0);
     LocalDateTime future = now.plusYears(1);
