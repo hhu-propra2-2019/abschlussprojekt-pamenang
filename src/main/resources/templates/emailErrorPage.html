@@ -33,7 +33,10 @@
         <div class="alert alert-success" th:if="${successMessage!=null}">
             <span th:text="${successMessage}"></span>
         </div>
-        <table class="table">
+        <div class="alert alert-success" th:if="${emailErrors.isEmpty()}">
+            <span>Alle Emails wurden erfolgreich versendet.</span>
+        </div>
+        <table class="table" th:if="${!emailErrors.isEmpty()}">
             <thead>
             <tr>
                 <th>Vorname</th>
