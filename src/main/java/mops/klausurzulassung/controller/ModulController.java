@@ -391,13 +391,9 @@ public class ModulController {
     Modul moduul = modulService.findById(id).get();
     if (token.getName().equals(moduul.getOwner())) {
 
-      if (bindingResult.hasErrors()) {
-        message.setErrorMessage("Alle Felder im Formular müssen befüllt werden!");
-        return "redirect:/zulassung1/modul/" + id;
-      }
       model.addAttribute("account", createAccountFromPrincipal(token));
 
-      message = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
+      message = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id, bindingResult);
       return "redirect:/zulassung1/modul/" + id;
     }
     message.setErrorMessage(
