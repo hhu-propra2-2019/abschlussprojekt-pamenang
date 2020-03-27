@@ -74,6 +74,8 @@ dependencies {
     implementation("com.google.guava:guava:28.2-jre")
     compile 'com.opencsv:opencsv:5.1'
     compile 'org.apache.commons:commons-csv:1.8'
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+
 }
 
 test {
