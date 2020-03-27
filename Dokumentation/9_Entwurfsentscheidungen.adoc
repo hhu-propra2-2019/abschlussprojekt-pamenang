@@ -17,3 +17,94 @@ weiter in den Risiken erläutert.
 
 Anmeldeliste werden weder erstellt noch gespeichert, da dies nach reichlicher Überlegung
 und Absprache mit dem Dozenten nicht in unser Aufgabengebiet fällt.
+
+=== Wöchentliche Rückschau
+
+[cols="1,1,1,1, 1", options="header"]
+|===
+|
+|Woche 1
+|Woche 2
+|Woche 3
+|Woche 4
+
+|*Geschafft*
+|
+- Tokengenerierung und Organisationsoberfläche fertig
+
+- Studentencontroller und -frontend erstellt
+
+- Anmeldung, Emailservice und CSVImport fertig
+|
+- Token mit Base64 verschlüsselt
+
+- Verbindung der einzelnen Subsysteme
+
+- Erstellen der arc42 Dokumentation
+
+- Tests für die meisten Klassen geschrieben
+|
+- DatePicker erstellt
+
+- Tokengenerierung und Tokenverifikation final überarbeitet
+
+- Logger und Exeption handling
+
+- Beenden der arc42 Dokumentation
+|
+- Statistik Seite vervollständigt
+
+- finales Refactoring und überarbeiten der Doku
+
+- Controller Tests
+
+- JavaDoc für Controller und Services geschrieben
+
+|*Nächste Schritte*
+|
+- Tests für die fertigen Services und Controller schreiben
+
+- Verknüpfen der fertigen Subsysteme
+|
+- Verschönerung der Benutzeroberfläche
+
+- Refactoring aller Klassen
+
+- Testabdeckung vervollständigen
+
+- Kritik umsetzen
+|
+- Statistik Seite für Module erstellen
+
+- Refactoring
+|
+- Abgabe
+
+|*Probleme*
+|
+- Suche nach einem System zur Tokenerstellung war schwierig
+
+- Verständnis und Umsetzung des gesamten Systems
+|
+- Token war deutlich zu lang
+
+- Downloadbutton umsetzen
+
+- Architekturverständnis
+|
+- DatePicker wird nicht bei allen Browsern unterstützt
+|
+- Grafische Visualisierung der Statistiken
+
+|*Lösungsansätze*
+|
+- Detailiertes Besprechen und Diskutieren des Systems in der ganzen Gruppe
+|
+- Verküzen der KeySize für den Token und Verschlüsselung mit Base64
+
+- Diskutieren über Architektur und dann Überarbeiten der Packagestruktur
+|
+- Nutzen der Bibliothek JQuery für den DatePicker
+|
+- Nutzen von GoogleCharts für die Visualisierung der Statistiken als Liniendiagramm
+|===
