@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mopslayout :: html(name='Klausurzulassung', title='Optional: Tabtitel', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}">
+<head>
+    <meta charset="utf-8">
+    <title>Modul Hinzufügen</title>
+    <th:block th:fragment="headcontent">
+        <style>
+            /* Add padding and center-align text to the container */
+            .containerModal {
+                padding: 16px;
+                text-align: center;
+            }
+
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                /*z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgba(0, 0, 0, 0.42);
+                padding-top: 50px;
+            }
+
+            .modal-backdrop {
+                opacity: 0.5 !important;
+            }
+
+            /* Modal Content/Box */
+            .modal-content {
+                background-color: #fefefe;
+                margin: 10% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+                border: 1px solid #888;
+                width: 40%; /* Could be more or less, depending on screen size */
+            }
+
+            /* Style the horizontal ruler */
+            hr {
+                border: 1px solid #f1f1f1;
+                margin-bottom: 25px;
+            }
+
+            /* The Modal Close Button (x) */
+            .close {
+                position: absolute;
+                right: 35px;
+                top: 15px;
+                font-size: 40px;
+                font-weight: bold;
+                color: #000000;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #f44336;
+                cursor: pointer;
+            }
+
+            /* Clear floats */
+            .clearfix::after {
+                content: "";
+                clear: both;
+                display: table;
+            }
+        </style>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script>
+            $(function () {
+                $("#datepicker").datepicker();
+            });
+        </script>
+    </th:block>
+</head>
+<body>
+<header>
+    <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
+        <ul>
+            <li>
+                <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
+            </li>
+            <li>
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main th:fragment="bodycontent">
+    <div class="container pt-3">
+        <h1 class="text-center">
+            Hinzufügen eines Moduls
+        </h1>
+
+        <div class="alert alert-warning" th:if="${errorMessage!=null}">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="alert alert-success" th:if="${successMessage!=null}">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+
+        <label> Hier können sie ein Modul hinzufügen, für welches noch keine ID und Zulassungen in der Datenkenbank
+            gespeichert sind.
+            <div>
+                <button class="btn btn-outline-dark"
+                        onclick="document.getElementById('id03').style.display='block'">Neues Modul hinzufügen
+                </button>
+            </div>
+        </label>
+
+        <div class="modal" id="id03">
+                                <span class="close" onclick="document.getElementById('id03').style.display='none'"
+                                      title="Close Modal">&times;</span>
+            <div class="modal-content">
+                <div class="containerModal">
+                    <h1>Neues Modul Hinzufügen</h1>
+
+                    <form action="#" method="post" th:action="'/zulassung1/neuesModulHinzufuegen'"
+                          th:object="${modul}">
+                        <div class="form-group">
+                            <label for="name">Bitte geben Sie den offiziellen Namen des Moduls ein.</label>
+                            <input id="name" class="form-control" th:field="*{name}"
+                                   placeholder="Modulname" type="text"
+                                   th:errorclass="is-invalid" th:value="*{name}">
+                            <span class="text-danger"
+                                  th:if="${#fields.hasErrors('name')}"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Bitte geben Sie eine Frist für das Modul ein. Die Frist endet immer um 12:00 Uhr am
+                                gewählten Tag.</label>
+                            <p><input class="form-control" type="text" id="datepicker" th:value="*{frist}"
+                                      placeholder="mm/dd/yyyy" th:field="*{frist}" th:errorclass="is-invalid"></p>
+                            <span class="text-danger" th:if="${#fields.hasErrors('frist')}"></span>
+                        </div>
+                        <div class="buttonModal">
+                            <input align="center" class="btn btn-primary" type="submit" value="Abschicken">
+                        </div>
+                    </form>
+
+
+                    <div class="clearfix">
+                        <div class="linkerButton">
+                            <form action="#" method="GET"
+                                  th:action="'/zulassung1/modulHinzufuegen'">
+                                <input class="btn btn-outline-dark btn-sm" data-target="#myModal"
+                                       data-toggle="modal"
+                                       type="submit" value="Abbrechen">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="m-5">
+        <h2>Bereits vorhandene Module</h2>
+
+        <div id="links" th:if="${moduls}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Modul-ID</th>
+                    <th>Modulname</th>
+                    <th>Optionen</th>
+                </tr>
+                </thead>
+                <tbody th:remove="all-but-first">
+                <tr th:each="m : ${moduls}">
+                    <td>
+                        <span th:text="${m.id}">1234</span>
+                    </td>
+                    <td>
+                        <span th:text="${m.name}">ProPra2</span>
+                    </td>
+                    <td>
+                        <div>
+                            <form action="#" method="GET" th:action="'/zulassung1/modulBearbeiten/' + ${m.id}">
+                                <input class="btn btn-outline-dark btn-sm" type="submit" value="Modul hinzufügen">
+                            </form>
+
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- JavaScript für DeleteModal -->
+        <script>
+            // Get the modal
+            var modal = document.getElementById('id03');
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
+    </div>
+</main>
+</body>
+</html>

@@ -13,124 +13,43 @@
 <header>
     <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
         <ul>
-            <li>
-                <a href="/zulassung1/" th:href="@{/zulassung1}">Home</a>
-            </li>
             <li class="active">
                 <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
             </li>
-            <li>
-                <a href="/zulassung1/modulHinzufuegen" th:href="@{/zulassung1/modulHinzufuegen}">Orga</a>
+            <li th:if="${!#lists.contains(account.roles, 'studentin')}">
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
             </li>
         </ul>
     </nav>
 </header>
 <main th:fragment="bodycontent">
-    <h1>Klausuranmeldung</h1>
-    <div th:if="${meldung}">
-        <div th:if="${success}">
+    <h1 class="text-center">Klausuranmeldung</h1>
 
-            <form>
-                <input id="fname" name="fname" style="    width: 100%;
-                                  padding: 12px 20px;
-                                  margin: 8px 0;
-                                  box-sizing: border-box;
-                                  border: none;
-                                  background-color: #3CBC8D;
-                                  color: white; " type="text"
-                       value="Erfolgreich zur Klausur angemeldet!">
-            </form>
+
+    <div class="container">
+        <h5 class="lead text-center"> Hier kannst du mithilfe deines Tokens deine Altklausurzulassung einreichen.</h5>
+        <br>
+
+        <div class="alert alert-warning" th:if="${errorMessage!=null}">
+            <span th:text="${errorMessage}"></span>
         </div>
-        <div th:if="${!success}">
-            <form>
-                <input id="fname" name="fname" style="    width: 100%;
-                                  padding: 12px 20px;
-                                  margin: 8px 0;
-                                  box-sizing: border-box;
-                                  border: none;
-                                  background-color: #ef291f;
-                                  color: white; " type="text" value="Anmeldung fehlgeschlagen!">
-            </form>
+
+        <div class="alert alert-success" th:if="${successMessage!=null}">
+            <span th:text="${successMessage}"></span>
         </div>
+
+
+        <form method="post" th:action="@{/zulassung1/student}" th:object="${token}">
+            <div class="form-group">
+                <label>Bitte geben Sie ihren Token ein.</label>
+                <input class="form-control" th:field="*{token}" th:placeholder="Token"
+                       th:value="*{token}"
+                       type="text">
+            </div>
+            <input class="btn btn-primary" name="action" type="submit" value="Klausurzulassung erhalten">
+        </form>
     </div>
-    <form th:action="@{/zulassung1/student}" method="post">
 
-        <table>
-
-            <tr>
-                <td>Matrikelnummer:</td>
-                <td>
-
-                    <input type="text" name="matrikelnummer" th:value="${matrikelnr}">
-
-
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-            <tr>
-                <td>Vorname:</td>
-                <td>
-
-                    <input type="text" name="vorname" th:value="${vorname}">
-
-
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-            <tr>
-                <td>Nachname:</td>
-                <td>
-
-                    <input type="text" name="nachname" th:value="${nachname}">
-
-
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-            <tr>
-                <td>E-Mail Adresse:</td>
-                <td>
-
-                    <input type="text" name="email" th:value="${email}">
-
-
-                </td>
-                <td>
-                    <p></p>
-                </td>
-            </tr>
-            <tr>
-                <td>FachID: </td>
-                <td>
-
-                    <input type="text" name="fach" th:value="${fachName}">
-
-                </td>
-                <td>
-                    <p>(Wie auf Quittung)</p>
-                </td>
-            </tr>
-            <tr>
-                <td>Token:</td>
-                <td>
-                    <input type="text" name="token" th:value="${zulassungToken}">
-
-                </td>
-                <td>
-                    <p>(64-stellig)</p>
-                </td>
-            </tr>
-
-        </table>
-        <input name="action" type="submit" value="Klausurzulassung erhalten">
-
-    </form>
 </main>
 </body>
 </html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{mopslayout :: html(name='Statistik', title='Optional: Tabtitel', headcontent=~{:: headcontent}, navigation=~{:: navigation}, bodycontent=~{:: bodycontent})}"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Statistiken</title>
+    <th:block th:fragment="headcontent">
+        <!-- Links, Skripts, Styles hier einfügen! -->
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    </th:block>
+</head>
+<body>
+<header>
+    <nav class="navigation navigation-secondary" is="mops-navigation" th:fragment="navigation">
+        <ul>
+            <li>
+                <a href="/zulassung1/student" th:href="@{/zulassung1/student}">Student</a>
+            </li>
+            <li>
+                <a href="/zulassung1/modulAuswahl" th:href="@{/zulassung1/modulAuswahl}">Orga</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main th:fragment="bodycontent">
+    <h1 class="text-center text-uppercase">Statistik des Moduls <span th:text="${currentModul.getName()}"></span></h1>
+    <div class="container" style="height: 50vh;" id="chart_div"></div>
+    <br>
+    <br>
+    <div class="container" id="links" th:if="${modulStatistiken}">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Modul-ID</th>
+                <th>Frist</th>
+                <th>Teilnehmerzahl</th>
+                <th>Zulassungszahl</th>
+            </tr>
+            </thead>
+            <tbody th:remove="all-but-first">
+            <tr th:each="modul,stats : ${modulStatistiken}">
+                <td>
+                    <span th:id="${'modul' + stats.index}" th:text="${modul.getModulId()}">1234</span>
+                </td>
+                <td>
+                    <span th:id="${'frist' + stats.index}" th:text="${modul.getFrist()}">ProPra2</span>
+                </td>
+                <td>
+                    <span th:id="${'teilnehmer' + stats.index}" th:text="${modul.getTeilnehmer()}">ProPra2</span>
+                </td>
+                <td>
+                    <span th:id="${'zulassung' + stats.index}" th:text="${modul.getZulassungsZahl()}">ProPra2</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawLogScales);
+
+    function drawLogScales() {
+
+        var modulStatistikenLaenge = /*[[${modulStatistiken.size()}]]*/ '0';
+        var modulData = [];
+        for (var i = 0; i < modulStatistikenLaenge; i++) {
+            var frist = document.getElementById("frist" + i);
+            var teilnehmer = document.getElementById("teilnehmer" + i);
+            var zulassungen = document.getElementById("zulassung" + i);
+            modulData[i] = [new Date(parseInt(frist.innerText.substring(6, 10)), parseInt(frist.innerText.substring(0, 2)), parseInt(frist.innerText.substring(3, 5)))
+                , parseInt(teilnehmer.innerText)
+                , parseInt(zulassungen.innerText)];
+        }
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Zeit');
+        data.addColumn('number', 'Teilnehmer');
+        data.addColumn('number', 'Zulassungen');
+
+        for (var i = 0; i < modulStatistikenLaenge; i++) {
+            data.addRow([modulData[i][0], modulData[i][1], modulData[i][2]]);
+        }
+        var options = {
+            hAxis: {
+                title: 'Zeit',
+                logScale: false
+            },
+            vAxis: {
+                title: 'Anzahl',
+                logScale: false
+            },
+            colors: ['#a52714', '#097138'],
+            curveType: 'function',
+            legend: {position: 'bottom'}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+
+    /*]]>*/
+</script>
