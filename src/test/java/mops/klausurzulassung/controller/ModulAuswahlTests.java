@@ -219,11 +219,24 @@ class ModulAuswahlTests {
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
 
     mockMvc
-        .perform(get("/zulassung1/modul/1"))
-        .andExpect(model().attribute("modul", modul.getName()))
-        .andExpect(model().attribute("id", modul.getId()))
-        .andExpect(model().attribute("frist", modul.getFrist()))
-        .andExpect(status().isOk());
+            .perform(get("/zulassung1/modul/1"))
+            .andExpect(model().attribute("modul", modul.getName()))
+            .andExpect(model().attribute("id", modul.getId()))
+            .andExpect(model().attribute("frist", modul.getFrist()))
+            .andExpect(status().isOk());
+  }
+
+  @WithMockKeycloackAuth(name = "user", roles = "orga")
+  @Test
+  void test_Modul_Select_Get_wrong_User() throws Exception {
+    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
+    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
+
+    mockMvc
+            .perform(get("/zulassung1/modul/1"))
+            .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulAuswahl/"))
+            .andExpect(status().
+                    is3xxRedirection());
   }
 
   @WithMockKeycloackAuth(name = "owner", roles = "orga")
@@ -231,14 +244,29 @@ class ModulAuswahlTests {
   void test_Modul_Select_Post() throws Exception {
 
     MockMultipartFile multipartFile =
-        new MockMultipartFile("datei", "test.csv", "text/csv", "test;test;test".getBytes());
+            new MockMultipartFile("datei", "test.csv", "text/csv", "test;test;test".getBytes());
     FrontendMessage message = new FrontendMessage("error", "success");
     Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
     when(modulservice.verarbeiteUploadliste(1L, multipartFile)).thenReturn(message);
     mockMvc
-        .perform(MockMvcRequestBuilders.multipart("/zulassung1/modul/1").file(multipartFile))
-        .andExpect(status().is3xxRedirection());
+            .perform(MockMvcRequestBuilders.multipart("/zulassung1/modul/1").file(multipartFile))
+            .andExpect(status().is3xxRedirection());
+  }
+
+  @WithMockKeycloackAuth(name = "user", roles = "orga")
+  @Test
+  void test_Modul_Select_Post_wrong_User() throws Exception {
+
+    MockMultipartFile multipartFile =
+            new MockMultipartFile("datei", "test.csv", "text/csv", "test;test;test".getBytes());
+    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
+    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
+    mockMvc
+            .perform(MockMvcRequestBuilders.multipart("/zulassung1/modul/1").file(multipartFile))
+            .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulAuswahl"))
+            .andExpect(status().
+                    is3xxRedirection());
   }
 
   @WithMockKeycloackAuth(name = "owner", roles = "orga")
@@ -252,18 +280,6 @@ class ModulAuswahlTests {
 
   @WithMockKeycloackAuth(name = "owner", roles = "orga")
   @Test
-  void test_altKlausurZulassungHinzufuegenLeer() throws Exception {
-    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
-    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
-    mockMvc
-        .perform(post("/zulassung1/1/altzulassungHinzufuegen"))
-        .andExpect(status().is3xxRedirection());
-    verify(modulservice, times(0))
-        .altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
-  }
-
-  @WithMockKeycloackAuth(name = "owner", roles = "orga")
-  @Test
   void test_altKlausurZulassungHinzufuegenMitVollemObject() throws Exception {
 
     AltzulassungStudentDto studentDto =
@@ -272,20 +288,43 @@ class ModulAuswahlTests {
     Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
     when(modulservice.altzulassungVerarbeiten(
-            any(AltzulassungStudentDto.class), anyBoolean(), anyLong()))
+            any(AltzulassungStudentDto.class), anyBoolean(), anyLong(), any()))
         .thenReturn(message);
     mockMvc
-        .perform(
-            post("/zulassung1/1/altzulassungHinzufuegen")
-                .param("vorname", studentDto.getVorname())
-                .param("nachname", studentDto.getNachname())
-                .param("email", studentDto.getEmail())
-                .param("matrikelnummer", studentDto.getMatrikelnummer().toString())
-                .param("modulId", "1")
-                .param("papierzulassung", String.valueOf(true)))
-        .andExpect(status().is3xxRedirection());
+            .perform(
+                    post("/zulassung1/1/altzulassungHinzufuegen")
+                            .param("vorname", studentDto.getVorname())
+                            .param("nachname", studentDto.getNachname())
+                            .param("email", studentDto.getEmail())
+                            .param("matrikelnummer", studentDto.getMatrikelnummer().toString())
+                            .param("modulId", "1")
+                            .param("papierzulassung", String.valueOf(true)))
+            .andExpect(status().is3xxRedirection());
     verify(modulservice, times(1))
-        .altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
+            .altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong(), any());
+  }
+
+  @WithMockKeycloackAuth(name = "user", roles = "orga")
+  @Test
+  void test_altKlausurZulassungHinzufuegenWrongUser() throws Exception {
+
+    AltzulassungStudentDto studentDto =
+            new AltzulassungStudentDto("vorname", "nachname", "test@test.de", 1234567L, 1L);
+    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
+    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
+    mockMvc
+            .perform(
+                    post("/zulassung1/1/altzulassungHinzufuegen")
+                            .param("vorname", studentDto.getVorname())
+                            .param("nachname", studentDto.getNachname())
+                            .param("email", studentDto.getEmail())
+                            .param("matrikelnummer", studentDto.getMatrikelnummer().toString())
+                            .param("modulId", "1")
+                            .param("papierzulassung", String.valueOf(true)))
+            .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulAuswahl/"))
+            .andExpect(status().is3xxRedirection());
+    verify(modulservice, times(0))
+            .altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong(), any());
   }
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
@@ -296,7 +335,7 @@ class ModulAuswahlTests {
     when(modulservice.missingAttributeInModul(modul)).thenReturn(true);
 
     MockHttpServletRequestBuilder builder =
-        MockMvcRequestBuilders.post("/zulassung1/modulBearbeiten/1")
+            MockMvcRequestBuilders.post("/zulassung1/modulBearbeiten/1")
             .param("id", modul.getId().toString())
             .param("name", modul.getName())
             .param("owner", modul.getOwner())
@@ -488,15 +527,36 @@ class ModulAuswahlTests {
 
     MockHttpServletRequestBuilder builder =
         MockMvcRequestBuilders.post("/zulassung1/modul/teilnehmerHinzufuegen/2")
-            .param("teilnehmerAnzahl", "100");
+                .param("teilnehmerAnzahl", "100");
 
     mockMvc
-        .perform(builder)
-        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modul/2"))
-        .andExpect(status().is3xxRedirection());
+            .perform(builder)
+            .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modul/2"))
+            .andExpect(status().is3xxRedirection());
 
     verify(modulservice, times(1)).saveGesamtTeilnehmerzahlForModul(any(), any());
     verify(statistikService, times(1)).save(any());
+  }
+
+  @WithMockKeycloackAuth(name = "user", roles = "orga")
+  @Test
+  void modulTeilnehmerHinzufuegenWrongUser() throws Exception {
+    String frist = "01/01/2100";
+    Modul modul = new Modul(2L, "ProPra", "owner", frist, null, 100L);
+
+    when(modulservice.findById(2L)).thenReturn(Optional.of(modul));
+
+    MockHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.post("/zulassung1/modul/teilnehmerHinzufuegen/2")
+                    .param("teilnehmerAnzahl", "100");
+
+    mockMvc
+            .perform(builder)
+            .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulAuswahl/"))
+            .andExpect(status().is3xxRedirection());
+
+    verify(modulservice, times(0)).saveGesamtTeilnehmerzahlForModul(any(), any());
+    verify(statistikService, times(0)).save(any());
   }
 
   private String fristInZukunft() {

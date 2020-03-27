@@ -11,6 +11,7 @@ import mops.klausurzulassung.exceptions.NoTokenInDatabaseException;
 import mops.klausurzulassung.repositories.ModulRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
@@ -20,9 +21,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,9 +149,9 @@ class ModulServiceTest {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
     InputStream input =
-        new ByteArrayInputStream(
-            "Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447"
-                .getBytes());
+            new ByteArrayInputStream(
+                    "Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447"
+                            .getBytes());
 
     List<Student> students = new ArrayList<>();
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, null, null));
@@ -178,7 +176,7 @@ class ModulServiceTest {
     FrontendMessage message;
 
     InputStream input =
-        new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,zu viel".getBytes());
+            new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,zu viel".getBytes());
     when(multipartFile.getInputStream()).thenReturn(input);
 
     String errorMessage = "Datei hat eine falsche Anzahl von Einträgen pro Zeile!";
@@ -188,7 +186,7 @@ class ModulServiceTest {
 
   @Test
   void verarbeiteZuKurzeUploadliste()
-      throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+          throws IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de".getBytes());
@@ -201,7 +199,7 @@ class ModulServiceTest {
 
   @Test
   void verarbeiteFalscheUploadliste()
-      throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+          throws IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
     InputStream input = new ByteArrayInputStream("".getBytes());
@@ -216,20 +214,22 @@ class ModulServiceTest {
   void altzulassungenVerarbeitenSuccessMessageOhneTokenError()
       throws NoTokenInDatabaseException {
     AltzulassungStudentDto student =
-        AltzulassungStudentDto.builder()
-            .vorname("Joshua")
-            .nachname("Müller")
-            .email("joshua@gmail.com")
-            .matrikelnummer((long) 1231)
-            .build();
+            AltzulassungStudentDto.builder()
+                    .vorname("Joshua")
+                    .nachname("Müller")
+                    .email("joshua@gmail.com")
+                    .matrikelnummer((long) 1231)
+                    .build();
     Optional<Modul> modul =
-        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+            Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
     Optional<ModulStatistiken> modulstat =
-        Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
+            Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
+    BindingResult bindingResult = mock(BindingResult.class);
+    when(bindingResult.hasErrors()).thenReturn(false);
     when(statistikService.findById(any())).thenReturn(modulstat);
     when(quittungService.findQuittung("123", "123")).thenReturn("132");
     when(modulRepository.findById((long) 1)).thenReturn(modul);
-    modulService.altzulassungVerarbeiten(student, true, (long) 1);
+    modulService.altzulassungVerarbeiten(student, true, (long) 1, bindingResult);
 
     verify(studentService, times(1)).save(any());
     verify(emailService, times(1)).resendEmail(any());
@@ -240,20 +240,22 @@ class ModulServiceTest {
       throws NoTokenInDatabaseException {
     FrontendMessage message;
     AltzulassungStudentDto student =
-        AltzulassungStudentDto.builder()
-            .vorname("Joshua")
-            .nachname("Müller")
-            .email("joshua@gmail.com")
-            .matrikelnummer((long) 1231)
-            .build();
+            AltzulassungStudentDto.builder()
+                    .vorname("Joshua")
+                    .nachname("Müller")
+                    .email("joshua@gmail.com")
+                    .matrikelnummer((long) 1231)
+                    .build();
     Optional<Modul> modul =
-        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+            Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    BindingResult bindingResult = mock(BindingResult.class);
 
+    when(bindingResult.hasErrors()).thenReturn(false);
     when(quittungService.findQuittung(anyString(), anyString()))
-        .thenThrow(new NoTokenInDatabaseException("ERROR"));
+            .thenThrow(new NoTokenInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
-    message = modulService.altzulassungVerarbeiten(student, true, (long) 1);
+    message = modulService.altzulassungVerarbeiten(student, true, (long) 1, bindingResult);
     String successMessage =
         "Student "
             + "1231"
@@ -266,21 +268,45 @@ class ModulServiceTest {
       throws NoTokenInDatabaseException {
     FrontendMessage message;
     AltzulassungStudentDto student =
-        AltzulassungStudentDto.builder()
-            .vorname("Joshua")
-            .nachname("Müller")
-            .email("joshua@gmail.com")
-            .matrikelnummer((long) 1231)
-            .build();
+            AltzulassungStudentDto.builder()
+                    .vorname("Joshua")
+                    .nachname("Müller")
+                    .email("joshua@gmail.com")
+                    .matrikelnummer((long) 1231)
+                    .build();
     Optional<Modul> modul =
-        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+            Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    BindingResult bindingResult = mock(BindingResult.class);
 
+    when(bindingResult.hasErrors()).thenReturn(false);
     when(quittungService.findQuittung(anyString(), anyString()))
-        .thenThrow(new NoTokenInDatabaseException("ERROR"));
+            .thenThrow(new NoTokenInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
-    message = modulService.altzulassungVerarbeiten(student, false, (long) 1);
+    message = modulService.altzulassungVerarbeiten(student, false, (long) 1, bindingResult);
     String errorMessage = "Student " + "1231" + " hat keine Zulassung in diesem Modul!";
+    assertEquals(errorMessage, message.getErrorMessage());
+  }
+
+  @Test
+  void altzulassungenVerarbeitenBindingErrors()
+          throws NoTokenInDatabaseException {
+    FrontendMessage message;
+    AltzulassungStudentDto student =
+            AltzulassungStudentDto.builder()
+                    .vorname("")
+                    .nachname("Müller")
+                    .email("joshua@gmail.com")
+                    .matrikelnummer((long) 1231)
+                    .build();
+    Optional<Modul> modul =
+            Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    BindingResult bindingResult = mock(BindingResult.class);
+
+    when(bindingResult.hasErrors()).thenReturn(true);
+
+    message = modulService.altzulassungVerarbeiten(student, false, (long) 1, bindingResult);
+    String errorMessage = "Alle Felder im Formular müssen befüllt werden!";
     assertEquals(errorMessage, message.getErrorMessage());
   }
 

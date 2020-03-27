@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -231,9 +232,9 @@ public class ModulService {
     logger.info("ID: " + id);
     Optional<Modul> modul = findById(id);
     if (modul.isPresent()) {
-      if (!checkOwner(modul.get(), user)) {
+      if (!isUserOwner(modul.get(), user)) {
         message.setErrorMessage(
-            "Modul konnte nicht gelöscht werden, da es einem anderen User gehört");
+                "Modul konnte nicht gelöscht werden, da es einem anderen User gehört");
         return message;
       }
 
@@ -263,10 +264,10 @@ public class ModulService {
    * <p>
    *
    * @param modul responding to the selected id
-   * @param user who tries to modify the modul
+   * @param user  who tries to modify the modul
    * @return Checks if the user is the corresponding owner
    */
-  boolean checkOwner(Modul modul, String user) {
+  boolean isUserOwner(Modul modul, String user) {
     return user.equals(modul.getOwner());
   }
 
@@ -434,23 +435,29 @@ public class ModulService {
    * paper admission then the token is generated and an email is send. In both cases the student is
    * written into the database for old admissions.
    *
-   * @param studentDto represents student
+   * @param studentDto      represents student
    * @param papierZulassung if the student has an offline/paper admission
-   * @param id of the selected modul
+   * @param id              of the selected modul
+   * @param bindingResult   if all fields in the formular are filled
    * @return error or success message for ModulController
    */
   public FrontendMessage altzulassungVerarbeiten(
-      AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
+          AltzulassungStudentDto studentDto, boolean papierZulassung, Long id, BindingResult bindingResult) {
+
+    if (bindingResult.hasErrors()) {
+      message.setErrorMessage("Alle Felder im Formular müssen befüllt werden!");
+      return message;
+    }
 
     message.resetMessage();
     String modulname = findById(id).get().getName();
     Student student =
-        Student.builder()
-            .email(studentDto.getEmail())
-            .fachname(modulname)
-            .vorname(studentDto.getVorname())
-            .nachname(studentDto.getNachname())
-            .matrikelnummer(studentDto.getMatrikelnummer())
+            Student.builder()
+                    .email(studentDto.getEmail())
+                    .fachname(modulname)
+                    .vorname(studentDto.getVorname())
+                    .nachname(studentDto.getNachname())
+                    .matrikelnummer(studentDto.getMatrikelnummer())
             .modulId(id)
             .build();
     try {
