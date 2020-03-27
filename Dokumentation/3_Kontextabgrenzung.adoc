@@ -31,6 +31,11 @@ Es ist ein Email Service implementiert, der automatisch den Studenten die generi
 Es ist kein Handeln der Organisatoren nötig.
 Dadurch können keine Fehler beim Versenden entstehen und bürokratischer Aufwand gegenüber früher verschwindet.
 
+==== Statistik
+
+Es existiert in der Anwendung zu jedem Modul eine Statistik. Diese gibt grafisch Rückmeldung über die Teilnehmer und davon zur Klausur
+zugelassenen Studenten. Es wird der Trend der letzten Jahre visualisiert.
+
 ==== Key-Cloak (Fremdsystem)
 
 Key-Cloak sorgt für die Sicherheit des Systems.
