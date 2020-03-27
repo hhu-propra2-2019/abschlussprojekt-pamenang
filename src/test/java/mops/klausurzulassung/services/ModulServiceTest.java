@@ -145,7 +145,7 @@ class ModulServiceTest {
 
   @Test
   void verarbeiteRichtigeUploadliste()
-          throws IOException {
+      throws IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
     InputStream input =
@@ -171,7 +171,7 @@ class ModulServiceTest {
 
   @Test
   void verarbeiteZuLangeUploadliste()
-          throws IOException {
+      throws IOException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
 
@@ -212,7 +212,7 @@ class ModulServiceTest {
 
   @Test
   void altzulassungenVerarbeitenSuccessMessageOhneTokenError()
-          throws NoTokenInDatabaseException {
+      throws NoTokenInDatabaseException {
     AltzulassungStudentDto student =
             AltzulassungStudentDto.builder()
                     .vorname("Joshua")
@@ -232,12 +232,12 @@ class ModulServiceTest {
     modulService.altzulassungVerarbeiten(student, true, (long) 1, bindingResult);
 
     verify(studentService, times(1)).save(any());
-    verify(emailService, times(1)).sendMail(any());
+    verify(emailService, times(1)).resendEmail(any());
   }
 
   @Test
   void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung()
-          throws NoTokenInDatabaseException {
+      throws NoTokenInDatabaseException {
     FrontendMessage message;
     AltzulassungStudentDto student =
             AltzulassungStudentDto.builder()
@@ -265,7 +265,7 @@ class ModulServiceTest {
 
   @Test
   void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung()
-          throws NoTokenInDatabaseException {
+      throws NoTokenInDatabaseException {
     FrontendMessage message;
     AltzulassungStudentDto student =
             AltzulassungStudentDto.builder()
@@ -351,7 +351,7 @@ class ModulServiceTest {
     modulService.erstelleTokenUndSendeEmail(student, (long) 1, false);
 
     verify(studentService, times(0)).save(student);
-    verify(emailService, times(1)).sendMail(student);
+    verify(emailService, times(1)).resendEmail(student);
   }
 
   @Test
@@ -375,7 +375,7 @@ class ModulServiceTest {
     modulService.erstelleTokenUndSendeEmail(student, (long) 1, true);
 
     verify(studentService, times(1)).save(student);
-    verify(emailService, times(1)).sendMail(student);
+    verify(emailService, times(1)).resendEmail(student);
   }
 
   @Test

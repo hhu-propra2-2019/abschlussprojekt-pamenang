@@ -470,7 +470,7 @@ public class ModulService {
           "Student "
               + student.getMatrikelnummer()
               + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
-      emailService.sendMail(student);
+      sendAltzulassungsEmail(student);
 
     } catch (NoTokenInDatabaseException e) {
       if (papierZulassung) {
@@ -486,6 +486,13 @@ public class ModulService {
     }
 
     return message;
+  }
+
+  private void sendAltzulassungsEmail(Student student) {
+    boolean statusEmail = emailService.resendEmail(student);
+    if(!statusEmail){
+      message.setErrorMessage("Email konnte nicht verschickt werden an: " + student.getEmail());
+    }
   }
 
   /**
@@ -523,7 +530,7 @@ public class ModulService {
       if (isAltzulassung) {
         studentService.save(student);
       }
-      emailService.sendMail(student);
+      sendAltzulassungsEmail(student);
     }
   }
 
