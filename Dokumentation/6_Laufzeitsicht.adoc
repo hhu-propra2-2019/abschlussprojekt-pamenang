@@ -1,7 +1,7 @@
 == Abschnitt 6 Laufzeitsicht
 
 Vor dem Semester kann der Organisator ein Modul für seine eigene Vorlesung
-erstellen. Dabei Kann er entweder, falls das Modul bereits aus früheren Semestern
+erstellen. Dabei kann er entweder, falls das Modul bereits aus früheren Semestern
 im System enthalten ist, dieses aus einer Liste der inaktiven Module auswählen.
 Dabei muss eine Frist gesetzt werden, bis zu welcher Studenten mit Altzulassungen
 diese einlösen können. Außerdem kann der Name des Moduls angepasst werden. Die
@@ -43,8 +43,8 @@ auf welcher alle Studenten stehen welche per Token eine Altzulassung eingelöst,
 Organisator manuell eingetragen oder in diesem Semester eine neue Zulassung
 erworben haben.
 
-Auf der Statistik-Seite weder die Zulassungs- und Teilnehmerzahlen der letzten Semester
+Auf der Statistik-Seite werden die Zulassungs- und Teilnehmerzahlen der letzten Semester
 für dieses Modul graphisch dargestellt.
 
-Am Ende des Semsters , oder nach Abschluss des Moduls muss der Organisator das Modul
+Am Ende des Semesters, oder nach Abschluss des Moduls muss der Organisator das Modul
 deaktivieren, um es für die kommenden Semester wieder freizugeben.
