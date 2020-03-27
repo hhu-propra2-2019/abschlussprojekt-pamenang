@@ -50,8 +50,14 @@ public class ModulService {
   private FrontendMessage message = new FrontendMessage();
   private Logger logger = LoggerFactory.getLogger(ModulService.class);
 
-
-  public ModulService(ModulRepository modulRepository, CsvService csvService, StudentService studentService, TokengenerierungService tokengenerierungService, EmailService emailService, QuittungService quittungService, StatistikService statistikService) {
+  public ModulService(
+      ModulRepository modulRepository,
+      CsvService csvService,
+      StudentService studentService,
+      TokengenerierungService tokengenerierungService,
+      EmailService emailService,
+      QuittungService quittungService,
+      StatistikService statistikService) {
     this.csvService = csvService;
     this.studentService = studentService;
     this.tokengenerierungService = tokengenerierungService;
@@ -64,7 +70,7 @@ public class ModulService {
   /**
    * This methods finds all active moduls corresponding to the given owner.
    *
-   * @param name   of the owner
+   * @param name of the owner
    * @param active if the modul is active
    * @return Iterable of the moduls
    */
@@ -104,10 +110,10 @@ public class ModulService {
 
   /**
    * This method is called from ModulController.uploadListe.
-   * <p>
-   * Checks format of uploaded csv-file and processes students.
    *
-   * @param id   of the selected modul
+   * <p>Checks format of uploaded csv-file and processes students.
+   *
+   * @param id of the selected modul
    * @param file input csv file with header: name, surname, email, matriculationnumber
    * @return error or success message for ModulController
    */
@@ -120,7 +126,11 @@ public class ModulService {
     logger.info("Die Liste wurde erfolgreich eingelesen.");
 
     try {
-      records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").withSkipHeaderRecord().parse(new InputStreamReader(file.getInputStream()));
+      records =
+          CSVFormat.DEFAULT
+              .withHeader("Vorname", "Nachname", "Email", "Matrikelnummer")
+              .withSkipHeaderRecord()
+              .parse(new InputStreamReader(file.getInputStream()));
     } catch (IOException e) {
       logger.error("Fehler beim Einlesen der Datei!", e);
     }
@@ -138,13 +148,13 @@ public class ModulService {
 
   /**
    * This method is called from ModulService.verarbeiteUploadliste.
-   * <p>
-   * Creates student objects from records and generates token which are send to the student in an email.
-   * Writes all students with a admission
-   * for this modul to download file.
    *
-   * @param id      of the selected modul
-   * @param records contains the lines of the csv-file with header: name, surname, email, matriculationnumber
+   * <p>Creates student objects from records and generates token which are send to the student in an
+   * email. Writes all students with a admission for this modul to download file.
+   *
+   * @param id of the selected modul
+   * @param records contains the lines of the csv-file with header: name, surname, email,
+   *     matriculationnumber
    */
   private void verarbeiteStudenten(Long id, Iterable<CSVRecord> records) {
     try {
@@ -163,16 +173,18 @@ public class ModulService {
 
     } catch (NumberFormatException e) {
       logger.error("Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!");
-      message.setErrorMessage("Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!");
+      message.setErrorMessage(
+          "Eine Matrikelnummer der hochgeladenen Liste enthält nicht nur Zahlen!");
     }
   }
 
   /**
    * This method is called from ModulService.verarbeiteUploadliste.
-   * <p>
-   * Checks if the input file contains 4 strings in each line.
    *
-   * @param records contains the lines of the csv-file with header: name, surname, email, matriculationnumber
+   * <p>Checks if the input file contains 4 strings in each line.
+   *
+   * @param records contains the lines of the csv-file with header: name, surname, email,
+   *     matriculationnumber
    * @return if the input file is valid
    */
   private boolean isValidInputFile(Iterable<CSVRecord> records) {
@@ -196,7 +208,10 @@ public class ModulService {
   private Iterable<CSVRecord> getCsvRecords(MultipartFile file) {
     Iterable<CSVRecord> records = null;
     try {
-      records = CSVFormat.DEFAULT.withHeader("Vorname", "Nachname", "Email", "Matrikelnummer").parse(new InputStreamReader(file.getInputStream()));
+      records =
+          CSVFormat.DEFAULT
+              .withHeader("Vorname", "Nachname", "Email", "Matrikelnummer")
+              .parse(new InputStreamReader(file.getInputStream()));
     } catch (IOException e) {
       logger.error("Fehler beim Einlesen der Datei!", e);
     }
@@ -205,17 +220,23 @@ public class ModulService {
 
   /**
    * This method is called from ModulController.deleteModul.
-   * <p>
-   * Sets the modul to inactiv and deletes all students participating this modul.
    *
-   * @param id  of the selected modul
+   * <p>Sets the modul to inactiv and deletes all students participating this modul.
+   *
+   * @param id of the selected modul
    * @return error or success message for ModulController
    */
-  public FrontendMessage deleteStudentsFromModul(Long id) {
+  public FrontendMessage deleteStudentsFromModul(Long id, String user) {
 
     logger.info("ID: " + id);
     Optional<Modul> modul = findById(id);
     if (modul.isPresent()) {
+      if (!checkOwner(modul.get(), user)) {
+        message.setErrorMessage(
+            "Modul konnte nicht gelöscht werden, da es einem anderen User gehört");
+        return message;
+      }
+
       String modulName = modul.get().getName();
       modul.get().setOwner(null);
       modul.get().setFrist(null);
@@ -229,16 +250,30 @@ public class ModulService {
       }
       message.setSuccessMessage("Das Modul " + modulName + " wurde gelöscht!");
     } else {
-      message.setErrorMessage("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.");
+      message.setErrorMessage(
+          "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.");
     }
 
     return message;
   }
 
   /**
-   * This method is called from ModulService.istFristAbgelaufen.
+   * This method is called from ModulService.deleteStudentsFromModul
+   *
    * <p>
-   * Takes deadline from modul and sets time at 12PM.
+   *
+   * @param modul responding to the selected id
+   * @param user who tries to modify the modul
+   * @return Checks if the user is the corresponding owner
+   */
+  boolean checkOwner(Modul modul, String user) {
+    return user.equals(modul.getOwner());
+  }
+
+  /**
+   * This method is called from ModulService.istFristAbgelaufen.
+   *
+   * <p>Takes deadline from modul and sets time at 12PM.
    *
    * @param modul responding to the selected id
    * @return now and deadline as LocalDateTime
@@ -247,10 +282,8 @@ public class ModulService {
     String frist = modul.getFrist() + " 12:00";
     Date date = new SimpleDateFormat("MM/dd/yyyy hh:mm").parse(frist);
     LocalDateTime actualDate = LocalDateTime.now().withNano(0).withSecond(0);
-    LocalDateTime localFrist = date.toInstant()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDateTime();
-    return new LocalDateTime[]{actualDate, localFrist};
+    LocalDateTime localFrist = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    return new LocalDateTime[] {actualDate, localFrist};
   }
 
   /**
@@ -273,10 +306,10 @@ public class ModulService {
 
   /**
    * This method is called from ModulController.downloadListe.
-   * <p>
-   * Writes the download file.
    *
-   * @param id       of the selected modul
+   * <p>Writes the download file.
+   *
+   * @param id of the selected modul
    * @param response contains download file
    */
   public void download(Long id, HttpServletResponse response) {
@@ -309,15 +342,16 @@ public class ModulService {
 
   /**
    * This method is called from ModulService.download.
-   * <p>
-   * Writes OutputStream in HttpServletResponse.
    *
-   * @param id           of the selected modul
-   * @param response     contains download file
-   * @param bytes        content of the output file
+   * <p>Writes OutputStream in HttpServletResponse.
+   *
+   * @param id of the selected modul
+   * @param response contains download file
+   * @param bytes content of the output file
    * @param klausurliste file which should be deleted after download
    */
-  private void writeOutputFile(Long id, HttpServletResponse response, byte[] bytes, File klausurliste) {
+  private void writeOutputFile(
+      Long id, HttpServletResponse response, byte[] bytes, File klausurliste) {
     OutputStream outputStream = writeHeader(id, response);
     try {
       outputStream.write(bytes);
@@ -325,7 +359,6 @@ public class ModulService {
       outputStream.close();
 
       countLines(id, klausurliste);
-
 
       klausurliste.delete();
     } catch (IOException e) {
@@ -335,10 +368,10 @@ public class ModulService {
 
   /**
    * This method is called from ModulService.download.
-   * <p>
-   * Counts number of admissions for this modul.
    *
-   * @param id           of the selected modul
+   * <p>Counts number of admissions for this modul.
+   *
+   * @param id of the selected modul
    * @param klausurliste file which contains students with admission
    */
   void countLines(Long id, File klausurliste) throws IOException {
@@ -354,7 +387,8 @@ public class ModulService {
   }
 
   /**
-   * This method is called from ModulController.backToModulAuswahl and ModulController.modulAbschicken.
+   * This method is called from ModulController.backToModulAuswahl and
+   * ModulController.modulAbschicken.
    *
    * @param zuPruefendesModul which is selected
    * @return if deadline of the modul has expired
@@ -372,7 +406,7 @@ public class ModulService {
   /**
    * This method is called from ModulService.writeOutputFile.
    *
-   * @param id       of the selected modul
+   * @param id of the selected modul
    * @param response contains download file
    * @return outputstream with the header for the output file
    */
@@ -395,41 +429,52 @@ public class ModulService {
 
   /**
    * This method is called from ModulController.altzulassungHinzufuegen.
-   * <p>
-   * Checks if admission is saved in the database and sends token in email. If the student got a paper admission then the token is generated and an email is send.
-   * In both cases the student is written into the database for old admissions.
    *
-   * @param studentDto      represents student
+   * <p>Checks if admission is saved in the database and sends token in email. If the student got a
+   * paper admission then the token is generated and an email is send. In both cases the student is
+   * written into the database for old admissions.
+   *
+   * @param studentDto represents student
    * @param papierZulassung if the student has an offline/paper admission
-   * @param id              of the selected modul
+   * @param id of the selected modul
    * @return error or success message for ModulController
    */
-  public FrontendMessage altzulassungVerarbeiten(AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
+  public FrontendMessage altzulassungVerarbeiten(
+      AltzulassungStudentDto studentDto, boolean papierZulassung, Long id) {
 
     message.resetMessage();
     String modulname = findById(id).get().getName();
-    Student student = Student.builder()
-        .email(studentDto.getEmail())
-        .fachname(modulname)
-        .vorname(studentDto.getVorname())
-        .nachname(studentDto.getNachname())
-        .matrikelnummer(studentDto.getMatrikelnummer())
-        .modulId(id)
-        .build();
+    Student student =
+        Student.builder()
+            .email(studentDto.getEmail())
+            .fachname(modulname)
+            .vorname(studentDto.getVorname())
+            .nachname(studentDto.getNachname())
+            .matrikelnummer(studentDto.getMatrikelnummer())
+            .modulId(id)
+            .build();
     try {
 
-      String token = quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
+      String token =
+          quittungService.findQuittung(studentDto.getMatrikelnummer().toString(), id.toString());
       student.setToken(token);
       studentService.save(student);
-      message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
+      message.setSuccessMessage(
+          "Student "
+              + student.getMatrikelnummer()
+              + " wurde erfolgreich zur Altzulassungsliste hinzugefügt.");
       emailService.sendMail(student);
 
     } catch (NoTokenInDatabaseException e) {
       if (papierZulassung) {
         erstelleTokenUndSendeEmail(student, student.getModulId(), true);
-        message.setSuccessMessage("Student " + student.getMatrikelnummer() + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
+        message.setSuccessMessage(
+            "Student "
+                + student.getMatrikelnummer()
+                + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.");
       } else {
-        message.setErrorMessage("Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
+        message.setErrorMessage(
+            "Student " + student.getMatrikelnummer() + " hat keine Zulassung in diesem Modul!");
       }
     }
 
@@ -437,19 +482,21 @@ public class ModulService {
   }
 
   /**
-   * This method is called from ModulService.verarbeiteStudenten and ModulService.altzulassungVerarbeiten.
-   * <p>
-   * Generates Token and sends email to student.
+   * This method is called from ModulService.verarbeiteStudenten and
+   * ModulService.altzulassungVerarbeiten.
    *
-   * @param student        represents student
-   * @param id             of the selected modul
+   * <p>Generates Token and sends email to student.
+   *
+   * @param student represents student
+   * @param id of the selected modul
    * @param isAltzulassung if the student has an old admission
    */
   void erstelleTokenUndSendeEmail(Student student, Long id, boolean isAltzulassung) {
 
     try {
 
-      quittungService.findPublicKey(student.getMatrikelnummer().toString(), student.getModulId().toString());
+      quittungService.findPublicKey(
+          student.getMatrikelnummer().toString(), student.getModulId().toString());
 
       if (isAltzulassung) {
         emailService.sendMail(student);
@@ -459,7 +506,9 @@ public class ModulService {
 
       String tokenString = null;
       try {
-        tokenString = tokengenerierungService.erstellenToken(student.getMatrikelnummer().toString(), id.toString());
+        tokenString =
+            tokengenerierungService.erstellenToken(
+                student.getMatrikelnummer().toString(), id.toString());
       } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException ex) {
         logger.error("Fehler bei Erstellung des Tokens!", ex);
       }
@@ -472,7 +521,8 @@ public class ModulService {
   }
 
   /**
-   * This method is called from ModulController.backToModulAuswahl and ModulController.modulAbschicken.
+   * This method is called from ModulController.backToModulAuswahl and
+   * ModulController.modulAbschicken.
    *
    * @param modul responding to the selected id
    * @return if modul has name and deadline
@@ -483,10 +533,10 @@ public class ModulService {
 
   /**
    * This method is called from ModulController.modulTeilnehmerHinzufuegen.
-   * <p>
-   * Saves the number of participants for the selected modul.
    *
-   * @param id               of the selected modul
+   * <p>Saves the number of participants for the selected modul.
+   *
+   * @param id of the selected modul
    * @param teilnehmerAnzahl number of participants
    */
   public void saveGesamtTeilnehmerzahlForModul(Long id, Long teilnehmerAnzahl) {

@@ -62,8 +62,8 @@ public class ModulController {
   /**
    * This method is called for a GET request to /zulassung1/modulAuswahl.
    *
-   * @param model     Spring object that is used as a container to supply the variables
-   * @param token     contains role data
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
    * @param principal contains account data
    * @return view modulAuswahl
    */
@@ -73,7 +73,6 @@ public class ModulController {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Iterable<Modul> moduls = modulService.findByOwnerAndActive(principal.getName(), true);
     model.addAttribute("moduls", moduls);
-
     model.addAttribute("errorMessage", message.getErrorMessage());
     model.addAttribute("successMessage", message.getSuccessMessage());
 
@@ -84,15 +83,19 @@ public class ModulController {
   /**
    * This method is called for a POST request to /zulassung1/neuesModulHinzufuegen.
    *
-   * @param modul     contains data from form
-   * @param model     Spring object that is used as a container to supply the variables
-   * @param token     contains role data
+   * @param modul contains data from form
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
    * @param principal contains account data
    * @return Redirects to view zulassung1/modulAuswahl if formdata is valid
    */
   @Secured("ROLE_orga")
   @PostMapping("/neuesModulHinzufuegen")
-  public String backToModulAuswahl(@ModelAttribute @Valid Modul modul, Model model, KeycloakAuthenticationToken token, Principal principal) {
+  public String backToModulAuswahl(
+      @ModelAttribute @Valid Modul modul,
+      Model model,
+      KeycloakAuthenticationToken token,
+      Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     String owner = principal.getName();
 
@@ -134,14 +137,15 @@ public class ModulController {
   /**
    * This method is called for a GET request to /zulassung1/modulBearbeiten/{id}.
    *
-   * @param id    of the edited modul
+   * @param id of the edited modul
    * @param model Spring object that is used as a container to supply the variables
    * @param token contains role data
    * @return view modulBearbeiten
    */
   @Secured("ROLE_orga")
   @GetMapping("/modulBearbeiten/{id}")
-  public String modulBearbeiten(@PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
+  public String modulBearbeiten(
+      @PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Modul modul = modulService.findById(id).get();
     model.addAttribute("id", id);
@@ -156,16 +160,21 @@ public class ModulController {
   /**
    * This method is called for a POST request to /zulassung1/modulBearbeiten/{id}.
    *
-   * @param modul     contains data from form
-   * @param id        of the edited modul
-   * @param model     Spring object that is used as a container to supply the variables
-   * @param token     contains role data
+   * @param modul contains data from form
+   * @param id of the edited modul
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
    * @param principal contains account data
    * @return Redirect to view zulassung1/modulAuswahl if formdata is valid
    */
   @Secured("ROLE_orga")
   @PostMapping("/modulBearbeiten/{id}")
-  public String modulAbschicken(@ModelAttribute @Valid Modul modul, @PathVariable Long id, Model model, KeycloakAuthenticationToken token, Principal principal) {
+  public String modulAbschicken(
+      @ModelAttribute @Valid Modul modul,
+      @PathVariable Long id,
+      Model model,
+      KeycloakAuthenticationToken token,
+      Principal principal) {
     model.addAttribute("account", createAccountFromPrincipal(token));
 
     String page = "redirect:/zulassung1/modulBearbeiten/" + id;
@@ -206,15 +215,12 @@ public class ModulController {
    */
   @Secured("ROLE_orga")
   @GetMapping("/modulHinzufuegen")
-  public String newModul(
-      Model model,
-      KeycloakAuthenticationToken token) {
+  public String newModul(Model model, KeycloakAuthenticationToken token) {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
 
     Iterable<Modul> moduls = modulService.findByActive(false);
     model.addAttribute("moduls", moduls);
-
 
     model.addAttribute("modul", currentModul);
     model.addAttribute("bearbeitetesModul", currentModul);
@@ -229,7 +235,7 @@ public class ModulController {
    * This method is called for a POST request to /zulassung1/modul/{id}/delete.
    *
    * @param model Spring object that is used as a container to supply the variables
-   * @param id    of the deleted modul
+   * @param id of the deleted modul
    * @param token contains role data
    * @return view modulAuswahl
    */
@@ -238,15 +244,14 @@ public class ModulController {
   public String deleteModul(Model model, @PathVariable Long id, KeycloakAuthenticationToken token) {
 
     model.addAttribute("account", createAccountFromPrincipal(token));
-
-    message = modulService.deleteStudentsFromModul(id);
+    message = modulService.deleteStudentsFromModul(id, token.getName());
     return "redirect:/zulassung1/modulAuswahl";
   }
 
   /**
    * This method is called for a GET request to /zulassung1/modul/{id}.
    *
-   * @param id    of the selected modul
+   * @param id of the selected modul
    * @param model Spring object that is used as a container to supply the variables
    * @param token contains role data
    * @return view modulAnsicht
@@ -256,102 +261,147 @@ public class ModulController {
   public String selectModul(@PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
     Modul modul = modulService.findById(id).get();
-    String name = modul.getName();
-    String frist = modul.getFrist();
-    model.addAttribute("modul", name);
-    model.addAttribute("id", id);
-    model.addAttribute("frist", frist);
-    model.addAttribute("student", new Student("", "", "", null, id, null, null));
-    model.addAttribute("papierZulassung", false);
-    model.addAttribute("teilnehmerAnzahl", modul.getTeilnehmer());
+    if (token.getName().equals(modul.getOwner())) {
+      String name = modul.getName();
+      String frist = modul.getFrist();
+      model.addAttribute("modul", name);
+      model.addAttribute("id", id);
+      model.addAttribute("frist", frist);
+      model.addAttribute("student", new Student("", "", "", null, id, null, null));
+      model.addAttribute("papierZulassung", false);
+      model.addAttribute("teilnehmerAnzahl", modul.getTeilnehmer());
 
-    model.addAttribute("errorMessage", message.getErrorMessage());
-    model.addAttribute("successMessage", message.getSuccessMessage());
-    message.resetMessage();
+      model.addAttribute("errorMessage", message.getErrorMessage());
+      model.addAttribute("successMessage", message.getSuccessMessage());
+      message.resetMessage();
 
-    return "modulAnsicht";
+      return "modulAnsicht";
+    }
+    message.setErrorMessage(
+        "Du kannst auf das Modul nicht zugreifen, da es einem anderen User gehört.");
+    return "redirect:/zulassung1/modulAuswahl/";
   }
 
   /**
    * This method is called for a POST request to /zulassung1/modul/{id}.
    *
-   * @param id    of the selected modul
+   * @param id of the selected modul
    * @param model Spring object that is used as a container to supply the variables
    * @param token contains role data
-   * @param file  containing the uploaded csv-file
+   * @param file containing the uploaded csv-file
    * @return Redirect of view zulassung1/modul/{id}
    */
   @Secured("ROLE_orga")
   @PostMapping("/modul/{id}")
-  public String uploadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, @RequestParam("datei") MultipartFile file) {
+  public String uploadListe(
+      @PathVariable Long id,
+      Model model,
+      KeycloakAuthenticationToken token,
+      @RequestParam("datei") MultipartFile file) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    message = modulService.verarbeiteUploadliste(id, file);
-    return "redirect:/zulassung1/emailError" + "/" + id;
+    Modul modul = modulService.findById(id).get();
+    if (token.getName().equals(modul.getOwner())) {
+      message = modulService.verarbeiteUploadliste(id, file);
+      return "redirect:/zulassung1/emailError" + "/" + id;
+    }
+    message.setErrorMessage(
+        "Du kannst auf das Modul nicht zugreifen, da es einem anderen User gehört.");
+    return "redirect:/zulassung1/modulAuswahl";
   }
 
   /**
    * This method is called for a GET request to /zulassung1/modul/{id}/klausurliste.
    *
-   * @param id       of the selected modul
-   * @param model    Spring object that is used as a container to supply the variables
-   * @param token    contains role data
+   * @param id of the selected modul
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
    * @param response contains download file
    */
   @Secured("ROLE_orga")
-  @GetMapping(value = "/modul/{id}/klausurliste", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+  @GetMapping(
+      value = "/modul/{id}/klausurliste",
+      produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   @ResponseBody
-  public void downloadListe(@PathVariable Long id, Model model, KeycloakAuthenticationToken token, HttpServletResponse response) {
-    model.addAttribute("account", createAccountFromPrincipal(token));
-    modulService.download(id, response);
+  public void downloadListe(
+      @PathVariable Long id,
+      Model model,
+      KeycloakAuthenticationToken token,
+      HttpServletResponse response) {
+    Modul modul = modulService.findById(id).get();
+    if (token.getName().equals(modul.getOwner())) {
+      model.addAttribute("account", createAccountFromPrincipal(token));
+      modulService.download(id, response);
+    }
   }
 
   /**
    * This method is called for a POST request to /zulassung1/modul/teilnehmerHinzufuegen/{id}
    *
-   * @param id               of the selected modul
+   * @param id of the selected modul
    * @param teilnehmerAnzahl number of participants
-   * @param model            Spring object that is used as a container to supply the variables
-   * @param token            contains role data
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
    * @return Redirect of view zulassung1/modul/{id}
    */
   @Secured("ROLE_orga")
   @PostMapping("modul/teilnehmerHinzufuegen/{id}")
-  public String modulTeilnehmerHinzufuegen(@PathVariable Long id, @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl, Model model, KeycloakAuthenticationToken token) {
+  public String modulTeilnehmerHinzufuegen(
+      @PathVariable Long id,
+      @ModelAttribute("teilnehmerAnzahl") Long teilnehmerAnzahl,
+      Model model,
+      KeycloakAuthenticationToken token) {
     model.addAttribute("account", createAccountFromPrincipal(token));
-    modulService.saveGesamtTeilnehmerzahlForModul(id, teilnehmerAnzahl);
-    String frist = modulService.findById(id).get().getFrist();
-    Long statId = statistikService.modulInDatabase(frist, id);
-    ModulStatistiken modul = new ModulStatistiken(statId, id, frist, teilnehmerAnzahl, null);
-    String date = frist.substring(0, frist.length() - 6);
-    modul.setFrist(date);
-    statistikService.save(modul);
-    message.setSuccessMessage("Teilnehmeranzahl wurde erfolgreich übernommen.");
-    return "redirect:/zulassung1/modul/" + id;
+    Modul moduul = modulService.findById(id).get();
+    if (token.getName().equals(moduul.getOwner())) {
+      modulService.saveGesamtTeilnehmerzahlForModul(id, teilnehmerAnzahl);
+      String frist = modulService.findById(id).get().getFrist();
+      Long statId = statistikService.modulInDatabase(frist, id);
+      ModulStatistiken modul = new ModulStatistiken(statId, id, frist, teilnehmerAnzahl, null);
+      String date = frist.substring(0, frist.length() - 6);
+      modul.setFrist(date);
+      statistikService.save(modul);
+      message.setSuccessMessage("Teilnehmeranzahl wurde erfolgreich übernommen.");
+      return "redirect:/zulassung1/modul/" + id;
+    }
+    message.setErrorMessage(
+        "Du kannst auf das Modul nicht zugreifen, da es einem anderen User gehört.");
+    return "redirect:/zulassung1/modulAuswahl/";
   }
 
   /**
    * This method is called for a POST request to /zulassung1/{id}/altzulassungHinzufuegen.
    *
-   * @param studentDto      data from form
-   * @param bindingResult   checks if form has no empty fields
+   * @param studentDto data from form
+   * @param bindingResult checks if form has no empty fields
    * @param papierZulassung value of checkbox
-   * @param id              of selected Modul
-   * @param model           Spring object that is used as a container to supply the variables
-   * @param token           contains role data
+   * @param id of selected Modul
+   * @param model Spring object that is used as a container to supply the variables
+   * @param token contains role data
    * @return Redirect of view zulassung1/modul/{id}
    */
   @Secured("ROLE_orga")
   @PostMapping("/{id}/altzulassungHinzufuegen")
-  public String altzulassungHinzufuegen(@ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto, BindingResult bindingResult, boolean papierZulassung, @PathVariable Long id, Model model, KeycloakAuthenticationToken token) {
+  public String altzulassungHinzufuegen(
+      @ModelAttribute("studentDto") @Valid AltzulassungStudentDto studentDto,
+      BindingResult bindingResult,
+      boolean papierZulassung,
+      @PathVariable Long id,
+      Model model,
+      KeycloakAuthenticationToken token) {
+    Modul moduul = modulService.findById(id).get();
+    if (token.getName().equals(moduul.getOwner())) {
 
-    if (bindingResult.hasErrors()) {
-      message.setErrorMessage("Alle Felder im Formular müssen befüllt werden!");
+      if (bindingResult.hasErrors()) {
+        message.setErrorMessage("Alle Felder im Formular müssen befüllt werden!");
+        return "redirect:/zulassung1/modul/" + id;
+      }
+      model.addAttribute("account", createAccountFromPrincipal(token));
+
+      message = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
       return "redirect:/zulassung1/modul/" + id;
     }
-    model.addAttribute("account", createAccountFromPrincipal(token));
-
-    message = modulService.altzulassungVerarbeiten(studentDto, papierZulassung, id);
-    return "redirect:/zulassung1/modul/" + id;
+    message.setErrorMessage(
+        "Du kannst auf das Modul nicht zugreifen, da es einem anderen User gehört.");
+    return "redirect:/zulassung1/modulAuswahl/";
   }
-
 }

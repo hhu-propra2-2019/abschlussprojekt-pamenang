@@ -57,7 +57,13 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     super.configure(http);
     http.cors().and().csrf().disable();
-    http.authorizeRequests().antMatchers("/student").hasRole("studentin").anyRequest().permitAll();
+    http.authorizeRequests()
+        .antMatchers("/student")
+        .hasRole("studentin")
+        .antMatchers("/actuator")
+        .hasRole("monitoring")
+        .anyRequest()
+        .permitAll();
   }
 
   /**
@@ -67,6 +73,5 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
    */
   @Configuration
   @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
-  public static class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
-  }
+  public static class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {}
 }

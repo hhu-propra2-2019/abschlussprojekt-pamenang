@@ -48,13 +48,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class ModulAuswahlTests {
 
-  @Autowired
-  private MockMvc mockMvc;
-  @MockBean
-  private ModulService modulservice;
+  @Autowired private MockMvc mockMvc;
+  @MockBean private ModulService modulservice;
 
-  @MockBean
-  private StatistikService statistikService;
+  @MockBean private StatistikService statistikService;
 
   @Test
   void fuerModulAuswahlAnmelden() throws Exception {
@@ -96,10 +93,7 @@ class ModulAuswahlTests {
   @Test
   @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
   void test_fuerModulFalscherBenutzer_modulUndId() throws Exception {
-    mockMvc
-        .perform(get("/zulassung1/modul/" + 5))
-        .andExpect(status().isForbidden())
-        .andDo(print());
+    mockMvc.perform(get("/zulassung1/modul/" + 5)).andExpect(status().isForbidden()).andDo(print());
   }
 
   @Test
@@ -144,8 +138,7 @@ class ModulAuswahlTests {
   @WithMockKeycloackAuth(name = "studentin", roles = "studentin")
   void test_fuerModulFalscherBenutzer_post_modulListeUpload() throws Exception {
     mockMvc
-        .perform(post("/zulassung1/modul" + 5)
-            .requestAttr("file", mock(MultipartFile.class)))
+        .perform(post("/zulassung1/modul" + 5).requestAttr("file", mock(MultipartFile.class)))
         .andExpect(status().isNotFound())
         .andDo(print());
   }
@@ -172,7 +165,8 @@ class ModulAuswahlTests {
     when(principal.getName()).thenReturn("orga");
 
     when(modulservice.findByActive(false)).thenReturn(module);
-    mockMvc.perform(get("/zulassung1/modulHinzufuegen"))
+    mockMvc
+        .perform(get("/zulassung1/modulHinzufuegen"))
         .andExpect(status().isOk())
         .andExpect(model().attribute("moduls", module));
   }
@@ -188,12 +182,11 @@ class ModulAuswahlTests {
     when(principal.getName()).thenReturn("orga");
 
     when(modulservice.findByOwnerAndActive(principal.getName(), true)).thenReturn(module);
-    mockMvc.perform(get("/zulassung1/modulAuswahl"))
+    mockMvc
+        .perform(get("/zulassung1/modulAuswahl"))
         .andExpect(status().isOk())
         .andExpect(model().attribute("moduls", module));
   }
-
-
 
   @Test
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
@@ -210,79 +203,89 @@ class ModulAuswahlTests {
         .andDo(print());
   }
 
-
-
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @WithMockKeycloackAuth(name = "owner", roles = "orga")
   @Test
   void test_deleteModulWirdAufgerufen() throws Exception {
     FrontendMessage message = new FrontendMessage("error", "success");
-    when(modulservice.deleteStudentsFromModul(1L)).thenReturn(message);
-    mockMvc.perform(post("/zulassung1/modul/1/delete"))
-        .andExpect(status().is3xxRedirection());
-    verify(modulservice, times(1)).deleteStudentsFromModul(1L);
+    when(modulservice.deleteStudentsFromModul(1L, "owner")).thenReturn(message);
+    mockMvc.perform(post("/zulassung1/modul/1/delete")).andExpect(status().is3xxRedirection());
+    verify(modulservice, times(1)).deleteStudentsFromModul(1L, "owner");
   }
 
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @WithMockKeycloackAuth(name = "owner", roles = "orga")
   @Test
   void test_Modul_Select_Get() throws Exception {
-    Modul modul = new Modul(1L, "testen", null, "2020-12-15 15:00", true, 0L);
+    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
     when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
 
-    mockMvc.perform(get("/zulassung1/modul/1"))
+    mockMvc
+        .perform(get("/zulassung1/modul/1"))
         .andExpect(model().attribute("modul", modul.getName()))
         .andExpect(model().attribute("id", modul.getId()))
         .andExpect(model().attribute("frist", modul.getFrist()))
         .andExpect(status().isOk());
   }
 
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @WithMockKeycloackAuth(name = "owner", roles = "orga")
   @Test
   void test_Modul_Select_Post() throws Exception {
 
-    MockMultipartFile multipartFile = new MockMultipartFile("datei", "test.csv", "text/csv", "test;test;test".getBytes());
+    MockMultipartFile multipartFile =
+        new MockMultipartFile("datei", "test.csv", "text/csv", "test;test;test".getBytes());
     FrontendMessage message = new FrontendMessage("error", "success");
-
+    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
+    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
     when(modulservice.verarbeiteUploadliste(1L, multipartFile)).thenReturn(message);
-    mockMvc.perform(MockMvcRequestBuilders.multipart("/zulassung1/modul/1").file(multipartFile))
+    mockMvc
+        .perform(MockMvcRequestBuilders.multipart("/zulassung1/modul/1").file(multipartFile))
         .andExpect(status().is3xxRedirection());
   }
 
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @WithMockKeycloackAuth(name = "owner", roles = "orga")
   @Test
   void test_downloadListeWirdAufgerufen() throws Exception {
-    mockMvc
-        .perform(get("/zulassung1/modul/1/klausurliste"))
-        .andExpect(status().isOk());
+    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
+    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
+    mockMvc.perform(get("/zulassung1/modul/1/klausurliste")).andExpect(status().isOk());
     verify(modulservice, times(1)).download(eq(1L), Matchers.any(HttpServletResponse.class));
   }
 
-
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @WithMockKeycloackAuth(name = "owner", roles = "orga")
   @Test
   void test_altKlausurZulassungHinzufuegenLeer() throws Exception {
+    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
+    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
     mockMvc
         .perform(post("/zulassung1/1/altzulassungHinzufuegen"))
         .andExpect(status().is3xxRedirection());
-    verify(modulservice, times(0)).altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
+    verify(modulservice, times(0))
+        .altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
   }
 
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @WithMockKeycloackAuth(name = "owner", roles = "orga")
   @Test
   void test_altKlausurZulassungHinzufuegenMitVollemObject() throws Exception {
 
-    AltzulassungStudentDto studentDto = new AltzulassungStudentDto("vorname", "nachname", "test@test.de", 1234567L, 1L);
+    AltzulassungStudentDto studentDto =
+        new AltzulassungStudentDto("vorname", "nachname", "test@test.de", 1234567L, 1L);
     FrontendMessage message = new FrontendMessage("error", "success");
-
-    when(modulservice.altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong())).thenReturn(message);
+    Modul modul = new Modul(1L, "testen", "owner", "2020-12-15 15:00", true, 0L);
+    when(modulservice.findById(1L)).thenReturn(java.util.Optional.of(modul));
+    when(modulservice.altzulassungVerarbeiten(
+            any(AltzulassungStudentDto.class), anyBoolean(), anyLong()))
+        .thenReturn(message);
     mockMvc
-        .perform(post("/zulassung1/1/altzulassungHinzufuegen")
-            .param("vorname", studentDto.getVorname())
-            .param("nachname", studentDto.getNachname())
-            .param("email", studentDto.getEmail())
-            .param("matrikelnummer", studentDto.getMatrikelnummer().toString())
-            .param("modulId", "1")
-            .param("papierzulassung", String.valueOf(true))).andExpect(status().is3xxRedirection());
-    verify(modulservice, times(1)).altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
+        .perform(
+            post("/zulassung1/1/altzulassungHinzufuegen")
+                .param("vorname", studentDto.getVorname())
+                .param("nachname", studentDto.getNachname())
+                .param("email", studentDto.getEmail())
+                .param("matrikelnummer", studentDto.getMatrikelnummer().toString())
+                .param("modulId", "1")
+                .param("papierzulassung", String.valueOf(true)))
+        .andExpect(status().is3xxRedirection());
+    verify(modulservice, times(1))
+        .altzulassungVerarbeiten(any(AltzulassungStudentDto.class), anyBoolean(), anyLong());
   }
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
@@ -300,10 +303,10 @@ class ModulAuswahlTests {
             .param("frist", modul.getFrist())
             .param("active", "true");
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(MockMvcResultMatchers.redirectedUrl
-            ("/zulassung1/modulBearbeiten/1"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulBearbeiten/1"))
         .andExpect(status().is3xxRedirection());
   }
 
@@ -323,12 +326,11 @@ class ModulAuswahlTests {
             .param("frist", modul.getFrist())
             .param("active", "true");
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(MockMvcResultMatchers.redirectedUrl
-            ("/zulassung1/modulBearbeiten/2"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulBearbeiten/2"))
         .andExpect(status().is3xxRedirection());
-
   }
 
   @WithMockKeycloackAuth(name = "orga", roles = "orga")
@@ -349,10 +351,10 @@ class ModulAuswahlTests {
             .param("active", "true")
             .param("teilnehmer", "0");
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(MockMvcResultMatchers.redirectedUrl
-            ("/zulassung1/modulBearbeiten/3"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulBearbeiten/3"))
         .andExpect(status().is3xxRedirection());
   }
 
@@ -376,10 +378,10 @@ class ModulAuswahlTests {
             .param("name", modul.getName())
             .param("frist", modul.getFrist());
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(MockMvcResultMatchers.redirectedUrl
-            ("/zulassung1/modulAuswahl"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulAuswahl"))
         .andExpect(status().is3xxRedirection());
 
     verify(modulservice, times(1)).save(vorhandenesModul);
@@ -402,10 +404,10 @@ class ModulAuswahlTests {
             .param("name", modul.getName())
             .param("frist", modul.getFrist());
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(MockMvcResultMatchers.redirectedUrl
-            ("/zulassung1/modulHinzufuegen"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulHinzufuegen"))
         .andExpect(status().is3xxRedirection());
   }
 
@@ -422,10 +424,10 @@ class ModulAuswahlTests {
             .param("name", modul.getName())
             .param("frist", modul.getFrist());
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(MockMvcResultMatchers.redirectedUrl
-            ("/zulassung1/modulHinzufuegen"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulHinzufuegen"))
         .andExpect(status().is3xxRedirection());
   }
 
@@ -443,10 +445,10 @@ class ModulAuswahlTests {
             .param("name", modul.getName())
             .param("frist", modul.getFrist());
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andDo(MockMvcResultHandlers.print())
-        .andExpect(MockMvcResultMatchers.redirectedUrl
-            ("/zulassung1/modulAuswahl"))
+        .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulAuswahl"))
         .andExpect(status().is3xxRedirection());
   }
 
@@ -466,7 +468,8 @@ class ModulAuswahlTests {
             .param("name", modul.getName())
             .param("frist", modul.getFrist());
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andDo(MockMvcResultHandlers.print())
         .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modulAuswahl"))
         .andExpect(status().is3xxRedirection());
@@ -474,11 +477,11 @@ class ModulAuswahlTests {
     verify(modulservice, times(1)).save(any());
   }
 
-  @WithMockKeycloackAuth(name = "orga", roles = "orga")
+  @WithMockKeycloackAuth(name = "owner", roles = "orga")
   @Test
   void modulTeilnehmerHinzufuegen() throws Exception {
     String frist = "01/01/2100";
-    Modul modul = new Modul(2L, "ProPra", null, frist, null, 100L);
+    Modul modul = new Modul(2L, "ProPra", "owner", frist, null, 100L);
 
     when(modulservice.findById(2L)).thenReturn(Optional.of(modul));
     when(statistikService.modulInDatabase(frist, 2L)).thenReturn(15L);
@@ -487,13 +490,13 @@ class ModulAuswahlTests {
         MockMvcRequestBuilders.post("/zulassung1/modul/teilnehmerHinzufuegen/2")
             .param("teilnehmerAnzahl", "100");
 
-    mockMvc.perform(builder)
+    mockMvc
+        .perform(builder)
         .andExpect(MockMvcResultMatchers.redirectedUrl("/zulassung1/modul/2"))
         .andExpect(status().is3xxRedirection());
 
     verify(modulservice, times(1)).saveGesamtTeilnehmerzahlForModul(any(), any());
     verify(statistikService, times(1)).save(any());
-
   }
 
   private String fristInZukunft() {
