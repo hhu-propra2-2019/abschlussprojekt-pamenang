@@ -52,7 +52,6 @@ class ModulServiceTest {
   private ServletOutputStream outputStream;
   private StatistikService statistikService;
 
-
   @BeforeEach
   void initilize() {
 
@@ -74,8 +73,7 @@ class ModulServiceTest {
             tokengenerierungService,
             emailService,
             quittungService,
-            statistikService
-        );
+            statistikService);
   }
 
   @Test
@@ -108,13 +106,14 @@ class ModulServiceTest {
   void deleteExistingModulWithStudents() {
     long modulID = 1L;
     FrontendMessage message;
-    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true, 0L));
+    Optional<Modul> modul =
+        Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true, 0L));
     when(modulRepository.findById(modulID)).thenReturn(modul);
     ArrayList<Student> students = new ArrayList<>();
     students.add(new Student());
     when(studentService.findByModulId(modulID)).thenReturn(students);
 
-    message = modulService.deleteStudentsFromModul(modulID);
+    message = modulService.deleteStudentsFromModul(modulID, "owner");
 
     assertEquals("Das Modul fname wurde gelöscht!", message.getSuccessMessage());
   }
@@ -123,10 +122,11 @@ class ModulServiceTest {
   void deleteExistingModulWithoutStudents() {
     long modulID = 1L;
     FrontendMessage message;
-    Optional<Modul> modul = Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true, 0L));
+    Optional<Modul> modul =
+        Optional.of(new Modul(modulID, "fname", "owner", "12/12/2000", true, 0L));
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
-    message = modulService.deleteStudentsFromModul(modulID);
+    message = modulService.deleteStudentsFromModul(modulID, "owner");
 
     assertEquals("Das Modul fname wurde gelöscht!", message.getSuccessMessage());
   }
@@ -138,22 +138,29 @@ class ModulServiceTest {
     Optional<Modul> modul = Optional.empty();
     when(modulRepository.findById(modulID)).thenReturn(modul);
 
-    message = modulService.deleteStudentsFromModul(modulID);
+    message = modulService.deleteStudentsFromModul(modulID, "owner");
 
-    assertEquals("Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.", message.getErrorMessage());
+    assertEquals(
+        "Modul konnte nicht gelöscht werden, da es in der Datenbank nicht vorhanden ist.",
+        message.getErrorMessage());
   }
 
   @Test
-  void verarbeiteRichtigeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void verarbeiteRichtigeUploadliste()
+      throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
-    InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447".getBytes());
+    InputStream input =
+        new ByteArrayInputStream(
+            "Cara,Überschär,caueb100@hhu.de,2659396\nRebecca,Fröhlich,refro100@hhu.de,2658447"
+                .getBytes());
 
     List<Student> students = new ArrayList<>();
     students.add(new Student("Cara", "Überschär", "caueb100@hhu.de", 2659396L, 1L, null, null));
     students.add(new Student("Rebecca", "Fröhlich", "refro100@hhu.de", 2658447L, 1L, null, null));
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    Optional<Modul> modul =
+        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
 
     when(multipartFile.getInputStream()).thenReturn(input);
     when(csvService.getStudentListFromInputFile(any(), any())).thenReturn(students);
@@ -165,11 +172,13 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteZuLangeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void verarbeiteZuLangeUploadliste()
+      throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
 
-    InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,zu viel".getBytes());
+    InputStream input =
+        new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de,2659396,zu viel".getBytes());
     when(multipartFile.getInputStream()).thenReturn(input);
 
     String errorMessage = "Datei hat eine falsche Anzahl von Einträgen pro Zeile!";
@@ -178,7 +187,8 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteZuKurzeUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void verarbeiteZuKurzeUploadliste()
+      throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
     InputStream input = new ByteArrayInputStream("Cara,Überschär,caueb100@hhu.de".getBytes());
@@ -190,7 +200,8 @@ class ModulServiceTest {
   }
 
   @Test
-  void verarbeiteFalscheUploadliste() throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void verarbeiteFalscheUploadliste()
+      throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
     MultipartFile multipartFile = mock(MultipartFile.class);
     FrontendMessage message;
     InputStream input = new ByteArrayInputStream("".getBytes());
@@ -202,59 +213,74 @@ class ModulServiceTest {
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageOhneTokenError() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-    AltzulassungStudentDto student = AltzulassungStudentDto.builder()
+  void altzulassungenVerarbeitenSuccessMessageOhneTokenError()
+      throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException,
+          SignatureException {
+    AltzulassungStudentDto student =
+        AltzulassungStudentDto.builder()
             .vorname("Joshua")
             .nachname("Müller")
             .email("joshua@gmail.com")
-            .matrikelnummer((long) 1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
-    Optional<ModulStatistiken> modulstat = Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
+            .matrikelnummer((long) 1231)
+            .build();
+    Optional<Modul> modul =
+        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    Optional<ModulStatistiken> modulstat =
+        Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
     when(statistikService.findById(any())).thenReturn(modulstat);
     when(quittungService.findQuittung("123", "123")).thenReturn("132");
     when(modulRepository.findById((long) 1)).thenReturn(modul);
     modulService.altzulassungVerarbeiten(student, true, (long) 1);
-
 
     verify(studentService, times(1)).save(any());
     verify(emailService, times(1)).sendMail(any());
   }
 
   @Test
-  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorMitPapierzulassung()
+      throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException,
+          SignatureException {
     FrontendMessage message;
-    AltzulassungStudentDto student = AltzulassungStudentDto.builder()
-        .vorname("Joshua")
-        .nachname("Müller")
-        .email("joshua@gmail.com")
-        .matrikelnummer((long) 1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    AltzulassungStudentDto student =
+        AltzulassungStudentDto.builder()
+            .vorname("Joshua")
+            .nachname("Müller")
+            .email("joshua@gmail.com")
+            .matrikelnummer((long) 1231)
+            .build();
+    Optional<Modul> modul =
+        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
 
-    when(quittungService.findQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
-        "ERROR"));
+    when(quittungService.findQuittung(anyString(), anyString()))
+        .thenThrow(new NoTokenInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
-
     message = modulService.altzulassungVerarbeiten(student, true, (long) 1);
-    String successMessage = "Student " + "1231" + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
+    String successMessage =
+        "Student "
+            + "1231"
+            + " wurde erfolgreich zur Altzulassungsliste hinzugefügt und hat ein Token.";
     assertEquals(successMessage, message.getSuccessMessage());
   }
 
-
   @Test
-  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung() throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+  void altzulassungenVerarbeitenSuccessMessageMitTokenErrorOhnePapierzulassung()
+      throws NoTokenInDatabaseException, NoSuchAlgorithmException, InvalidKeyException,
+          SignatureException {
     FrontendMessage message;
-    AltzulassungStudentDto student = AltzulassungStudentDto.builder()
-        .vorname("Joshua")
-        .nachname("Müller")
-        .email("joshua@gmail.com")
-        .matrikelnummer((long) 1231).build();
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    AltzulassungStudentDto student =
+        AltzulassungStudentDto.builder()
+            .vorname("Joshua")
+            .nachname("Müller")
+            .email("joshua@gmail.com")
+            .matrikelnummer((long) 1231)
+            .build();
+    Optional<Modul> modul =
+        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
 
-    when(quittungService.findQuittung(anyString(), anyString())).thenThrow(new NoTokenInDatabaseException(
-        "ERROR"));
+    when(quittungService.findQuittung(anyString(), anyString()))
+        .thenThrow(new NoTokenInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
-
 
     message = modulService.altzulassungVerarbeiten(student, false, (long) 1);
     String errorMessage = "Student " + "1231" + " hat keine Zulassung in diesem Modul!";
@@ -270,8 +296,8 @@ class ModulServiceTest {
     student.setEmail("joshua@gmail.com");
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
-
+    Optional<Modul> modul =
+        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
 
     when(quittungService.findPublicKey(anyString(), anyString())).thenReturn(any());
     when(modulRepository.findById((long) 1)).thenReturn(modul);
@@ -279,11 +305,11 @@ class ModulServiceTest {
     modulService.erstelleTokenUndSendeEmail(student, (long) 1, true);
 
     verify(emailService, times(1)).sendMail(student);
-
   }
 
   @Test
-  void erstelleTokenUndSendeMailWithExceptionMitAltzulassung() throws NoPublicKeyInDatabaseException {
+  void erstelleTokenUndSendeMailWithExceptionMitAltzulassung()
+      throws NoPublicKeyInDatabaseException {
 
     Student student = new Student();
     student.setVorname("Joshua");
@@ -292,20 +318,22 @@ class ModulServiceTest {
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    Optional<Modul> modul =
+        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
 
-    when(quittungService.findPublicKey(anyString(), anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
+    when(quittungService.findPublicKey(anyString(), anyString()))
+        .thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
     modulService.erstelleTokenUndSendeEmail(student, (long) 1, false);
 
     verify(studentService, times(0)).save(student);
     verify(emailService, times(1)).sendMail(student);
-
   }
 
   @Test
-  void erstelleTokenUndSendeMailWithExceptionOhneAltzulassung() throws NoPublicKeyInDatabaseException {
+  void erstelleTokenUndSendeMailWithExceptionOhneAltzulassung()
+      throws NoPublicKeyInDatabaseException {
 
     Student student = new Student();
     student.setVorname("Joshua");
@@ -314,16 +342,17 @@ class ModulServiceTest {
     student.setMatrikelnummer((long) 1231);
     student.setModulId((long) 1);
 
-    Optional<Modul> modul = Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
+    Optional<Modul> modul =
+        Optional.of(new Modul((long) 1, "name", "owner", "01/01/2000", true, 0L));
 
-    when(quittungService.findPublicKey(anyString(), anyString())).thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
+    when(quittungService.findPublicKey(anyString(), anyString()))
+        .thenThrow(new NoPublicKeyInDatabaseException("ERROR"));
     when(modulRepository.findById((long) 1)).thenReturn(modul);
 
     modulService.erstelleTokenUndSendeEmail(student, (long) 1, true);
 
     verify(studentService, times(1)).save(student);
     verify(emailService, times(1)).sendMail(student);
-
   }
 
   @Test
@@ -345,7 +374,8 @@ class ModulServiceTest {
     when(modulService.findById(1L)).thenReturn(modul);
 
     when(response.getOutputStream()).thenReturn(outputStream);
-    Optional<ModulStatistiken> modulstat = Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
+    Optional<ModulStatistiken> modulstat =
+        Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
     when(statistikService.findById(any())).thenReturn(modulstat);
     modulService.download(1L, response);
 
@@ -355,13 +385,22 @@ class ModulServiceTest {
   @Test
   void downloadOhneVorhandeneListe() throws IOException {
     csvService = new CsvService(studentService);
-    modulService = new ModulService(modulRepository, csvService, studentService, tokengenerierungService, emailService, quittungService, statistikService);
+    modulService =
+        new ModulService(
+            modulRepository,
+            csvService,
+            studentService,
+            tokengenerierungService,
+            emailService,
+            quittungService,
+            statistikService);
 
     Modul propra2 = new Modul(2L, "ProPra2", "orga", "12/12/2000", true, 0L);
     Optional<Modul> modul = Optional.of(propra2);
 
     when(modulService.findById(2L)).thenReturn(modul);
-    Optional<ModulStatistiken> modulstat = Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
+    Optional<ModulStatistiken> modulstat =
+        Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
     when(statistikService.findById(any())).thenReturn(modulstat);
     when(response.getOutputStream()).thenReturn(outputStream);
     modulService.download(2L, response);
@@ -385,14 +424,13 @@ class ModulServiceTest {
 
     Modul propra2 = new Modul(1L, "ProPra2", "orga", "03/28/2020", true, 0L);
     Optional<Modul> modul = Optional.of(propra2);
-    Optional<ModulStatistiken> modulstat = Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
+    Optional<ModulStatistiken> modulstat =
+        Optional.of(new ModulStatistiken(1L, 1L, "03/28/2020", 120L, 120L));
     when(statistikService.findById(any())).thenReturn(modulstat);
     when(statistikService.modulInDatabase(any(), any())).thenReturn(1L);
     when(modulService.findById(any())).thenReturn(modul);
     modulService.countLines(3L, outputFile);
     verify(statistikService, times(1)).save(any());
     assertEquals(2, modulstat.get().getZulassungsZahl());
-
-
   }
 }

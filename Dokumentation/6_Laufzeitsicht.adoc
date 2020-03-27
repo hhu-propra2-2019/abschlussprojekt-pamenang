@@ -1,8 +1,50 @@
 == Abschnitt 6 Laufzeitsicht
 
-Vor dem Semester kann der Organisator ein Modul für seine eigene Vorlesung erstellen.
-Innerhalb des Semesters können Studenten sich mit Altzulassungen zur neuen Klausur mit dem Token verifizieren.
-Sobald die Neuzulassungen feststehen kann der Organisator die Zulassungsliste hochladen, manuell prüfen und
-die Zulassungen per Mail an die Studenten versenden. Studenten mit Neu- sowie auch Altzulassungen können sich
-mit dem erhaltenen Key verifizieren. Organisatoren kann nach Ablauf der Frist manuell Studenten zulassen und am Ende
-des Semesters das Modul löschen.
+Vor dem Semester kann der Organisator ein Modul für seine eigene Vorlesung
+erstellen. Dabei kann er entweder, falls das Modul bereits aus früheren Semestern
+im System enthalten ist, dieses aus einer Liste der inaktiven Module auswählen.
+Dabei muss eine Frist gesetzt werden, bis zu welcher Studenten mit Altzulassungen
+diese einlösen können. Außerdem kann der Name des Moduls angepasst werden. Die
+Modul-ID wird dabei automatisch aus den früheren Semestern übernommen.
+Alternativ, falls dieses Modul zum ersten mal (seit Einsatz der Anwendung)
+stattfindet, kann ein neues Modul erstellt werden. Auch dabei muss eine Frist und
+ein neuer Name angegeben werden. Vom System wird dabei automatisch eine neue
+Modul-ID vergeben.
+
+Auf seiner Startseite findet der Organisator alle Module, welche er für dieses
+Semester aktiviert hat.
+
+Innerhalb des Semesters können Studenten mit Altzulassungen sich mittels der
+erhaltenen Token auf die Klausurliste für das laufende Semester schreiben.
+
+Bevor der Organisator ein ausgewähltes Modul verwendet muss er die Anzahl der
+Teilnehmer für dieses Modul eintragen. Diese kann auch während des Semesters
+verändert werden.
+
+Der Organisator kann vor dem hochladen der Zulassungsliste selbst Altzulassungen
+eintragen, dabei müssen Matrikelnummer, Name und Emailadresse des
+Studenten angegeben werden.
+Falls der Student nur eine Zulassung auf dem Papier
+besitzt, so muss zusätzlich das Feld Papierzulassung angekreuzt werden. In
+diesem Fall wird für den Studenten ein neues Token generiert und automatisch an
+die angegebene Emailadresse versendet. Der Student wird außerdem auf die Klausurliste
+für das laufende Semester geschrieben.
+Falls der Student dem Organisator angegeben hat bereits eine digitale Zulassung
+zu besitzen, diese aber verloren hat, so wird vom System geprüft ob diese Angaben
+stimmen. Sind die Angaben richtig, so wird dem Studenten eine neue Email mit dem
+Token gesendet und der Student landet auf der aktuelle Klausurliste.
+Sollte der Student keine Zulassung im System besitzen wird dem Organisator dies
+durch eine entsprechende Fehlermeldung mitgeteilt.
+
+Sobald die Neuzulassungen feststehen kann der Organisator die Zulassungsliste
+hochladen und die Zulassungen werden automatisch per Mail an die Studenten
+versendet. Im Anschluss kann die erstellte Klausurliste heruntergeladen werden,
+auf welcher alle Studenten stehen welche per Token eine Altzulassung eingelöst, vom
+Organisator manuell eingetragen oder in diesem Semester eine neue Zulassung
+erworben haben.
+
+Auf der Statistik-Seite werden die Zulassungs- und Teilnehmerzahlen der letzten Semester
+für dieses Modul graphisch dargestellt.
+
+Am Ende des Semesters, oder nach Abschluss des Moduls muss der Organisator das Modul
+deaktivieren, um es für die kommenden Semester wieder freizugeben.

@@ -9,6 +9,7 @@
 | Studentrepo | Speichert Studenten in der Datenbank
 | Modulrepo | Speichert Module in der Datenbank
 | Quittungenrepo | Speichert Quittungen in der Datenbank
+| Statistikrepo | Speichert Statistik in der Datenbank
 |===
 
 ==== Ebene 2: Logik
@@ -21,6 +22,7 @@
 | StudentenService | Findet und speichert Studenten
 | TokengenerierungsService | Erstellt anhand der Matrikelnummer und der FachID und einem Keypair ein Token
 | TokenverifikationsService | Entschlüsselt anhand der Matrikelnummer und der FachID den Token zur Verifikation
+| StatistikService | Findet Statistik Modul
 |===
 
 ==== Ebene 3: Grafische Oberfläche
@@ -29,6 +31,7 @@
 | MainController | Stellt die Links zu weiteren Navigation auf der Seite und liefert eine Beschreibung der Rollen
 | ModulController | Erstellt Module, lädt Zulassungslisten hoch und kombiniert diese mit der Altzulassungsliste
 | StudentenController | Lädt Altzulassungen hoch mit allen nötigen Daten
+| StatistikController | Selektiert eine Statistik
 |===
 
 === Aufgabe 5.2 Tokensystem
